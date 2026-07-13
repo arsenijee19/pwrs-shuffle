@@ -57,6 +57,7 @@
 - Refined public FAQ/Fair Play wording and added a pre-open list of currently available prizes without showing odds or percentages.
 - Added a repeatable admin action to seed the requested 28-item PlayWorld prize catalog without resetting existing draw data.
 - Added browser-based first-run setup and committed production dependencies for cPanel Git Version Control deployments without terminal access.
+- Added router fallback for `/index.php/...` URLs when cPanel rewrite rules are unavailable.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.

@@ -23,6 +23,15 @@ final class Router
     {
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+        $script = $_SERVER['SCRIPT_NAME'] ?? '';
+
+        if ($script !== '' && str_starts_with($path, $script)) {
+            $path = substr($path, strlen($script)) ?: '/';
+        }
+
+        if (str_starts_with($path, '/index.php')) {
+            $path = substr($path, strlen('/index.php')) ?: '/';
+        }
 
         foreach ($this->routes[$method] ?? [] as $route => $handler) {
             $pattern = '#^' . preg_replace('#\{([a-zA-Z_][a-zA-Z0-9_]*)\}#', '(?P<$1>[^/]+)', $route) . '$#';
