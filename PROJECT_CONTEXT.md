@@ -31,6 +31,7 @@
 - Draw logic: server-side weighted random selection in a transaction; animation is display-only.
 - Security: CSRF tokens on POST actions, hashed token storage, PHP secure cookie settings, basic file-based rate limiting, PDO prepared statements, output escaping, and security headers.
 - Deployment: document root should point to `public/`.
+- Apache/cPanel routing: root `.htaccess` forwards requests into `public/`; `public/.htaccess` routes friendly URLs to `index.php`.
 
 ## Setup & Execution
 - Dependencies: Composer, PHP 8.2+, SQLite extensions.
@@ -52,6 +53,7 @@
 - Added admin management screens, public Mystery Box flow, PDF certificate generation, FAQ/Fair Play content, documentation, and deployment guide.
 - Added PHPUnit coverage for token hashing, idempotent draw behavior, and result visibility retention.
 - Validated local HTTP flow, admin login, prize creation, token generation, box opening, PDF output, and desktop/mobile screenshots.
+- Added cPanel-friendly `.htaccess` files and dynamic URL fallback when `APP_URL` is not set to the final domain.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.

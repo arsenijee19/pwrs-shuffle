@@ -12,9 +12,10 @@
 
 1. Document root domena ili subdomena treba da pokazuje na `public/`.
 2. Ako hosting panel ne dozvoljava `public/` kao root, sadržaj projekta postaviti iznad public root-a, a `public/` mapirati kao web root kroz cPanel.
-3. Omogućiti PHP 8.2+ i ekstenzije `pdo_sqlite`, `sqlite3`, `mbstring`, `gd`, `dom`, `xml`.
-4. Folder `storage/` mora biti writeable za PHP proces.
-5. HTTPS mora biti aktivan pre produkcionog korišćenja.
+3. Ako nije moguće mapirati `public/`, root `.htaccess` preusmerava zahteve u `public/` i blokira direktan pristup osetljivim folderima.
+4. Omogućiti PHP 8.2+ i ekstenzije `pdo_sqlite`, `sqlite3`, `mbstring`, `gd`, `dom`, `xml`.
+5. Folder `storage/` mora biti writeable za PHP proces.
+6. HTTPS mora biti aktivan pre produkcionog korišćenja.
 
 ## Inicijalizacija
 
@@ -26,6 +27,8 @@ php bin/setup.php
 
 Admin nalog se kreira iz `ADMIN_EMAIL` i `ADMIN_PASSWORD`.
 Odmah nakon prvog logina promeniti lozinku.
+
+Ako hosting nema Terminal, lokalno napraviti ZIP koji već sadrži `vendor/`, `.env`, i SQLite bazu, pa ga uploadovati kroz File Manager.
 
 ## Build
 

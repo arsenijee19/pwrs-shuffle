@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^$ public/ [L]
+    RewriteRule (.*) public/$1 [L]
+</IfModule>
+
+<FilesMatch "^(\.env|composer\.(json|lock)|phpunit\.xml|PROJECT_CONTEXT\.md|README\.md|DEPLOYMENT\.md)$">
+    Require all denied
+</FilesMatch>
+
+RedirectMatch 403 ^/(app|bin|database|resources|storage|tests|vendor)(/|$)

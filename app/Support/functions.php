@@ -38,6 +38,11 @@ function redirect(string $path): never
 function url(string $path = ''): string
 {
     $base = rtrim((string) env_value('APP_URL', ''), '/');
+    if ($base === '' || str_contains($base, 'example') || str_contains($base, 'tvoj-domen')) {
+        $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $base = ($https ? 'https://' : 'http://') . $host;
+    }
     return $base . '/' . ltrim($path, '/');
 }
 
@@ -78,4 +83,3 @@ function format_date(string $date): string
     $dt = new DateTimeImmutable($date);
     return $dt->format('d.m.Y. H:i');
 }
-
