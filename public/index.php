@@ -76,6 +76,12 @@ $router->post('/admin/prizes/save', function (): void {
     (new PrizeService())->save($_POST, $_FILES['cover'] ?? null);
     redirect('/admin/prizes');
 });
+$router->post('/admin/prizes/seed-playworld', function (): void {
+    AuthService::requireAdmin();
+    verify_csrf();
+    $_SESSION['flash'] = (new PrizeService())->seedPlayWorldCatalog();
+    redirect('/admin/prizes');
+});
 $router->post('/admin/prizes/{id}/delete', function (string $id): void {
     AuthService::requireAdmin();
     verify_csrf();

@@ -1,8 +1,18 @@
 <section class="panel">
   <div class="section-head">
     <h1>Nagrade</h1>
-    <a class="primary" href="/admin/prizes/new">Dodaj nagradu</a>
+    <div class="actions">
+      <form method="post" action="/admin/prizes/seed-playworld" class="inline">
+        <?= csrf_field() ?>
+        <button class="ghost" type="submit">Dodaj PlayWorld katalog</button>
+      </form>
+      <a class="primary" href="/admin/prizes/new">Dodaj nagradu</a>
+    </div>
   </div>
+  <?php if (!empty($_SESSION['flash'])): ?>
+    <p class="notice">Katalog je dodat. Novo: <?= e((string) $_SESSION['flash']['created']) ?>, osveženo: <?= e((string) $_SESSION['flash']['updated']) ?>.</p>
+    <?php unset($_SESSION['flash']); ?>
+  <?php endif; ?>
   <table>
     <thead><tr><th>Cover</th><th>Naziv</th><th>Rarity</th><th>Weight</th><th>Max</th><th>Osvojeno</th><th>Preostalo</th><th>Status</th><th></th></tr></thead>
     <tbody>

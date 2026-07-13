@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PlayWorld\MysteryBox\Tests;
 
 use PlayWorld\MysteryBox\Services\DrawService;
+use PlayWorld\MysteryBox\Services\PrizeService;
 use PlayWorld\MysteryBox\Services\TokenService;
 use PlayWorld\MysteryBox\Support\Database;
 
@@ -48,5 +49,19 @@ final class TokenAndDrawTest extends TestCase
         $draw = ['created_at' => (new \DateTimeImmutable('-6 days'))->format('c')];
 
         $this->assertFalse((new DrawService())->isVisible($draw));
+    }
+
+    public function testPlayWorldCatalogSeedIsRepeatable(): void
+    {
+        $service = new PrizeService();
+
+        $first = $service->seedPlayWorldCatalog();
+        $second = $service->seedPlayWorldCatalog();
+
+        $this->assertSame(28, $first['created']);
+        $this->assertSame(0, $first['updated']);
+        $this->assertSame(0, $second['created']);
+        $this->assertSame(28, $second['updated']);
+        $this->assertSame(28, (int) Database::pdo()->query('SELECT COUNT(*) FROM prizes')->fetchColumn());
     }
 }
