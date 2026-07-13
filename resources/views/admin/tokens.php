@@ -12,7 +12,11 @@
     <div class="created-links">
       <h2>Novi linkovi</h2>
       <?php foreach ($created as $item): ?>
-        <div class="copy-row"><input readonly value="<?= e($item['link']) ?>"><button type="button" data-copy="<?= e($item['link']) ?>">Kopiraj</button></div>
+        <div class="copy-row">
+          <input readonly value="<?= e($item['link']) ?>">
+          <button type="button" data-copy="<?= e($item['link']) ?>">Kopiraj</button>
+          <button type="button" data-copy-formatted="<?= e($item['link']) ?>">Copy formatted</button>
+        </div>
       <?php endforeach; ?>
     </div>
   <?php endif; ?>

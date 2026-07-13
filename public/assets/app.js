@@ -7,6 +7,33 @@
     });
   });
 
+  document.querySelectorAll('[data-copy-formatted]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const link = button.dataset.copyFormatted || '';
+      const message = `Poštovani,
+
+u prilogu vam šaljemo Vaš jedinstveni link za PlayWorld Mystery Box:
+
+*${link}*
+
+Molimo Vas da otvorite link i ispratite instrukcije prikazane na stranici. Mystery Box možete otvoriti samo jednom, a rezultat nakon otvaranja nije moguće promeniti.
+
+Nakon što otvorite Mystery Box, molimo Vas da nam pošaljete:
+
+- screenshot osvojene nagrade, ili
+- PDF potvrdu koju možete preuzeti na stranici rezultata.
+
+Hvala Vam na učešću i želimo Vam puno sreće!
+
+Srdačno,
+PlayWorld tim`;
+
+      await navigator.clipboard.writeText(message);
+      button.textContent = 'Kopirano';
+      setTimeout(() => { button.textContent = 'Copy formatted'; }, 1400);
+    });
+  });
+
   document.querySelectorAll('[data-confirm-open]').forEach((form) => {
     form.addEventListener('submit', (event) => {
       if (!window.confirm('Ovu Mystery Box nagradu možete otvoriti samo jednom.')) {
