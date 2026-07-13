@@ -1,0 +1,14 @@
+/.env
+/vendor/
+/storage/database/*.sqlite
+/storage/database/*.sqlite-*
+/storage/logs/*.log
+/storage/rate-limit/*.json
+/storage/sessions/*
+!/storage/sessions/.gitkeep
+!/storage/database/.gitkeep
+!/storage/logs/.gitkeep
+!/storage/rate-limit/.gitkeep
+/.phpunit.cache/
+/.phpunit.result.cache
+/tmp/
