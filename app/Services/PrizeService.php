@@ -24,7 +24,18 @@ final class PrizeService
     public function activeAvailable(): array
     {
         return Database::pdo()->query(
-            'SELECT * FROM prizes WHERE active = 1 AND won_count < max_quantity AND weight > 0 ORDER BY name ASC'
+            "SELECT * FROM prizes WHERE active = 1 AND won_count < max_quantity AND weight > 0
+            ORDER BY
+                CASE rarity
+                    WHEN 'Ultra Rare' THEN 1
+                    WHEN 'Rare' THEN 2
+                    WHEN 'Special' THEN 3
+                    WHEN 'Standard' THEN 4
+                    WHEN 'Common' THEN 5
+                    ELSE 6
+                END,
+                weight ASC,
+                name ASC"
         )->fetchAll();
     }
 

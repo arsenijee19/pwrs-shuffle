@@ -60,6 +60,8 @@
 - Added router fallback for `/index.php/...` URLs when cPanel rewrite rules are unavailable.
 - Added query-string route fallback for restrictive cPanel hosts: `/index.php?route=/setup`.
 - Added physical fallback entrypoints `setup.php`, `admin-login.php`, and `admin-panel.php` for hosts that reject path-info URLs.
+- Changed the pre-open available prizes display to a text-only list without cover images.
+- Sorted the available prizes list by rarity and added restrained rarity color badges.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.

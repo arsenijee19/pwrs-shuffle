@@ -77,11 +77,20 @@ dd { margin: 4px 0 0; font-weight: 750; }
 .faq p { color: var(--muted); line-height: 1.55; }
 .available-prizes { margin: 24px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 22px 0; }
 .available-prizes h2 { font-size: 20px; margin: 0 0 14px; }
-.prize-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.prize-item { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center; background: var(--soft); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
-.prize-item img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; background: #fff; }
-.prize-item strong { display: block; line-height: 1.25; }
-.prize-item span { display: block; margin-top: 4px; color: var(--muted); font-size: 13px; }
+.prize-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 0; margin: 0; list-style: none; }
+.prize-item { position: relative; overflow: hidden; background: #fff; border: 1px solid var(--line); border-left: 5px solid var(--line); border-radius: 8px; padding: 13px 14px; box-shadow: 0 10px 24px rgba(19, 34, 56, .06); }
+.prize-item strong { display: block; line-height: 1.25; padding-right: 92px; }
+.prize-item span { position: absolute; top: 10px; right: 10px; border-radius: 999px; padding: 4px 9px; color: var(--muted); background: var(--soft); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.rarity-ultra-rare { border-left-color: #c03968; background: linear-gradient(90deg, rgba(192,57,104,.10), #fff 42%); }
+.rarity-ultra-rare span { color: #8d2148; background: #fde8f0; }
+.rarity-rare { border-left-color: #7c5cc4; background: linear-gradient(90deg, rgba(124,92,196,.10), #fff 42%); }
+.rarity-rare span { color: #553895; background: #eee9ff; }
+.rarity-special { border-left-color: #2364aa; background: linear-gradient(90deg, rgba(35,100,170,.10), #fff 42%); }
+.rarity-special span { color: #174c83; background: #e5f0fb; }
+.rarity-standard { border-left-color: #2f9e75; background: linear-gradient(90deg, rgba(47,158,117,.10), #fff 42%); }
+.rarity-standard span { color: #17624a; background: #e4f6ef; }
+.rarity-common { border-left-color: #8a98aa; background: linear-gradient(90deg, rgba(138,152,170,.10), #fff 42%); }
+.rarity-common span { color: #516070; background: #eef2f6; }
 .inline-tools { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin-bottom: 20px; }
 .inline-tools label { min-width: 180px; }
 .created-links { border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin: 18px 0; background: var(--soft); }

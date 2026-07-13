@@ -13,17 +13,15 @@
   <?php if (!empty($availablePrizes)): ?>
     <section class="available-prizes" aria-labelledby="available-prizes-title">
       <h2 id="available-prizes-title">Dostupne nagrade</h2>
-      <div class="prize-list">
+      <ul class="prize-list">
         <?php foreach ($availablePrizes as $prize): ?>
-          <article class="prize-item">
-            <img src="<?= e($prize['cover_path']) ?>" alt="">
-            <div>
-              <strong><?= e($prize['name']) ?></strong>
-              <span><?= e($prize['rarity']) ?></span>
-            </div>
-          </article>
+          <?php $rarityClass = strtolower((string) preg_replace('/[^a-z0-9]+/i', '-', $prize['rarity'])); ?>
+          <li class="prize-item rarity-<?= e(trim($rarityClass, '-')) ?>">
+            <strong><?= e($prize['name']) ?></strong>
+            <span><?= e($prize['rarity']) ?></span>
+          </li>
         <?php endforeach; ?>
-      </div>
+      </ul>
     </section>
   <?php endif; ?>
   <a class="text-link" href="/faq">Pročitaj više</a>
