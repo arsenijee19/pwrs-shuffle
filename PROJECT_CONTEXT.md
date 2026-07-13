@@ -66,6 +66,7 @@
 - Improved mobile responsiveness with compact navigation, sticky CTA, tuned prize list spacing, scaled result animation, and lightweight CSS confetti.
 - Expanded FAQ and Fair Play copy to cover multiple purchases, prize replacement rules, minimum active prize count, lost links, and technical interruptions.
 - Added an admin-only "Copy formatted" action for newly generated token links that copies the customer message template with the link embedded.
+- Added clipboard fallback and JS cache busting for admin copy buttons on restrictive browsers/hosting setups.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.

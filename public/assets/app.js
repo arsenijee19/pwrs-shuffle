@@ -1,9 +1,37 @@
 (() => {
+  const copyToClipboard = async (text) => {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    textarea.style.top = '0';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    document.execCommand('copy');
+    textarea.remove();
+  };
+
+  const markCopied = (button, label, delay = 1300) => {
+    button.textContent = 'Kopirano';
+    setTimeout(() => { button.textContent = label; }, delay);
+  };
+
   document.querySelectorAll('[data-copy]').forEach((button) => {
     button.addEventListener('click', async () => {
-      await navigator.clipboard.writeText(button.dataset.copy || '');
-      button.textContent = 'Kopirano';
-      setTimeout(() => { button.textContent = 'Kopiraj'; }, 1200);
+      try {
+        await copyToClipboard(button.dataset.copy || '');
+        markCopied(button, 'Kopiraj', 1200);
+      } catch (error) {
+        button.textContent = 'Copy failed';
+        setTimeout(() => { button.textContent = 'Kopiraj'; }, 1600);
+      }
     });
   });
 
@@ -28,9 +56,13 @@ Hvala Vam na učešću i želimo Vam puno sreće!
 Srdačno,
 PlayWorld tim`;
 
-      await navigator.clipboard.writeText(message);
-      button.textContent = 'Kopirano';
-      setTimeout(() => { button.textContent = 'Copy formatted'; }, 1400);
+      try {
+        await copyToClipboard(message);
+        markCopied(button, 'Copy formatted', 1400);
+      } catch (error) {
+        button.textContent = 'Copy failed';
+        setTimeout(() => { button.textContent = 'Copy formatted'; }, 1800);
+      }
     });
   });
 
