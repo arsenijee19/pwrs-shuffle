@@ -141,7 +141,11 @@ $router->get('/box/{token}', function (string $plain): void {
         render('public/invalid', ['title' => 'Token nije aktivan', 'reason' => 'Ovaj token je ' . strtolower($token['status']) . '.'], 410);
         return;
     }
-    render('public/box', ['title' => 'Open Mystery Box', 'token' => $plain]);
+    render('public/box', [
+        'title' => 'Open Mystery Box',
+        'token' => $plain,
+        'availablePrizes' => (new PrizeService())->activeAvailable(),
+    ]);
 });
 $router->post('/box/{token}/open', function (string $plain): void {
     verify_csrf();

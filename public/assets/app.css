@@ -75,6 +75,13 @@ dd { margin: 4px 0 0; font-weight: 750; }
 .faq details { border-bottom: 1px solid var(--line); padding: 16px 0; }
 .faq summary { cursor: pointer; font-weight: 800; }
 .faq p { color: var(--muted); line-height: 1.55; }
+.available-prizes { margin: 24px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 22px 0; }
+.available-prizes h2 { font-size: 20px; margin: 0 0 14px; }
+.prize-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.prize-item { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center; background: var(--soft); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+.prize-item img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; background: #fff; }
+.prize-item strong { display: block; line-height: 1.25; }
+.prize-item span { display: block; margin-top: 4px; color: var(--muted); font-size: 13px; }
 .inline-tools { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin-bottom: 20px; }
 .inline-tools label { min-width: 180px; }
 .created-links { border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin: 18px 0; background: var(--soft); }
@@ -94,6 +101,7 @@ dd { margin: 4px 0 0; font-weight: 750; }
   nav { flex-wrap: wrap; gap: 8px; }
   main { width: min(100% - 20px, 1120px); margin-top: 18px; }
   .admin-grid, .result-shell, .meta { grid-template-columns: 1fr; }
+  .prize-list { grid-template-columns: 1fr; }
   .section-head { align-items: flex-start; flex-direction: column; }
   table { display: block; overflow-x: auto; white-space: nowrap; }
   .box-animation { height: 260px; }

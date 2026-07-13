@@ -54,6 +54,7 @@
 - Added PHPUnit coverage for token hashing, idempotent draw behavior, and result visibility retention.
 - Validated local HTTP flow, admin login, prize creation, token generation, box opening, PDF output, and desktop/mobile screenshots.
 - Added cPanel-friendly `.htaccess` files and dynamic URL fallback when `APP_URL` is not set to the final domain.
+- Refined public FAQ/Fair Play wording and added a pre-open list of currently available prizes without showing odds or percentages.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
