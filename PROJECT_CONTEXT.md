@@ -59,6 +59,7 @@
 - Added browser-based first-run setup and committed production dependencies for cPanel Git Version Control deployments without terminal access.
 - Added router fallback for `/index.php/...` URLs when cPanel rewrite rules are unavailable.
 - Added query-string route fallback for restrictive cPanel hosts: `/index.php?route=/setup`.
+- Added physical fallback entrypoints `setup.php`, `admin-login.php`, and `admin-panel.php` for hosts that reject path-info URLs.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.

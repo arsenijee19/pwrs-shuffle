@@ -52,3 +52,4 @@ Detaljno uputstvo je u [DEPLOYMENT.md](DEPLOYMENT.md).
 - `SESSION_SECURE` - `true` kada aplikacija radi preko HTTPS-a.
 - `RESULT_RETENTION_DAYS` - koliko dana kupac vidi rezultat.
 - `RATE_LIMIT_PER_MINUTE` - osnovni rate limit po IP adresi.
+- `APP_QUERY_ROUTES` - postavite na `true` ako hosting ne podržava normalne rewrite rute.

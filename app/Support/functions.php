@@ -31,6 +31,10 @@ function e(?string $value): string
 
 function redirect(string $path): never
 {
+    if ((bool) env_value('APP_QUERY_ROUTES', false) && str_starts_with($path, '/')) {
+        $path = '/index.php?route=' . rawurlencode($path);
+    }
+
     header('Location: ' . $path, true, 302);
     exit;
 }

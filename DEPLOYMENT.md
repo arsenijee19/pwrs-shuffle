@@ -30,6 +30,7 @@ Odmah nakon prvog logina promeniti lozinku.
 
 Ako hosting nema Terminal, lokalno napraviti ZIP koji već sadrži `vendor/`, `.env`, i SQLite bazu, pa ga uploadovati kroz File Manager.
 Ako koristite cPanel Git Version Control, repo sadrži `vendor/`; nakon pull-a otvorite `/setup` da se automatski napravi baza i prvi admin nalog.
+Ako `/setup` ne radi zbog rewrite podešavanja hostinga, otvorite `/setup.php`. Za trajni query-route fallback u `.env` postavite `APP_QUERY_ROUTES=true`.
 
 ## Build
 
