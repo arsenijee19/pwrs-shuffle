@@ -3,7 +3,7 @@
   <h1>Kako funkcioniše?</h1>
   <ul class="checklist">
     <li>Svaki Mystery Box može da se otvori samo jednom.</li>
-    <li>Nagradni fond je pripremljen pre početka promocije.</li>
+    <li>U fondu je najmanje 25 aktivnih nagrada.</li>
     <li>Neke nagrade imaju ograničenu dostupnost.</li>
     <li>Rezultat određuje server.</li>
     <li>Nakon otvaranja rezultat nije moguće promeniti.</li>
