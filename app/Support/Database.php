@@ -35,4 +35,19 @@ final class Database
     {
         self::$pdo = null;
     }
+
+    public static function migrate(): void
+    {
+        $pdo = self::pdo();
+        foreach (glob(app_path('database/migrations/*.sql')) as $migration) {
+            $pdo->exec((string) file_get_contents($migration));
+        }
+    }
+
+    public static function hasAdmins(): bool
+    {
+        self::migrate();
+        $count = self::pdo()->query('SELECT COUNT(*) FROM admins')->fetchColumn();
+        return (int) $count > 0;
+    }
 }

@@ -15,6 +15,7 @@ use PlayWorld\MysteryBox\Support\Database;
 use PlayWorld\MysteryBox\Support\Router;
 
 App::bootstrap(dirname(__DIR__));
+Database::migrate();
 RateLimiter::hit('global');
 
 header('X-Frame-Options: DENY');
@@ -31,7 +32,41 @@ $router->get('/', fn () => render('public/home', ['title' => 'PlayWorld Mystery 
 $router->get('/faq', fn () => render('public/faq', ['title' => 'FAQ']));
 $router->get('/fair-play', fn () => render('public/fair-play', ['title' => 'Fair Play']));
 
-$router->get('/admin/login', fn () => render('admin/login', ['title' => 'Admin Login']));
+$router->get('/setup', function (): void {
+    if (Database::hasAdmins()) {
+        redirect('/admin/login');
+    }
+
+    render('admin/setup', ['title' => 'Initial Setup']);
+});
+$router->post('/setup', function (): void {
+    verify_csrf();
+    if (Database::hasAdmins()) {
+        redirect('/admin/login');
+    }
+
+    $email = trim((string) ($_POST['email'] ?? ''));
+    $password = (string) ($_POST['password'] ?? '');
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($password) < 10) {
+        render('admin/setup', [
+            'title' => 'Initial Setup',
+            'error' => 'Unesite ispravan email i lozinku od najmanje 10 karaktera.',
+        ], 422);
+        return;
+    }
+
+    (new AuthService())->createInitialAdmin($email, $password);
+    redirect('/admin/login');
+});
+
+$router->get('/admin/login', function (): void {
+    if (!Database::hasAdmins()) {
+        redirect('/setup');
+    }
+
+    render('admin/login', ['title' => 'Admin Login']);
+});
 $router->post('/admin/login', function (): void {
     verify_csrf();
     RateLimiter::hit('admin-login');

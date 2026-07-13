@@ -31,9 +31,32 @@ final class AuthService
 
     public static function requireAdmin(): void
     {
+        if (!\PlayWorld\MysteryBox\Support\Database::hasAdmins()) {
+            redirect('/setup');
+        }
+
         if (!self::check()) {
             redirect('/admin/login');
         }
+    }
+
+    public function createInitialAdmin(string $email, string $password): bool
+    {
+        if (\PlayWorld\MysteryBox\Support\Database::hasAdmins()) {
+            return false;
+        }
+
+        $now = date('c');
+        \PlayWorld\MysteryBox\Support\Database::pdo()->prepare(
+            'INSERT INTO admins (email, password_hash, created_at, updated_at) VALUES (:email, :hash, :created, :updated)'
+        )->execute([
+            'email' => strtolower(trim($email)),
+            'hash' => password_hash($password, PASSWORD_DEFAULT),
+            'created' => $now,
+            'updated' => $now,
+        ]);
+
+        return true;
     }
 
     public function logout(): void
@@ -62,4 +85,3 @@ final class AuthService
         return true;
     }
 }
-

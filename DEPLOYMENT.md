@@ -29,6 +29,7 @@ Admin nalog se kreira iz `ADMIN_EMAIL` i `ADMIN_PASSWORD`.
 Odmah nakon prvog logina promeniti lozinku.
 
 Ako hosting nema Terminal, lokalno napraviti ZIP koji već sadrži `vendor/`, `.env`, i SQLite bazu, pa ga uploadovati kroz File Manager.
+Ako koristite cPanel Git Version Control, repo sadrži `vendor/`; nakon pull-a otvorite `/setup` da se automatski napravi baza i prvi admin nalog.
 
 ## Build
 

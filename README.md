@@ -25,6 +25,7 @@ php -S localhost:8080 -t public
 ```
 
 Admin nalog se kreira iz `ADMIN_EMAIL` i `ADMIN_PASSWORD` vrednosti iz `.env`.
+Ako se aplikacija deployuje bez terminala i bez postojeće baze, otvorite `/setup` i kreirajte prvi admin nalog kroz browser.
 
 ## Testovi i provere
 
