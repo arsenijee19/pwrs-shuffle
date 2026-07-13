@@ -62,6 +62,7 @@
 - Added physical fallback entrypoints `setup.php`, `admin-login.php`, and `admin-panel.php` for hosts that reject path-info URLs.
 - Changed the pre-open available prizes display to a text-only list without cover images.
 - Sorted the available prizes list by rarity and added restrained rarity color badges.
+- Polished the available prizes panel with premium text styling, rarity-colored prize names, numbering, and a compact explanatory header.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.

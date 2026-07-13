@@ -75,21 +75,29 @@ dd { margin: 4px 0 0; font-weight: 750; }
 .faq details { border-bottom: 1px solid var(--line); padding: 16px 0; }
 .faq summary { cursor: pointer; font-weight: 800; }
 .faq p { color: var(--muted); line-height: 1.55; }
-.available-prizes { margin: 24px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 22px 0; }
-.available-prizes h2 { font-size: 20px; margin: 0 0 14px; }
-.prize-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 0; margin: 0; list-style: none; }
-.prize-item { position: relative; overflow: hidden; background: #fff; border: 1px solid var(--line); border-left: 5px solid var(--line); border-radius: 8px; padding: 13px 14px; box-shadow: 0 10px 24px rgba(19, 34, 56, .06); }
-.prize-item strong { display: block; line-height: 1.25; padding-right: 92px; }
-.prize-item span { position: absolute; top: 10px; right: 10px; border-radius: 999px; padding: 4px 9px; color: var(--muted); background: var(--soft); font-size: 11px; font-weight: 800; text-transform: uppercase; }
-.rarity-ultra-rare { border-left-color: #c03968; background: linear-gradient(90deg, rgba(192,57,104,.10), #fff 42%); }
+.available-prizes { margin: 26px 0; border: 1px solid var(--line); border-radius: 8px; padding: 20px; background: linear-gradient(180deg, #fff, #f8fbff); box-shadow: 0 16px 34px rgba(19, 34, 56, .08); }
+.prize-list-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
+.available-prizes h2 { font-size: 22px; margin: 0; }
+.available-prizes p { margin: 0; max-width: 300px; color: var(--muted); font-size: 13px; line-height: 1.45; text-align: right; }
+.prize-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 0; margin: 0; list-style: none; counter-reset: prize; }
+.prize-item { counter-increment: prize; position: relative; overflow: hidden; background: #fff; border: 1px solid var(--line); border-left: 5px solid var(--line); border-radius: 8px; padding: 14px 14px 14px 44px; box-shadow: 0 10px 24px rgba(19, 34, 56, .06); }
+.prize-item::before { content: counter(prize, decimal-leading-zero); position: absolute; left: 12px; top: 14px; color: #98a4b3; font-size: 12px; font-weight: 900; }
+.prize-item strong { display: block; line-height: 1.25; padding-right: 92px; font-weight: 850; }
+.prize-item span { position: absolute; top: 10px; right: 10px; border-radius: 999px; padding: 4px 9px; color: var(--muted); background: var(--soft); font-size: 11px; font-weight: 900; text-transform: uppercase; }
+.rarity-ultra-rare { border-left-color: #b92961; background: linear-gradient(90deg, rgba(185,41,97,.13), #fff 48%); }
+.rarity-ultra-rare strong { color: #8d2148; }
 .rarity-ultra-rare span { color: #8d2148; background: #fde8f0; }
-.rarity-rare { border-left-color: #7c5cc4; background: linear-gradient(90deg, rgba(124,92,196,.10), #fff 42%); }
+.rarity-rare { border-left-color: #6b4db4; background: linear-gradient(90deg, rgba(107,77,180,.13), #fff 48%); }
+.rarity-rare strong { color: #4d338b; }
 .rarity-rare span { color: #553895; background: #eee9ff; }
-.rarity-special { border-left-color: #2364aa; background: linear-gradient(90deg, rgba(35,100,170,.10), #fff 42%); }
+.rarity-special { border-left-color: #2364aa; background: linear-gradient(90deg, rgba(35,100,170,.12), #fff 48%); }
+.rarity-special strong { color: #174c83; }
 .rarity-special span { color: #174c83; background: #e5f0fb; }
-.rarity-standard { border-left-color: #2f9e75; background: linear-gradient(90deg, rgba(47,158,117,.10), #fff 42%); }
+.rarity-standard { border-left-color: #2f9e75; background: linear-gradient(90deg, rgba(47,158,117,.12), #fff 48%); }
+.rarity-standard strong { color: #17624a; }
 .rarity-standard span { color: #17624a; background: #e4f6ef; }
-.rarity-common { border-left-color: #8a98aa; background: linear-gradient(90deg, rgba(138,152,170,.10), #fff 42%); }
+.rarity-common { border-left-color: #8a98aa; background: linear-gradient(90deg, rgba(138,152,170,.11), #fff 48%); }
+.rarity-common strong { color: #344054; }
 .rarity-common span { color: #516070; background: #eef2f6; }
 .inline-tools { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin-bottom: 20px; }
 .inline-tools label { min-width: 180px; }
@@ -111,6 +119,10 @@ dd { margin: 4px 0 0; font-weight: 750; }
   main { width: min(100% - 20px, 1120px); margin-top: 18px; }
   .admin-grid, .result-shell, .meta { grid-template-columns: 1fr; }
   .prize-list { grid-template-columns: 1fr; }
+  .prize-list-head { align-items: flex-start; flex-direction: column; gap: 6px; }
+  .available-prizes p { text-align: left; max-width: none; }
+  .prize-item strong { padding-right: 0; }
+  .prize-item span { position: static; display: inline-block; margin-top: 8px; }
   .section-head { align-items: flex-start; flex-direction: column; }
   table { display: block; overflow-x: auto; white-space: nowrap; }
   .box-animation { height: 260px; }
