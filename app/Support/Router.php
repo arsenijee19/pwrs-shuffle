@@ -22,7 +22,10 @@ final class Router
     public function dispatch(): void
     {
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-        $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+        $routeParam = $_GET['route'] ?? null;
+        $path = is_string($routeParam) && $routeParam !== ''
+            ? '/' . ltrim($routeParam, '/')
+            : (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/');
         $script = $_SERVER['SCRIPT_NAME'] ?? '';
 
         if ($script !== '' && str_starts_with($path, $script)) {
