@@ -28,7 +28,10 @@ if ((bool) env_value('SESSION_SECURE', true)) {
 
 $router = new Router();
 
-$router->get('/', fn () => render('public/home', ['title' => 'PlayWorld Mystery Box']));
+$router->get('/', fn () => render('public/home', [
+    'title' => 'PlayWorld Mystery Box',
+    'availablePrizes' => (new PrizeService())->activeAvailable(),
+]));
 $router->get('/faq', fn () => render('public/faq', ['title' => 'FAQ']));
 $router->get('/fair-play', fn () => render('public/fair-play', ['title' => 'Fair Play']));
 
@@ -164,7 +167,9 @@ $router->post('/admin/password', function (): void {
 });
 
 $router->get('/box/{token}', function (string $plain): void {
-    $token = (new TokenService())->findPlain($plain);
+    $tokens = new TokenService();
+    $plain = $tokens->normalizePlain($plain);
+    $token = $tokens->findPlain($plain);
     if (!$token) {
         render('public/invalid', ['title' => 'Nevažeći link', 'reason' => 'Ovaj Mystery Box link nije pronađen.'], 404);
         return;
@@ -190,6 +195,7 @@ $router->get('/box/{token}', function (string $plain): void {
 });
 $router->post('/box/{token}/open', function (string $plain): void {
     verify_csrf();
+    $plain = (new TokenService())->normalizePlain($plain);
     try {
         $draw = (new DrawService())->open($plain);
         render('public/result', ['title' => 'Congratulations', 'draw' => $draw, 'token' => $plain, 'openedNow' => true]);
@@ -198,7 +204,9 @@ $router->post('/box/{token}/open', function (string $plain): void {
     }
 });
 $router->get('/box/{token}/certificate', function (string $plain): void {
-    $token = (new TokenService())->findPlain($plain);
+    $tokens = new TokenService();
+    $plain = $tokens->normalizePlain($plain);
+    $token = $tokens->findPlain($plain);
     if (!$token) {
         render('public/invalid', ['title' => 'Nevažeći link', 'reason' => 'Token nije pronađen.'], 404);
         return;

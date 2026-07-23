@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= e(($title ?? 'PlayWorld Mystery Box') . ' | PlayWorld') ?></title>
   <link rel="stylesheet" href="/assets/app.css">
-  <script defer src="/assets/app.js?v=20260713-copy2"></script>
+  <script defer src="/assets/app.js?v=20260723-admin-copy"></script>
 </head>
 <body>
   <header class="topbar">

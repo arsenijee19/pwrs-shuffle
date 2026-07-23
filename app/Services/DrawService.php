@@ -40,6 +40,7 @@ final class DrawService
     public function open(string $plainToken): array
     {
         $pdo = Database::pdo();
+        $plainToken = (new TokenService())->normalizePlain($plainToken);
         $tokenHash = hash('sha256', $plainToken);
 
         $pdo->beginTransaction();

@@ -1,4 +1,22 @@
 (() => {
+  const formattedMessage = (link) => `Poštovani,
+
+u prilogu vam šaljemo Vaš jedinstveni link za PlayWorld Mystery Box:
+
+${link}
+
+Molimo Vas da otvorite link i ispratite instrukcije prikazane na stranici. Mystery Box možete otvoriti samo jednom, a rezultat nakon otvaranja nije moguće promeniti.
+
+Nakon što otvorite Mystery Box, molimo Vas da nam pošaljete:
+
+- screenshot osvojene nagrade, ili
+- PDF potvrdu koju možete preuzeti na stranici rezultata.
+
+Hvala Vam na učešću i želimo Vam puno sreće!
+
+Srdačno,
+PlayWorld tim`;
+
   const copyToClipboard = async (text) => {
     if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(text);
@@ -18,16 +36,26 @@
     textarea.remove();
   };
 
-  const markCopied = (button, label, delay = 1300) => {
-    button.textContent = 'Kopirano';
-    setTimeout(() => { button.textContent = label; }, delay);
+  const markCopied = (button, label, type = 'Kopirano') => {
+    const row = button.closest('[data-copy-row]');
+    const status = row ? row.querySelector('[data-copy-status]') : null;
+    const time = new Date().toLocaleTimeString('sr-RS', { hour: '2-digit', minute: '2-digit' });
+
+    button.textContent = type;
+    button.classList.add('copied');
+    if (row) {
+      row.classList.add('copied-row');
+    }
+    if (status) {
+      status.textContent = `${type} u ${time}`;
+    }
   };
 
   document.querySelectorAll('[data-copy]').forEach((button) => {
     button.addEventListener('click', async () => {
       try {
         await copyToClipboard(button.dataset.copy || '');
-        markCopied(button, 'Kopiraj', 1200);
+        markCopied(button, 'Kopiraj link', 'Link kopiran');
       } catch (error) {
         button.textContent = 'Copy failed';
         setTimeout(() => { button.textContent = 'Kopiraj'; }, 1600);
@@ -38,30 +66,48 @@
   document.querySelectorAll('[data-copy-formatted]').forEach((button) => {
     button.addEventListener('click', async () => {
       const link = button.dataset.copyFormatted || '';
-      const message = `Poštovani,
-
-u prilogu vam šaljemo Vaš jedinstveni link za PlayWorld Mystery Box:
-
-*${link}*
-
-Molimo Vas da otvorite link i ispratite instrukcije prikazane na stranici. Mystery Box možete otvoriti samo jednom, a rezultat nakon otvaranja nije moguće promeniti.
-
-Nakon što otvorite Mystery Box, molimo Vas da nam pošaljete:
-
-- screenshot osvojene nagrade, ili
-- PDF potvrdu koju možete preuzeti na stranici rezultata.
-
-Hvala Vam na učešću i želimo Vam puno sreće!
-
-Srdačno,
-PlayWorld tim`;
+      const message = formattedMessage(link);
 
       try {
         await copyToClipboard(message);
-        markCopied(button, 'Copy formatted', 1400);
+        markCopied(button, 'Copy formatted', 'Poruka kopirana');
       } catch (error) {
         button.textContent = 'Copy failed';
         setTimeout(() => { button.textContent = 'Copy formatted'; }, 1800);
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-copy-all-formatted]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const links = [...document.querySelectorAll('[data-copy-formatted]')]
+        .map((copyButton) => copyButton.dataset.copyFormatted || '')
+        .filter(Boolean);
+
+      if (!links.length) {
+        return;
+      }
+
+      try {
+        await copyToClipboard(links.map(formattedMessage).join('\n\n---\n\n'));
+        button.textContent = `Copied ${links.length}`;
+        document.querySelectorAll('[data-copy-row]').forEach((row) => {
+          row.classList.add('copied-row');
+          const status = row.querySelector('[data-copy-status]');
+          if (status) {
+            status.textContent = 'Uključeno u bulk kopiranje';
+          }
+        });
+      } catch (error) {
+        button.textContent = 'Copy failed';
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-confirm-action]').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+      if (!window.confirm(form.dataset.confirmAction || 'Da li ste sigurni?')) {
+        event.preventDefault();
       }
     });
   });

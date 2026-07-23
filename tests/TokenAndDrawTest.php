@@ -25,6 +25,16 @@ final class TokenAndDrawTest extends TestCase
         $this->assertSame(hash('sha256', $plain), $token['token_hash']);
     }
 
+    public function testTokenLookupIgnoresTrailingFormattingCharacters(): void
+    {
+        $created = (new TokenService())->generate(1);
+        $plain = $created[0]['token'];
+        $token = (new TokenService())->findPlain('*' . $plain . '*');
+
+        $this->assertNotNull($token);
+        $this->assertSame('Active', $token['status']);
+    }
+
     public function testDrawIsIdempotentForUsedToken(): void
     {
         $now = date('c');

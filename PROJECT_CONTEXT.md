@@ -67,6 +67,8 @@
 - Expanded FAQ and Fair Play copy to cover multiple purchases, prize replacement rules, minimum active prize count, lost links, and technical interruptions.
 - Added an admin-only "Copy formatted" action for newly generated token links that copies the customer message template with the link embedded.
 - Added clipboard fallback and JS cache busting for admin copy buttons on restrictive browsers/hosting setups.
+- Added the public prize list to the homepage and made token lookup tolerate trailing formatting characters such as `*`.
+- Improved admin token UX with persistent per-row copy status, bulk formatted copy, clearer revoke action, and status badges.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.

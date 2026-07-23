@@ -3,7 +3,7 @@
         'name' => 'playworld/mystery-box',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '79d34ca9608d5abe076b9cf0452a024a4b5648ba',
+        'reference' => 'c9a05149c8f242c6a5676a811f429e4851dde018',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -85,7 +85,7 @@
         'playworld/mystery-box' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '79d34ca9608d5abe076b9cf0452a024a4b5648ba',
+            'reference' => 'c9a05149c8f242c6a5676a811f429e4851dde018',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

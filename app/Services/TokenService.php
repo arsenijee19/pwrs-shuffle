@@ -37,7 +37,20 @@ final class TokenService
 
     public function findPlain(string $plain): ?array
     {
+        $plain = $this->normalizePlain($plain);
         return $this->findByHash(hash('sha256', $plain));
+    }
+
+    public function normalizePlain(string $plain): string
+    {
+        $plain = trim(rawurldecode($plain));
+
+        if (str_contains($plain, '/box/')) {
+            $path = parse_url($plain, PHP_URL_PATH) ?: $plain;
+            $plain = basename($path);
+        }
+
+        return trim($plain, " \t\n\r\0\x0B*`_.,;:!?)]}>\"'");
     }
 
     public function findByHash(string $hash): ?array
@@ -50,6 +63,7 @@ final class TokenService
 
     public function mask(string $plain): string
     {
+        $plain = $this->normalizePlain($plain);
         return substr($plain, 0, 6) . '...' . substr($plain, -6);
     }
 
@@ -83,4 +97,3 @@ final class TokenService
             ->execute(['now' => date('c'), 'id' => $id]);
     }
 }
-
