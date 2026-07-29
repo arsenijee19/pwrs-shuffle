@@ -7,6 +7,9 @@
     <p class="notice">Ovu Mystery Box nagradu možete otvoriti samo jednom.</p>
     <button class="primary huge" type="submit">Open Mystery Box</button>
   </form>
+</section>
+
+<section class="panel narrow open-details-panel">
   <div class="open-details">
     <div class="compact-head">
       <h2>Šta treba da znate?</h2>
@@ -22,6 +25,7 @@
       <li>Po želji možete preuzeti PDF potvrdu.</li>
     </ul>
   </div>
-  <?php require app_path('resources/views/partials/prize-list.php'); ?>
   <a class="text-link" href="/faq">Pročitaj više</a>
 </section>
+
+<?php require app_path('resources/views/partials/prize-list.php'); ?>
