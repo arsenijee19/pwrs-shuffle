@@ -79,6 +79,7 @@
 - Polished the Draw ID verification page with a cleaner intro, official-looking mark, improved form layout, and clearer valid-result card.
 - Moved the pre-open Mystery Box CTA above the rules/prize list and refined result page spacing/actions so the screen feels less crowded.
 - Split the pre-open flow into separate CTA, rules, and prize-list sections; changed result pages to a vertical animation/result flow with calmer typography and more breathing room.
+- Centered public box/result content, CTA blocks, verification strips, and prize-list headers while keeping scan-heavy lists/meta content readable.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
