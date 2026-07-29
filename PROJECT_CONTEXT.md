@@ -77,6 +77,7 @@
 - Added homepage CTA buttons for buying a Mystery Box and opening the FAQ.
 - Reworked the mobile navbar into a compact equal-width grid without horizontal scrolling.
 - Polished the Draw ID verification page with a cleaner intro, official-looking mark, improved form layout, and clearer valid-result card.
+- Moved the pre-open Mystery Box CTA above the rules/prize list and refined result page spacing/actions so the screen feels less crowded.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
