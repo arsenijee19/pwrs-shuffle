@@ -22,6 +22,23 @@ final class DrawService
         return $draw ?: null;
     }
 
+    public function findByDrawId(string $drawId): ?array
+    {
+        $drawId = strtoupper(trim($drawId));
+        if (!preg_match('/^PW-[A-F0-9]{10}$/', $drawId)) {
+            return null;
+        }
+
+        $stmt = Database::pdo()->prepare(
+            'SELECT d.*, p.name prize_name, p.description prize_description, p.instructions prize_instructions,
+                p.cover_path, p.rarity
+             FROM draws d JOIN prizes p ON p.id = d.prize_id WHERE d.draw_id = :draw_id LIMIT 1'
+        );
+        $stmt->execute(['draw_id' => $drawId]);
+        $draw = $stmt->fetch();
+        return $draw ?: null;
+    }
+
     public function recent(int $limit = 8): array
     {
         $stmt = Database::pdo()->prepare(

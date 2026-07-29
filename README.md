@@ -13,7 +13,12 @@ Standalone PHP/SQLite MVP aplikacija za PlayWorld Mystery Box promociju.
 - Server-side izvlačenje sa transakcijom i zaključavanjem.
 - View-only rezultat 5 dana nakon otvaranja.
 - PDF potvrda sa QR kodom ka rezultatu.
+- Javna provera rezultata preko Draw ID-ja na `/verify`.
 - FAQ i Fair Play stranice.
+
+## Provera rezultata
+
+Screenshot sam po sebi ne treba prihvatati kao konačan dokaz. Svaki validan rezultat ima Draw ID. Otvorite `/verify`, unesite Draw ID i proverite da li se poklapaju nagrada, datum, vreme i maskirani token.
 
 ## Lokalno pokretanje
 

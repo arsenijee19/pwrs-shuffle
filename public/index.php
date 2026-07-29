@@ -34,6 +34,17 @@ $router->get('/', fn () => render('public/home', [
 ]));
 $router->get('/faq', fn () => render('public/faq', ['title' => 'FAQ']));
 $router->get('/fair-play', fn () => render('public/fair-play', ['title' => 'Fair Play']));
+$router->get('/verify', function (): void {
+    $drawId = strtoupper(trim((string) ($_GET['draw'] ?? '')));
+    $draw = $drawId !== '' ? (new DrawService())->findByDrawId($drawId) : null;
+
+    render('public/verify', [
+        'title' => 'Provera rezultata',
+        'drawId' => $drawId,
+        'draw' => $draw,
+        'searched' => $drawId !== '',
+    ], $drawId !== '' && !$draw ? 404 : 200);
+});
 
 $router->get('/setup', function (): void {
     if (Database::hasAdmins()) {

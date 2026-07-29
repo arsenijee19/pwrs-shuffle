@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= e(($title ?? 'PlayWorld Mystery Box') . ' | PlayWorld') ?></title>
   <link rel="stylesheet" href="/assets/app.css">
-  <script defer src="/assets/app.js?v=20260729-polish"></script>
+  <script defer src="/assets/app.js?v=20260729-verify"></script>
 </head>
 <body>
   <header class="topbar">
@@ -14,6 +14,7 @@
     <nav>
       <a href="/faq">FAQ</a>
       <a href="/fair-play">Fair Play</a>
+      <a href="/verify">Provera</a>
       <?php if (\PlayWorld\MysteryBox\Services\AuthService::check()): ?>
         <a href="/admin">Admin</a>
         <form method="post" action="/admin/logout" class="inline"><?= csrf_field() ?><button>Logout</button></form>

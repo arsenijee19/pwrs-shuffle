@@ -54,6 +54,25 @@ final class TokenAndDrawTest extends TestCase
         $this->assertSame(1, (int) $won);
     }
 
+    public function testDrawCanBeVerifiedByDrawId(): void
+    {
+        $now = date('c');
+        Database::pdo()->prepare(
+            'INSERT INTO prizes (name, description, instructions, cover_path, rarity, weight, max_quantity, won_count, active, created_at, updated_at)
+            VALUES ("NBA 2K26", "Opis", "Uputstvo", "/assets/placeholder-cover.svg", "Special", 10, 5, 0, 1, :created, :updated)'
+        )->execute(['created' => $now, 'updated' => $now]);
+
+        $plain = (new TokenService())->generate(1)[0]['token'];
+        $service = new DrawService();
+        $draw = $service->open($plain);
+        $verified = $service->findByDrawId(strtolower($draw['draw_id']));
+
+        $this->assertNotNull($verified);
+        $this->assertSame($draw['draw_id'], $verified['draw_id']);
+        $this->assertSame('NBA 2K26', $verified['prize_name']);
+        $this->assertNull($service->findByDrawId('PW-FAKEFAKEFA'));
+    }
+
     public function testExpiredResultIsNotVisibleAfterRetentionWindow(): void
     {
         $draw = ['created_at' => (new \DateTimeImmutable('-6 days'))->format('c')];

@@ -72,6 +72,12 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
 .result-shell { display: grid; grid-template-columns: minmax(240px, 380px) 1fr; gap: 28px; align-items: center; }
 .result { text-align: left; }
 .result h1 { font-size: clamp(34px, 5vw, 58px); }
+.verified-result { position: relative; overflow: hidden; }
+.verified-result::before { content: attr(data-watermark); position: absolute; right: -42px; top: 42%; z-index: 0; transform: rotate(-18deg); color: rgba(36,87,197,.055); font-size: clamp(30px, 5vw, 54px); font-weight: 950; white-space: nowrap; pointer-events: none; }
+.verified-result > * { position: relative; z-index: 1; }
+.verification-strip { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 18px; padding: 12px 14px; border: 1px solid #bde8d8; border-radius: 8px; background: linear-gradient(135deg, #eefaf5, #f8fffc); color: #17624a; }
+.verification-strip span { font-size: 12px; font-weight: 900; text-transform: uppercase; }
+.verification-strip strong { font-size: 15px; letter-spacing: 0; }
 .meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 22px 0; }
 .meta div { background: var(--soft); border-radius: 8px; padding: 12px; }
 dt { color: var(--muted); font-size: 12px; }
@@ -103,6 +109,13 @@ dd { margin: 4px 0 0; font-weight: 750; }
 .faq details:last-child { border-bottom: 0; padding-bottom: 2px; }
 .faq summary { cursor: pointer; font-weight: 850; color: #1d2939; }
 .faq p { color: var(--muted); line-height: 1.65; margin-bottom: 0; }
+.verify-panel .lead { margin-bottom: 22px; }
+.verify-form { display: grid; grid-template-columns: minmax(220px, 1fr) auto; gap: 12px; align-items: end; margin: 22px 0; }
+.verify-message { margin-top: 18px; }
+.verification-card { margin-top: 20px; border: 1px solid #bde8d8; border-radius: 8px; padding: 18px; background: linear-gradient(180deg, #ffffff, #f4fbf8); box-shadow: 0 16px 34px rgba(23, 98, 74, .08); }
+.verification-card > div:first-child { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.verification-card span { color: #17624a; font-size: 12px; font-weight: 900; text-transform: uppercase; }
+.verification-card strong { color: #121826; font-size: 20px; }
 .available-prizes { margin: 26px 0; border: 1px solid rgba(219,228,239,.94); border-radius: 8px; padding: 22px; background: linear-gradient(180deg, #ffffff, #f7f9ff); box-shadow: 0 18px 42px rgba(16, 24, 40, .09); }
 .prize-list-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
 .available-prizes h2 { font-size: 22px; margin: 0; }
@@ -180,6 +193,10 @@ dd { margin: 4px 0 0; font-weight: 750; }
   .result-shell { gap: 14px; }
   .result { text-align: center; }
   .result .primary, .result .ghost, .result .secondary-buy { width: 100%; margin-top: 8px; }
+  .verification-strip { align-items: flex-start; flex-direction: column; text-align: left; }
+  .verified-result::before { top: 36%; right: -90px; font-size: 34px; }
+  .verify-form { grid-template-columns: 1fr; }
+  .verification-card > div:first-child { align-items: flex-start; flex-direction: column; }
   .cover { width: min(220px, 100%); }
   .meta { margin: 18px 0; }
   .section-head { align-items: flex-start; flex-direction: column; }

@@ -47,6 +47,7 @@
 - If a draw result already exists, the same result is always returned.
 - Results remain viewable for `RESULT_RETENTION_DAYS`, default 5.
 - Animation never determines the result; the server persists the result first.
+- Screenshots are not authoritative by themselves; verify suspicious results by Draw ID through `/verify` or the admin/database record.
 
 ## Recent Changes
 - Built the PHP/SQLite MVP from an empty repository.
@@ -71,6 +72,7 @@
 - Improved admin token UX with persistent per-row copy status, bulk formatted copy, clearer revoke action, and status badges.
 - Upgraded the public visual layer with a premium dark hero treatment, refined prize cards, clearer FAQ grouping, smoother result animation, and mobile-aligned result actions.
 - Added a post-result "Kupi još jedan box" action linking to the PlayWorld Mystery Box product page.
+- Added Draw ID verification at `/verify`, a visible verification strip on result pages, and a subtle result watermark to make edited screenshots easier to reject.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
