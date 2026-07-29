@@ -31,6 +31,9 @@ nav { display: flex; align-items: center; gap: 18px; color: var(--muted); font-s
 .hero::after { content: ""; position: absolute; right: clamp(18px, 8vw, 90px); bottom: clamp(18px, 7vw, 82px); width: clamp(132px, 20vw, 238px); aspect-ratio: 1; z-index: -1; opacity: .22; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='12' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='58' y='98' width='144' height='108' rx='18'/%3E%3Cpath d='M42 78h176v38H42zM130 78v128M42 116h176'/%3E%3Cpath d='M128 77c-28-24-56-28-68-12-10 14 4 34 68 12ZM132 77c28-24 56-28 68-12 10 14-4 34-68 12Z'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat; }
 .hero h1, .panel h1 { font-size: clamp(36px, 6vw, 72px); line-height: 1.01; margin: 0 0 18px; letter-spacing: 0; font-weight: 950; }
 .hero .lead { color: rgba(255,255,255,.78); }
+.hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+.hero-actions .primary { min-height: 50px; padding: 0 22px; background: #fff; color: #121826; box-shadow: 0 18px 38px rgba(0,0,0,.22); }
+.hero-link { display: inline-flex; align-items: center; justify-content: center; min-height: 50px; border: 1px solid rgba(255,255,255,.26); border-radius: 8px; padding: 0 18px; color: rgba(255,255,255,.86); font-weight: 800; background: rgba(255,255,255,.08); }
 .lead { color: var(--muted); font-size: 18px; line-height: 1.6; max-width: 680px; }
 .eyebrow { color: var(--green); font-weight: 900; text-transform: uppercase; font-size: 12px; letter-spacing: 0; margin: 0 0 10px; }
 .hero .eyebrow { color: #ffc96a; }
@@ -177,6 +180,8 @@ dd { margin: 4px 0 0; font-weight: 750; }
   .panel { border-radius: 8px; padding: 18px; box-shadow: 0 12px 28px rgba(19, 34, 56, .10); }
   .hero { min-height: 58vh; padding: 26px 22px; border-radius: 8px; }
   .hero h1, .panel h1 { font-size: 34px; line-height: 1.06; }
+  .hero-actions { align-items: stretch; flex-direction: column; }
+  .hero-actions .primary, .hero-link { width: 100%; }
   .lead { font-size: 16px; line-height: 1.5; }
   .checklist { gap: 10px; margin: 18px 0; }
   .checklist li { font-size: 14px; padding-left: 28px; }

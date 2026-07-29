@@ -74,6 +74,7 @@
 - Added a post-result "Kupi još jedan box" action linking to the PlayWorld Mystery Box product page.
 - Added Draw ID verification at `/verify`, a visible verification strip on result pages, and a subtle result watermark to make edited screenshots easier to reject.
 - Refined homepage and Draw ID verification copy to sound more professional and less accusatory.
+- Added homepage CTA buttons for buying a Mystery Box and opening the FAQ.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
