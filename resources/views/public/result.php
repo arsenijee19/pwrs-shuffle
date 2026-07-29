@@ -1,5 +1,6 @@
 <section class="result-shell <?= !empty($openedNow) ? 'celebrate' : '' ?>">
   <div class="box-animation" aria-hidden="true">
+    <div class="spark-field"></div>
     <div class="box-lid"></div>
     <div class="box-body"></div>
     <div class="glow"></div>
@@ -15,7 +16,10 @@
       <div><dt>Datum i vreme</dt><dd><?= e(format_date($draw['created_at'])) ?></dd></div>
       <div><dt>Draw ID</dt><dd><?= e($draw['draw_id']) ?></dd></div>
     </dl>
-    <a class="primary" href="/box/<?= e($token) ?>/certificate">Download PDF Certificate</a>
-    <button class="ghost" type="button" data-sound-toggle>Sound on/off</button>
+    <div class="result-actions">
+      <a class="primary" href="/box/<?= e($token) ?>/certificate">Download PDF Certificate</a>
+      <a class="secondary-buy" href="https://www.playworld.rs/kupi/playworld-mystery-box-1004" target="_blank" rel="noopener">Kupi još jedan box</a>
+      <button class="ghost" type="button" data-sound-toggle>Sound on/off</button>
+    </div>
   </div>
 </section>

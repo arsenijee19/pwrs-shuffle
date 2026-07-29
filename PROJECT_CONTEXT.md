@@ -69,6 +69,8 @@
 - Added clipboard fallback and JS cache busting for admin copy buttons on restrictive browsers/hosting setups.
 - Added the public prize list to the homepage and made token lookup tolerate trailing formatting characters such as `*`.
 - Improved admin token UX with persistent per-row copy status, bulk formatted copy, clearer revoke action, and status badges.
+- Upgraded the public visual layer with a premium dark hero treatment, refined prize cards, clearer FAQ grouping, smoother result animation, and mobile-aligned result actions.
+- Added a post-result "Kupi još jedan box" action linking to the PlayWorld Mystery Box product page.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
