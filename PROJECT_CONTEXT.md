@@ -75,6 +75,8 @@
 - Added Draw ID verification at `/verify`, a visible verification strip on result pages, and a subtle result watermark to make edited screenshots easier to reject.
 - Refined homepage and Draw ID verification copy to sound more professional and less accusatory.
 - Added homepage CTA buttons for buying a Mystery Box and opening the FAQ.
+- Reworked the mobile navbar into a compact equal-width grid without horizontal scrolling.
+- Polished the Draw ID verification page with a cleaner intro, official-looking mark, improved form layout, and clearer valid-result card.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.

@@ -112,13 +112,22 @@ dd { margin: 4px 0 0; font-weight: 750; }
 .faq details:last-child { border-bottom: 0; padding-bottom: 2px; }
 .faq summary { cursor: pointer; font-weight: 850; color: #1d2939; }
 .faq p { color: var(--muted); line-height: 1.65; margin-bottom: 0; }
-.verify-panel .lead { margin-bottom: 22px; }
-.verify-form { display: grid; grid-template-columns: minmax(220px, 1fr) auto; gap: 12px; align-items: end; margin: 22px 0; }
+.verify-panel { overflow: hidden; }
+.verify-intro { display: grid; grid-template-columns: minmax(0, 1fr) 112px; gap: 22px; align-items: center; margin-bottom: 24px; }
+.verify-panel h1 { font-size: clamp(40px, 5vw, 64px); margin-bottom: 14px; }
+.verify-panel .lead { margin: 0; max-width: 760px; }
+.verify-mark { display: grid; place-items: center; width: 112px; aspect-ratio: 1; border-radius: 8px; background: linear-gradient(135deg, #121826, #2457c5 58%, #2f9e75); color: #fff; font-weight: 950; font-size: 30px; box-shadow: 0 18px 40px rgba(36,87,197,.2); }
+.verify-form { display: grid; grid-template-columns: minmax(220px, 1fr) auto; gap: 10px; align-items: end; margin: 22px 0; padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: #f8fbff; }
+.verify-form label { gap: 8px; }
+.verify-form label span { color: #465266; font-size: 13px; }
+.verify-form input { min-height: 50px; font-weight: 850; letter-spacing: 0; text-transform: uppercase; }
+.verify-form .primary { min-height: 50px; padding: 0 22px; }
 .verify-message { margin-top: 18px; }
 .verification-card { margin-top: 20px; border: 1px solid #bde8d8; border-radius: 8px; padding: 18px; background: linear-gradient(180deg, #ffffff, #f4fbf8); box-shadow: 0 16px 34px rgba(23, 98, 74, .08); }
-.verification-card > div:first-child { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.verification-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .verification-card span { color: #17624a; font-size: 12px; font-weight: 900; text-transform: uppercase; }
 .verification-card strong { color: #121826; font-size: 20px; }
+.verification-card-head p { margin: 0; color: #17624a; font-size: 13px; font-weight: 800; text-align: right; }
 .available-prizes { margin: 26px 0; border: 1px solid rgba(219,228,239,.94); border-radius: 8px; padding: 22px; background: linear-gradient(180deg, #ffffff, #f7f9ff); box-shadow: 0 18px 42px rgba(16, 24, 40, .09); }
 .prize-list-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
 .available-prizes h2 { font-size: 22px; margin: 0; }
@@ -171,11 +180,13 @@ dd { margin: 4px 0 0; font-weight: 750; }
 
 @media (max-width: 760px) {
   body { background: linear-gradient(180deg, #f7faff 0, #eef3f8 100%); }
-  .topbar { height: auto; min-height: 64px; align-items: flex-start; flex-direction: column; gap: 8px; padding: 12px 14px; }
-  .brand { font-size: 18px; }
-  nav { width: 100%; overflow-x: auto; flex-wrap: nowrap; gap: 4px; padding-bottom: 2px; scrollbar-width: none; }
-  nav::-webkit-scrollbar { display: none; }
-  nav a, .inline button { white-space: nowrap; padding: 8px 10px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 13px; }
+  .topbar { height: auto; min-height: 88px; align-items: stretch; flex-direction: column; gap: 12px; padding: 14px; background: rgba(255,255,255,.94); box-shadow: 0 10px 28px rgba(16, 24, 40, .08); }
+  .brand { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font-size: 18px; line-height: 1.15; }
+  .brand span { font-size: 16px; }
+  nav { width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; color: var(--ink); font-size: 12px; }
+  nav a, .inline button { width: 100%; min-height: 38px; white-space: nowrap; padding: 0 8px; border: 1px solid #dde6f0; border-radius: 8px; background: #f8fafc; color: #465266; font-size: 12px; font-weight: 850; box-shadow: none; }
+  nav a[href="/verify"] { background: #121826; border-color: #121826; color: #fff; }
+  .inline { display: block; }
   main { width: min(100% - 18px, 1120px); margin-top: 12px; margin-bottom: 34px; }
   .panel { border-radius: 8px; padding: 18px; box-shadow: 0 12px 28px rgba(19, 34, 56, .10); }
   .hero { min-height: 58vh; padding: 26px 22px; border-radius: 8px; }
@@ -200,8 +211,13 @@ dd { margin: 4px 0 0; font-weight: 750; }
   .result .primary, .result .ghost, .result .secondary-buy { width: 100%; margin-top: 8px; }
   .verification-strip { align-items: flex-start; flex-direction: column; text-align: left; }
   .verified-result::before { top: 36%; right: -90px; font-size: 34px; }
-  .verify-form { grid-template-columns: 1fr; }
-  .verification-card > div:first-child { align-items: flex-start; flex-direction: column; }
+  .verify-intro { grid-template-columns: 1fr; gap: 12px; }
+  .verify-mark { width: 76px; font-size: 21px; }
+  .verify-panel h1 { font-size: 34px; }
+  .verify-form { grid-template-columns: 1fr; padding: 12px; }
+  .verify-form .primary { width: 100%; }
+  .verification-card-head { align-items: flex-start; flex-direction: column; }
+  .verification-card-head p { text-align: left; }
   .cover { width: min(220px, 100%); }
   .meta { margin: 18px 0; }
   .section-head { align-items: flex-start; flex-direction: column; }

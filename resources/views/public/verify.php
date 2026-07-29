@@ -1,11 +1,16 @@
 <section class="panel readable verify-panel">
-  <p class="eyebrow">Provera rezultata</p>
-  <h1>Proverite Draw ID</h1>
-  <p class="lead">Unesite Draw ID sa stranice rezultata ili PDF potvrde i proverite zvanično zabeleženu nagradu, datum i vreme izvlačenja.</p>
+  <div class="verify-intro">
+    <div>
+      <p class="eyebrow">Provera rezultata</p>
+      <h1>Proverite Draw ID</h1>
+      <p class="lead">Unesite Draw ID sa stranice rezultata ili PDF potvrde i proverite zvanično zabeleženu nagradu, datum i vreme izvlačenja.</p>
+    </div>
+    <div class="verify-mark" aria-hidden="true">PW</div>
+  </div>
 
   <form class="verify-form" method="get" action="/verify">
     <label>
-      Draw ID
+      <span>Draw ID</span>
       <input name="draw" value="<?= e($drawId ?? '') ?>" placeholder="PW-XXXXXXXXXX" autocomplete="off" inputmode="latin">
     </label>
     <button class="primary" type="submit">Proveri rezultat</button>
@@ -19,9 +24,12 @@
 
   <?php if (!empty($draw)): ?>
     <div class="verification-card">
-      <div>
-        <span>Validan rezultat</span>
-        <strong><?= e($draw['draw_id']) ?></strong>
+      <div class="verification-card-head">
+        <div>
+          <span>Validan rezultat</span>
+          <strong><?= e($draw['draw_id']) ?></strong>
+        </div>
+        <p>Podaci su pronađeni u PlayWorld evidenciji.</p>
       </div>
       <dl class="meta">
         <div><dt>Nagrada</dt><dd><?= e($draw['prize_name']) ?></dd></div>
