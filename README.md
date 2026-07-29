@@ -18,7 +18,7 @@ Standalone PHP/SQLite MVP aplikacija za PlayWorld Mystery Box promociju.
 
 ## Provera rezultata
 
-Screenshot sam po sebi ne treba prihvatati kao konačan dokaz. Svaki validan rezultat ima Draw ID. Otvorite `/verify`, unesite Draw ID i proverite da li se poklapaju nagrada, datum, vreme i maskirani token.
+Svaki validan rezultat ima Draw ID. Otvorite `/verify`, unesite Draw ID i proverite zvanično zabeleženu nagradu, datum, vreme i maskirani token.
 
 ## Lokalno pokretanje
 

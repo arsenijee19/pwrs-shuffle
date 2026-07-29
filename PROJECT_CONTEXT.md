@@ -73,6 +73,7 @@
 - Upgraded the public visual layer with a premium dark hero treatment, refined prize cards, clearer FAQ grouping, smoother result animation, and mobile-aligned result actions.
 - Added a post-result "Kupi još jedan box" action linking to the PlayWorld Mystery Box product page.
 - Added Draw ID verification at `/verify`, a visible verification strip on result pages, and a subtle result watermark to make edited screenshots easier to reject.
+- Refined homepage and Draw ID verification copy to sound more professional and less accusatory.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.

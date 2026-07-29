@@ -1,7 +1,7 @@
 <section class="panel readable verify-panel">
   <p class="eyebrow">Provera rezultata</p>
   <h1>Proverite Draw ID</h1>
-  <p class="lead">Screenshot može da se izmeni, ali Draw ID mora da postoji u PlayWorld evidenciji i da vraća isti naziv nagrade, datum i vreme izvlačenja.</p>
+  <p class="lead">Unesite Draw ID sa stranice rezultata ili PDF potvrde i proverite zvanično zabeleženu nagradu, datum i vreme izvlačenja.</p>
 
   <form class="verify-form" method="get" action="/verify">
     <label>
@@ -13,7 +13,7 @@
 
   <?php if (!empty($searched) && empty($draw)): ?>
     <div class="alert verify-message">
-      Ovaj Draw ID nije pronađen u PlayWorld Mystery Box evidenciji. Screenshot ili PDF sa ovim kodom ne treba prihvatiti kao validan rezultat.
+      Ovaj Draw ID nije pronađen u PlayWorld Mystery Box evidenciji. Proverite da li je kod ispravno unet ili zatražite PDF potvrdu rezultata.
     </div>
   <?php endif; ?>
 
@@ -28,7 +28,7 @@
         <div><dt>Datum i vreme</dt><dd><?= e(format_date($draw['created_at'])) ?></dd></div>
         <div><dt>Token</dt><dd><?= e($draw['token_mask']) ?></dd></div>
       </dl>
-      <p class="notice">Ako se naziv nagrade, vreme ili Draw ID ne poklapaju sa screenshotom/PDF-om koji ste dobili, rezultat nije validan.</p>
+      <p class="notice">Uporedite ove podatke sa screenshotom ili PDF potvrdom. Validan rezultat mora imati isti Draw ID, naziv nagrade, datum i vreme.</p>
     </div>
   <?php endif; ?>
 </section>
