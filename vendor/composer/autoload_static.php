@@ -388,6 +388,7 @@ class ComposerStaticInitd76a9dd569d3f6565f7a0d3d07a5f6b9
         'PlayWorld\\MysteryBox\\Services\\MailService' => __DIR__ . '/../..' . '/app/Services/MailService.php',
         'PlayWorld\\MysteryBox\\Services\\PdfService' => __DIR__ . '/../..' . '/app/Services/PdfService.php',
         'PlayWorld\\MysteryBox\\Services\\PrizeService' => __DIR__ . '/../..' . '/app/Services/PrizeService.php',
+        'PlayWorld\\MysteryBox\\Services\\SettingsService' => __DIR__ . '/../..' . '/app/Services/SettingsService.php',
         'PlayWorld\\MysteryBox\\Services\\TokenService' => __DIR__ . '/../..' . '/app/Services/TokenService.php',
         'PlayWorld\\MysteryBox\\Support\\App' => __DIR__ . '/../..' . '/app/Support/App.php',
         'PlayWorld\\MysteryBox\\Support\\Database' => __DIR__ . '/../..' . '/app/Support/Database.php',

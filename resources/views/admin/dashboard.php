@@ -9,6 +9,7 @@
     <div class="actions">
       <a class="primary" href="/admin/tokens">Tokeni</a>
       <a class="ghost" href="/admin/prizes">Nagrade</a>
+      <a class="ghost" href="/admin/email">Email</a>
       <a class="ghost" href="/admin/password">Lozinka</a>
     </div>
   </div>

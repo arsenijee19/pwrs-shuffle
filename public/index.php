@@ -10,6 +10,7 @@ use PlayWorld\MysteryBox\Services\DrawService;
 use PlayWorld\MysteryBox\Services\MailService;
 use PlayWorld\MysteryBox\Services\PdfService;
 use PlayWorld\MysteryBox\Services\PrizeService;
+use PlayWorld\MysteryBox\Services\SettingsService;
 use PlayWorld\MysteryBox\Services\TokenService;
 use PlayWorld\MysteryBox\Support\App;
 use PlayWorld\MysteryBox\Support\Database;
@@ -201,6 +202,36 @@ $router->get('/admin/tokens.csv', function (): void {
     foreach ((new TokenService())->list(10000) as $token) {
         fputcsv($out, [$token['id'], $token['status'], $token['created_at'], $token['used_at']]);
     }
+});
+$router->get('/admin/email', function (): void {
+    AuthService::requireAdmin();
+    $settings = new SettingsService();
+    render('admin/email-settings', [
+        'title' => 'Email podešavanja',
+        'settings' => $settings->all(),
+        'passwordSaved' => $settings->get('smtp_password') !== '',
+        'flash' => $_SESSION['flash'] ?? null,
+        'flashType' => $_SESSION['flash_type'] ?? 'success',
+    ]);
+    unset($_SESSION['flash'], $_SESSION['flash_type']);
+});
+$router->post('/admin/email', function (): void {
+    AuthService::requireAdmin();
+    verify_csrf();
+
+    $email = trim((string) ($_POST['mail_from'] ?? ''));
+    $username = trim((string) ($_POST['smtp_username'] ?? ''));
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || $username === '') {
+        $_SESSION['flash'] = 'Unesite ispravan email pošiljaoca i SMTP korisničko ime.';
+        $_SESSION['flash_type'] = 'error';
+        redirect('/admin/email');
+    }
+
+    (new SettingsService())->saveEmailSettings($_POST);
+    $_SESSION['flash'] = 'Email podešavanja su sačuvana.';
+    $_SESSION['flash_type'] = 'success';
+    redirect('/admin/email');
 });
 $router->get('/admin/password', function (): void {
     AuthService::requireAdmin();

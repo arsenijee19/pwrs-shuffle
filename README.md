@@ -67,3 +67,5 @@ Detaljno uputstvo je u [DEPLOYMENT.md](DEPLOYMENT.md).
 - `MAIL_FROM` - email adresa pošiljaoca, npr. `usluge@playworld.rs`.
 - `MAIL_FROM_NAME` - ime pošiljaoca koje kupac vidi.
 - `MAIL_TIMEOUT` - timeout za SMTP konekciju u sekundama.
+
+Email podešavanja se mogu uneti i kroz admin panel na `/admin/email`. To je preporučeni put za cPanel kada ne želite ručno da menjate `.env`.

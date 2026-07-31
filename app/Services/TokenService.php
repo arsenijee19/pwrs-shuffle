@@ -50,7 +50,7 @@ final class TokenService
             $plain = basename($path);
         }
 
-        return trim($plain, " \t\n\r\0\x0B*`_.,;:!?)]}>\"'");
+        return trim($plain, " \t\n\r\0\x0B*`.,;:!?)]}>\"'");
     }
 
     public function findByHash(string $hash): ?array

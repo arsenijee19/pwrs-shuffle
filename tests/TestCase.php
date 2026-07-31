@@ -24,7 +24,9 @@ abstract class TestCase extends BaseTestCase
 
         App::bootstrap(dirname(__DIR__));
         Database::reset();
-        Database::pdo()->exec((string) file_get_contents(app_path('database/migrations/001_create_schema.sql')));
+        foreach (glob(app_path('database/migrations/*.sql')) as $migration) {
+            Database::pdo()->exec((string) file_get_contents($migration));
+        }
     }
 
     protected function tearDown(): void

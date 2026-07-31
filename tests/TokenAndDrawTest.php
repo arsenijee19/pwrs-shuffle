@@ -35,6 +35,20 @@ final class TokenAndDrawTest extends TestCase
         $this->assertSame('Active', $token['status']);
     }
 
+    public function testTokenLookupKeepsBase64UrlUnderscores(): void
+    {
+        $hash = hash('sha256', '_test_token_');
+        $now = date('c');
+        Database::pdo()->prepare(
+            'INSERT INTO tokens (token_hash, status, created_at, updated_at) VALUES (:hash, "Active", :created, :updated)'
+        )->execute(['hash' => $hash, 'created' => $now, 'updated' => $now]);
+
+        $token = (new TokenService())->findPlain('_test_token_');
+
+        $this->assertNotNull($token);
+        $this->assertSame('Active', $token['status']);
+    }
+
     public function testDrawIsIdempotentForUsedToken(): void
     {
         $now = date('c');

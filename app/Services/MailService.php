@@ -10,34 +10,37 @@ final class MailService
 {
     public function sendMysteryBoxLink(string $recipientEmail, string $recipientName, string $link): void
     {
-        if (!(bool) env_value('MAIL_ENABLED', false)) {
-            throw new RuntimeException('Email slanje nije uključeno. Proverite MAIL_ENABLED u .env fajlu.');
+        $config = $this->config();
+
+        if (!$config['enabled']) {
+            throw new RuntimeException('Email slanje nije uključeno. Otvorite Admin > Email i uključite isporuku.');
         }
 
-        $host = (string) env_value('SMTP_HOST', '');
-        $port = (int) env_value('SMTP_PORT', 587);
-        $username = (string) env_value('SMTP_USERNAME', '');
-        $password = (string) env_value('SMTP_PASSWORD', '');
-        $from = (string) env_value('MAIL_FROM', '');
-        $fromName = (string) env_value('MAIL_FROM_NAME', 'PlayWorld');
-        $timeout = (int) env_value('MAIL_TIMEOUT', 15);
-
-        if ($host === '' || $username === '' || $password === '' || $from === '') {
-            throw new RuntimeException('SMTP podešavanja nisu kompletna u .env fajlu.');
+        if ($config['host'] === '' || $config['username'] === '' || $config['password'] === '' || $config['from'] === '') {
+            throw new RuntimeException('SMTP podešavanja nisu kompletna. Otvorite Admin > Email i proverite podatke.');
         }
 
         $html = $this->mysteryBoxHtml($link, $recipientName);
         $text = $this->mysteryBoxText($link, $recipientName);
         $message = $this->buildMessage(
-            $from,
-            $fromName,
+            $config['from'],
+            $config['from_name'],
             $recipientEmail,
             'Vaš PlayWorld Mystery Box link',
             $html,
             $text
         );
 
-        $this->smtpSend($host, $port, $username, $password, $from, $recipientEmail, $message, $timeout);
+        $this->smtpSend(
+            $config['host'],
+            $config['port'],
+            $config['username'],
+            $config['password'],
+            $config['from'],
+            $recipientEmail,
+            $message,
+            $config['timeout']
+        );
     }
 
     public function mysteryBoxHtml(string $link, string $recipientName = ''): string
@@ -207,5 +210,24 @@ final class MailService
     private function encodeHeader(string $value): string
     {
         return '=?UTF-8?B?' . base64_encode($value) . '?=';
+    }
+
+    private function config(): array
+    {
+        $saved = (new SettingsService())->emailConfig();
+        if ($saved['enabled']) {
+            return $saved;
+        }
+
+        return [
+            'enabled' => (bool) env_value('MAIL_ENABLED', false),
+            'host' => (string) env_value('SMTP_HOST', ''),
+            'port' => (int) env_value('SMTP_PORT', 587),
+            'username' => (string) env_value('SMTP_USERNAME', ''),
+            'password' => (string) env_value('SMTP_PASSWORD', ''),
+            'from' => (string) env_value('MAIL_FROM', ''),
+            'from_name' => (string) env_value('MAIL_FROM_NAME', 'PlayWorld - Mystery Box'),
+            'timeout' => (int) env_value('MAIL_TIMEOUT', 15),
+        ];
     }
 }

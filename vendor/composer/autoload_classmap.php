@@ -201,6 +201,7 @@ return array(
     'PlayWorld\\MysteryBox\\Services\\MailService' => $baseDir . '/app/Services/MailService.php',
     'PlayWorld\\MysteryBox\\Services\\PdfService' => $baseDir . '/app/Services/PdfService.php',
     'PlayWorld\\MysteryBox\\Services\\PrizeService' => $baseDir . '/app/Services/PrizeService.php',
+    'PlayWorld\\MysteryBox\\Services\\SettingsService' => $baseDir . '/app/Services/SettingsService.php',
     'PlayWorld\\MysteryBox\\Services\\TokenService' => $baseDir . '/app/Services/TokenService.php',
     'PlayWorld\\MysteryBox\\Support\\App' => $baseDir . '/app/Support/App.php',
     'PlayWorld\\MysteryBox\\Support\\Database' => $baseDir . '/app/Support/Database.php',

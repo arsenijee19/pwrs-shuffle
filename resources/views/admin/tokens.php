@@ -1,7 +1,10 @@
 <section class="panel">
   <div class="section-head">
     <h1>Tokeni</h1>
-    <a class="ghost" href="/admin/tokens.csv">Export CSV</a>
+    <div class="actions">
+      <a class="ghost" href="/admin/email">Email podešavanja</a>
+      <a class="ghost" href="/admin/tokens.csv">Export CSV</a>
+    </div>
   </div>
   <?php if (!empty($flash)): ?>
     <div class="flash flash-<?= e((string) $flashType) ?>"><?= e((string) $flash) ?></div>

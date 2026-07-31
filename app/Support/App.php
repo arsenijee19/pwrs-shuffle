@@ -15,7 +15,11 @@ final class App
         self::$basePath = rtrim($basePath, DIRECTORY_SEPARATOR);
 
         if (file_exists(self::basePath('.env'))) {
-            Dotenv::createImmutable(self::$basePath)->safeLoad();
+            try {
+                Dotenv::createImmutable(self::$basePath)->safeLoad();
+            } catch (\Throwable) {
+                // Keep the app reachable if a hosting file editor accidentally breaks .env formatting.
+            }
         }
 
         date_default_timezone_set((string) env_value('APP_TIMEZONE', 'Europe/Belgrade'));
@@ -47,4 +51,3 @@ final class App
         return str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $full);
     }
 }
-

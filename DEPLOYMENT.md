@@ -35,7 +35,9 @@ Ako `/setup` ne radi zbog rewrite podešavanja hostinga, otvorite `/setup.php`. 
 ## Email isporuka Mystery Box linka
 
 Admin panel može da kreira novi Mystery Box link i pošalje ga kupcu putem Brevo SMTP-a.
-U produkcionom `.env` fajlu podesite:
+Najlakši način na cPanelu je da otvorite `/admin/email`, unesete Brevo podatke i sačuvate ih kroz browser.
+
+Alternativno, u produkcionom `.env` fajlu možete podesiti:
 
 ```bash
 MAIL_ENABLED=true
@@ -48,7 +50,7 @@ MAIL_FROM_NAME="PlayWorld"
 MAIL_TIMEOUT=15
 ```
 
-Ne upisivati stvarni SMTP key u git. Ako cPanel nema terminal, `.env` se može izmeniti kroz File Manager.
+Ne upisivati stvarni SMTP key u git. Ako koristite admin formu, key se čuva u lokalnoj SQLite bazi servera i ne ide u GitHub.
 
 ## Build
 
