@@ -198,6 +198,7 @@ return array(
     'PlayWorld\\MysteryBox\\Middleware\\RateLimiter' => $baseDir . '/app/Middleware/RateLimiter.php',
     'PlayWorld\\MysteryBox\\Services\\AuthService' => $baseDir . '/app/Services/AuthService.php',
     'PlayWorld\\MysteryBox\\Services\\DrawService' => $baseDir . '/app/Services/DrawService.php',
+    'PlayWorld\\MysteryBox\\Services\\EmailDeliveryService' => $baseDir . '/app/Services/EmailDeliveryService.php',
     'PlayWorld\\MysteryBox\\Services\\MailService' => $baseDir . '/app/Services/MailService.php',
     'PlayWorld\\MysteryBox\\Services\\PdfService' => $baseDir . '/app/Services/PdfService.php',
     'PlayWorld\\MysteryBox\\Services\\PrizeService' => $baseDir . '/app/Services/PrizeService.php',

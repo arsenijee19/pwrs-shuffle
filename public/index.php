@@ -7,6 +7,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use PlayWorld\MysteryBox\Middleware\RateLimiter;
 use PlayWorld\MysteryBox\Services\AuthService;
 use PlayWorld\MysteryBox\Services\DrawService;
+use PlayWorld\MysteryBox\Services\EmailDeliveryService;
 use PlayWorld\MysteryBox\Services\MailService;
 use PlayWorld\MysteryBox\Services\PdfService;
 use PlayWorld\MysteryBox\Services\PrizeService;
@@ -175,12 +176,15 @@ $router->post('/admin/tokens/send-email', function (): void {
 
     $created = (new TokenService())->generate(1);
     $_SESSION['created_tokens'] = $created;
+    $deliveries = new EmailDeliveryService();
 
     try {
         (new MailService())->sendMysteryBoxLink($email, $name, $created[0]['link']);
+        $deliveries->record((int) $created[0]['id'], $email, $name, 'Sent');
         $_SESSION['flash'] = 'Mystery Box link je kreiran i poslat na ' . $email . '.';
         $_SESSION['flash_type'] = 'success';
     } catch (Throwable $e) {
+        $deliveries->record((int) $created[0]['id'], $email, $name, 'Failed', $e->getMessage());
         $_SESSION['flash'] = 'Link je kreiran, ali email nije poslat: ' . $e->getMessage();
         $_SESSION['flash_type'] = 'error';
     }
@@ -214,6 +218,15 @@ $router->get('/admin/email', function (): void {
         'flashType' => $_SESSION['flash_type'] ?? 'success',
     ]);
     unset($_SESSION['flash'], $_SESSION['flash_type']);
+});
+$router->get('/admin/email-history', function (): void {
+    AuthService::requireAdmin();
+    $deliveries = new EmailDeliveryService();
+    render('admin/email-history', [
+        'title' => 'Istorija slanja',
+        'deliveries' => $deliveries->recent(),
+        'stats' => $deliveries->stats(),
+    ]);
 });
 $router->post('/admin/email', function (): void {
     AuthService::requireAdmin();

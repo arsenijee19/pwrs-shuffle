@@ -51,6 +51,7 @@ MAIL_TIMEOUT=15
 ```
 
 Ne upisivati stvarni SMTP key u git. Ako koristite admin formu, key se čuva u lokalnoj SQLite bazi servera i ne ide u GitHub.
+Istorija slanja dostupna je u admin panelu na `/admin/email-history`.
 
 ## Build
 

@@ -7,7 +7,7 @@
 
 ## Current Project Status
 - MVP implementation completed for local validation.
-- Completed functionality: admin login/logout, password change, dashboard stats, prize CRUD, token generation/revocation/listing, email delivery for newly generated Mystery Box links, CSV export, public token opening flow, idempotent draw result, 5-day result visibility, PDF certificate with QR code, FAQ, Fair Play page, rate limiting, CSRF protection, secure session settings, and responsive UI.
+- Completed functionality: admin login/logout, password change, dashboard stats, prize CRUD, token generation/revocation/listing, email delivery/history for newly generated Mystery Box links, CSV export, public token opening flow, idempotent draw result, 5-day result visibility, PDF certificate with QR code, FAQ, Fair Play page, rate limiting, CSRF protection, secure session settings, and responsive UI.
 - Partially implemented functionality: sound is a short browser-generated success tone with user toggle; it is intentionally simple for MVP.
 - Unfinished work: production branding assets and real PlayWorld contact details should be added before launch.
 - Known limitations: no external PlayWorld integrations, no user accounts, no multi-campaign support, no SMS sender, no physical device testing. Email sender requires production SMTP environment variables.
@@ -28,7 +28,7 @@
 - Database: SQLite via PDO.
 - Dependencies: Dotenv, Dompdf, chillerlan/php-qrcode, PHPUnit for tests.
 - Authentication: session-based admin login with CSRF protection.
-- Email: direct SMTP over Brevo using admin-saved database settings first, with `.env` fallback; no SMTP secrets are committed.
+- Email: direct SMTP over Brevo using admin-saved database settings first, with `.env` fallback; no SMTP secrets are committed. Delivery attempts are logged in `email_deliveries`.
 - Draw logic: server-side weighted random selection in a transaction; animation is display-only.
 - Security: CSRF tokens on POST actions, hashed token storage, PHP secure cookie settings, basic file-based rate limiting, PDO prepared statements, output escaping, and security headers.
 - Deployment: document root should point to `public/`.
@@ -44,7 +44,7 @@
 
 ## Important Business Logic
 - Tokens are cryptographically generated and stored hashed.
-- Email delivery creates a new token and sends that one-time link immediately; existing token links cannot be reconstructed from hashes. SMTP settings can be saved in `/admin/email`.
+- Email delivery creates a new token and sends that one-time link immediately; existing token links cannot be reconstructed from hashes. SMTP settings can be saved in `/admin/email`, and attempts are visible in `/admin/email-history`.
 - Tokens can be used once and have statuses: Active, Used, Expired, Revoked.
 - If a draw result already exists, the same result is always returned.
 - Results remain viewable for `RESULT_RETENTION_DAYS`, default 5.
@@ -83,6 +83,7 @@
 - Split the pre-open flow into separate CTA, rules, and prize-list sections; changed result pages to a vertical animation/result flow with calmer typography and more breathing room.
 - Centered public box/result content, CTA blocks, verification strips, and prize-list headers while keeping scan-heavy lists/meta content readable.
 - Added admin email delivery for new Mystery Box links through Brevo SMTP, including a branded HTML email template, admin email settings page, and `.env.example`/deployment documentation.
+- Added admin email delivery history with per-attempt recipient, token, status, timestamp, and SMTP error message.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.

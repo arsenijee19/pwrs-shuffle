@@ -86,6 +86,7 @@ textarea { min-height: 110px; resize: vertical; }
 table { width: 100%; border-collapse: collapse; margin: 14px 0 28px; font-size: 14px; }
 th, td { text-align: left; padding: 13px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
 th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+.table-note { max-width: 340px; color: var(--muted); white-space: normal; }
 .thumb { width: 54px; height: 54px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); }
 .cover { width: min(260px, 100%); aspect-ratio: 4/3; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); }
 .result-shell { display: grid; grid-template-columns: 1fr; width: min(940px, 100%); margin: 0 auto; gap: 34px; align-items: stretch; }
@@ -190,6 +191,8 @@ dd { margin: 4px 0 0; font-weight: 750; }
 .status-pill { display: inline-flex; align-items: center; min-height: 28px; border-radius: 999px; padding: 0 10px; font-size: 12px; font-weight: 850; }
 .status-active { background: #e4f6ef; color: #17624a; }
 .status-used { background: #e5f0fb; color: #174c83; }
+.status-sent { background: #e4f6ef; color: #17624a; }
+.status-failed { background: #fff1ef; color: var(--danger); }
 .status-expired { background: #fff4d8; color: #8a5b00; }
 .status-revoked { background: #fff1ef; color: var(--danger); }
 

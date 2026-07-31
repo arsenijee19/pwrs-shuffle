@@ -5,7 +5,10 @@
       <h1>Email podešavanja</h1>
       <p class="lead">Unesite Brevo SMTP podatke jednom. Nakon toga admin može direktno da šalje Mystery Box link kupcu.</p>
     </div>
-    <a class="ghost" href="/admin/tokens">Nazad na tokene</a>
+    <div class="actions">
+      <a class="ghost" href="/admin/email-history">Istorija slanja</a>
+      <a class="ghost" href="/admin/tokens">Nazad na tokene</a>
+    </div>
   </div>
   <?php if (!empty($flash)): ?>
     <div class="flash flash-<?= e((string) $flashType) ?>"><?= e((string) $flash) ?></div>

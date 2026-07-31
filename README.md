@@ -9,6 +9,7 @@ Standalone PHP/SQLite MVP aplikacija za PlayWorld Mystery Box promociju.
 - Upravljanje nagradama, uključujući cover upload.
 - Generisanje jednog ili više sigurnih tokena.
 - Generisanje i slanje Mystery Box linka kupcu putem Brevo SMTP emaila.
+- Admin istorija slanja emailova sa statusom uspeha ili greške.
 - CSV export tokena.
 - Kupac otvara jedinstven link bez naloga.
 - Server-side izvlačenje sa transakcijom i zaključavanjem.
