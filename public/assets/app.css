@@ -61,8 +61,12 @@ nav { display: flex; align-items: center; gap: 18px; color: var(--muted); font-s
 .text-link { color: var(--blue); font-weight: 750; }
 .notice, .alert { border-radius: 8px; padding: 12px 14px; background: #eef7f3; color: #17624a; }
 .alert { background: #fff1ef; color: var(--danger); }
+.flash { margin: 0 0 18px; border-radius: 8px; padding: 13px 15px; font-weight: 750; }
+.flash-success { border: 1px solid #bde8d8; background: #eef7f3; color: #17624a; }
+.flash-error { border: 1px solid #ffd0ca; background: #fff1ef; color: var(--danger); }
 .form { display: grid; gap: 16px; }
 label { display: grid; gap: 7px; font-weight: 700; color: #344054; }
+label span { color: var(--muted); font-size: 12px; font-weight: 650; }
 input, textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; min-height: 44px; padding: 10px 12px; background: #fff; color: var(--ink); }
 textarea { min-height: 110px; resize: vertical; }
 .checkbox { display: flex; align-items: center; gap: 10px; }
@@ -168,6 +172,12 @@ dd { margin: 4px 0 0; font-weight: 750; }
 .rarity-common span { color: #516070; background: #eef2f6; }
 .inline-tools { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin-bottom: 20px; }
 .inline-tools label { min-width: 180px; }
+.token-tools { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 16px; margin: 0 0 22px; }
+.token-tool-card { display: grid; align-content: start; gap: 14px; min-height: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fbff); box-shadow: 0 12px 28px rgba(16, 24, 40, .07); }
+.token-tool-card h2 { margin: 0 0 6px; font-size: 20px; }
+.token-tool-card p { margin: 0; color: var(--muted); line-height: 1.5; font-size: 14px; }
+.token-tool-card .primary { width: fit-content; }
+.featured-mail { border-color: #cfe0ff; background: linear-gradient(145deg, #ffffff 0, #f4f8ff 58%, #f7f4ff 100%); }
 .created-links { border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin: 18px 0; background: var(--soft); }
 .copy-row { display: grid; grid-template-columns: minmax(260px, 1fr) auto auto minmax(136px, auto); gap: 8px; margin-top: 8px; align-items: stretch; padding: 8px; border: 1px solid transparent; border-radius: 8px; }
 .copy-row button { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 0 14px; cursor: pointer; }
@@ -236,6 +246,8 @@ dd { margin: 4px 0 0; font-weight: 750; }
   .cover { width: min(220px, 100%); }
   .meta { margin: 18px 0; }
   .section-head { align-items: flex-start; flex-direction: column; }
+  .token-tools { grid-template-columns: 1fr; }
+  .token-tool-card .primary { width: 100%; }
   table { display: block; overflow-x: auto; white-space: nowrap; }
   .box-animation { height: 238px; transform: scale(.82); transform-origin: center; margin: -14px 0 -24px; }
   .box-body { bottom: 52px; }

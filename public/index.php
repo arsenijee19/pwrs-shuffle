@@ -7,6 +7,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use PlayWorld\MysteryBox\Middleware\RateLimiter;
 use PlayWorld\MysteryBox\Services\AuthService;
 use PlayWorld\MysteryBox\Services\DrawService;
+use PlayWorld\MysteryBox\Services\MailService;
 use PlayWorld\MysteryBox\Services\PdfService;
 use PlayWorld\MysteryBox\Services\PrizeService;
 use PlayWorld\MysteryBox\Services\TokenService;
@@ -140,14 +141,49 @@ $router->post('/admin/prizes/{id}/delete', function (string $id): void {
 
 $router->get('/admin/tokens', function (): void {
     AuthService::requireAdmin();
-    render('admin/tokens', ['title' => 'Tokeni', 'tokens' => (new TokenService())->list(), 'created' => $_SESSION['created_tokens'] ?? []]);
+    render('admin/tokens', [
+        'title' => 'Tokeni',
+        'tokens' => (new TokenService())->list(),
+        'created' => $_SESSION['created_tokens'] ?? [],
+        'flash' => $_SESSION['flash'] ?? null,
+        'flashType' => $_SESSION['flash_type'] ?? 'success',
+    ]);
     unset($_SESSION['created_tokens']);
+    unset($_SESSION['flash'], $_SESSION['flash_type']);
 });
 $router->post('/admin/tokens/generate', function (): void {
     AuthService::requireAdmin();
     verify_csrf();
     $count = min(500, max(1, (int) ($_POST['count'] ?? 1)));
     $_SESSION['created_tokens'] = (new TokenService())->generate($count);
+    redirect('/admin/tokens');
+});
+$router->post('/admin/tokens/send-email', function (): void {
+    AuthService::requireAdmin();
+    verify_csrf();
+    RateLimiter::hit('admin-send-email');
+
+    $email = trim((string) ($_POST['email'] ?? ''));
+    $name = trim((string) ($_POST['name'] ?? ''));
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['flash'] = 'Unesite ispravan email kupca.';
+        $_SESSION['flash_type'] = 'error';
+        redirect('/admin/tokens');
+    }
+
+    $created = (new TokenService())->generate(1);
+    $_SESSION['created_tokens'] = $created;
+
+    try {
+        (new MailService())->sendMysteryBoxLink($email, $name, $created[0]['link']);
+        $_SESSION['flash'] = 'Mystery Box link je kreiran i poslat na ' . $email . '.';
+        $_SESSION['flash_type'] = 'success';
+    } catch (Throwable $e) {
+        $_SESSION['flash'] = 'Link je kreiran, ali email nije poslat: ' . $e->getMessage();
+        $_SESSION['flash_type'] = 'error';
+    }
+
     redirect('/admin/tokens');
 });
 $router->post('/admin/tokens/{id}/revoke', function (string $id): void {

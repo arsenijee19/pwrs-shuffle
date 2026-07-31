@@ -3,11 +3,30 @@
     <h1>Tokeni</h1>
     <a class="ghost" href="/admin/tokens.csv">Export CSV</a>
   </div>
-  <form method="post" action="/admin/tokens/generate" class="inline-tools">
-    <?= csrf_field() ?>
-    <label>Broj tokena<input type="number" min="1" max="500" name="count" value="1"></label>
-    <button class="primary">Generiši</button>
-  </form>
+  <?php if (!empty($flash)): ?>
+    <div class="flash flash-<?= e((string) $flashType) ?>"><?= e((string) $flash) ?></div>
+  <?php endif; ?>
+  <div class="token-tools">
+    <form method="post" action="/admin/tokens/generate" class="token-tool-card">
+      <?= csrf_field() ?>
+      <div>
+        <h2>Generiši linkove</h2>
+        <p>Koristite kada želite ručno da kopirate jedan ili više Mystery Box linkova.</p>
+      </div>
+      <label>Broj tokena<input type="number" min="1" max="500" name="count" value="1"></label>
+      <button class="primary">Generiši</button>
+    </form>
+    <form method="post" action="/admin/tokens/send-email" class="token-tool-card featured-mail">
+      <?= csrf_field() ?>
+      <div>
+        <h2>Isporuči na email</h2>
+        <p>Kreira novi jedinstveni link i šalje kupcu HTML email sa dugmetom za otvaranje box-a.</p>
+      </div>
+      <label>Email kupca<input type="email" name="email" placeholder="kupac@example.com" required></label>
+      <label>Ime kupca <span>opciono</span><input type="text" name="name" placeholder="Ime kupca"></label>
+      <button class="primary">Generiši i pošalji</button>
+    </form>
+  </div>
   <?php if (!empty($created)): ?>
     <div class="created-links">
       <div class="section-head compact-head">

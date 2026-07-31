@@ -385,6 +385,7 @@ class ComposerStaticInitd76a9dd569d3f6565f7a0d3d07a5f6b9
         'PlayWorld\\MysteryBox\\Middleware\\RateLimiter' => __DIR__ . '/../..' . '/app/Middleware/RateLimiter.php',
         'PlayWorld\\MysteryBox\\Services\\AuthService' => __DIR__ . '/../..' . '/app/Services/AuthService.php',
         'PlayWorld\\MysteryBox\\Services\\DrawService' => __DIR__ . '/../..' . '/app/Services/DrawService.php',
+        'PlayWorld\\MysteryBox\\Services\\MailService' => __DIR__ . '/../..' . '/app/Services/MailService.php',
         'PlayWorld\\MysteryBox\\Services\\PdfService' => __DIR__ . '/../..' . '/app/Services/PdfService.php',
         'PlayWorld\\MysteryBox\\Services\\PrizeService' => __DIR__ . '/../..' . '/app/Services/PrizeService.php',
         'PlayWorld\\MysteryBox\\Services\\TokenService' => __DIR__ . '/../..' . '/app/Services/TokenService.php',

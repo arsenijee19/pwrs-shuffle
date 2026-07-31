@@ -8,6 +8,7 @@ Standalone PHP/SQLite MVP aplikacija za PlayWorld Mystery Box promociju.
 - Dashboard sa tokenima, otvaranjima i nagradama.
 - Upravljanje nagradama, uključujući cover upload.
 - Generisanje jednog ili više sigurnih tokena.
+- Generisanje i slanje Mystery Box linka kupcu putem Brevo SMTP emaila.
 - CSV export tokena.
 - Kupac otvara jedinstven link bez naloga.
 - Server-side izvlačenje sa transakcijom i zaključavanjem.
@@ -58,3 +59,11 @@ Detaljno uputstvo je u [DEPLOYMENT.md](DEPLOYMENT.md).
 - `RESULT_RETENTION_DAYS` - koliko dana kupac vidi rezultat.
 - `RATE_LIMIT_PER_MINUTE` - osnovni rate limit po IP adresi.
 - `APP_QUERY_ROUTES` - postavite na `true` ako hosting ne podržava normalne rewrite rute.
+- `MAIL_ENABLED` - `true` uključuje slanje emaila iz admin panela.
+- `SMTP_HOST` - Brevo SMTP server, obično `smtp-relay.brevo.com`.
+- `SMTP_PORT` - SMTP port, obično `587`.
+- `SMTP_USERNAME` - Brevo SMTP login.
+- `SMTP_PASSWORD` - Brevo SMTP key.
+- `MAIL_FROM` - email adresa pošiljaoca, npr. `usluge@playworld.rs`.
+- `MAIL_FROM_NAME` - ime pošiljaoca koje kupac vidi.
+- `MAIL_TIMEOUT` - timeout za SMTP konekciju u sekundama.
