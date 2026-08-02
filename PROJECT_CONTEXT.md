@@ -84,6 +84,7 @@
 - Centered public box/result content, CTA blocks, verification strips, and prize-list headers while keeping scan-heavy lists/meta content readable.
 - Added admin email delivery for new Mystery Box links through Brevo SMTP, including a branded HTML email template, admin email settings page, and `.env.example`/deployment documentation.
 - Added admin email delivery history with per-attempt recipient, token, status, timestamp, and SMTP error message.
+- Redesigned the mobile navbar as a centered glass/pill horizontal navigation so admin/public links stay aligned on small screens.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
