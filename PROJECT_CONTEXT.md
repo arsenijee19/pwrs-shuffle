@@ -7,10 +7,10 @@
 
 ## Current Project Status
 - MVP implementation completed for local validation.
-- Completed functionality: admin login/logout, password change, dashboard stats, prize CRUD, token generation/revocation/listing, email delivery/history for newly generated Mystery Box links, CSV export, public token opening flow, idempotent draw result, 5-day result visibility, PDF certificate with QR code, FAQ, Fair Play page, rate limiting, CSRF protection, secure session settings, and responsive UI.
+- Completed functionality: admin login/logout, password change, dashboard stats, prize CRUD, token generation/revocation/listing, email delivery/history for newly generated Mystery Box links, CSV export, public token opening flow, idempotent draw result, 5-day result visibility, PDF certificate with QR code, FAQ, Fair Play page, rate limiting, CSRF protection, secure session settings, responsive UI, and an authenticated n8n fulfillment API.
 - Partially implemented functionality: sound is a short browser-generated success tone with user toggle; it is intentionally simple for MVP.
 - Unfinished work: production branding assets and real PlayWorld contact details should be added before launch.
-- Known limitations: no external PlayWorld integrations, no user accounts, no multi-campaign support, no SMS sender, no physical device testing. Email sender requires production SMTP environment variables.
+- Known limitations: no external PlayWorld integrations beyond the optional n8n fulfillment endpoint and SMTP sender, no user accounts, no multi-campaign support, no SMS sender, no physical device testing. Email sender requires production SMTP environment variables.
 - Known bugs: none found in local validation.
 - Untested areas: real cPanel runtime, real mobile devices, and real 90/120 Hz hardware performance.
 
@@ -29,7 +29,9 @@
 - Dependencies: Dotenv, Dompdf, chillerlan/php-qrcode, PHPUnit for tests.
 - Authentication: session-based admin login with CSRF protection.
 - Email: direct SMTP over Brevo using admin-saved database settings first, with `.env` fallback; no SMTP secrets are committed. Delivery attempts are logged in `email_deliveries`.
+- n8n API: `POST /api/v1/mystery-box/fulfill`, JSON-only, Bearer-authenticated with `N8N_API_KEY`, disabled by default, rate-limited independently, and capped by `N8N_API_MAX_QUANTITY`.
 - Draw logic: server-side weighted random selection in a transaction; animation is display-only.
+- Fulfillment logic: `MysteryBoxFulfillmentService` is the shared source of truth for admin single-link delivery and n8n order fulfillment. `mystery_box_fulfillments` stores one unique order record and `mystery_box_fulfillment_items` stores each requested link independently. `Sending`/unknown SMTP outcomes become `NeedsReview` and are never automatically retried.
 - Security: CSRF tokens on POST actions, hashed token storage, PHP secure cookie settings, basic file-based rate limiting, PDO prepared statements, output escaping, and security headers.
 - Deployment: document root should point to `public/`.
 - Apache/cPanel routing: root `.htaccess` forwards requests into `public/`; `public/.htaccess` routes friendly URLs to `index.php`.
@@ -50,6 +52,7 @@
 - Results remain viewable for `RESULT_RETENTION_DAYS`, default 5.
 - Animation never determines the result; the server persists the result first.
 - Screenshots are not authoritative by themselves; verify suspicious results by Draw ID through `/verify` or the admin/database record.
+- n8n fulfillment resumes only known `Failed` items. A completed `order_id` is an idempotent replay; a changed email or quantity returns a conflict.
 
 ## Recent Changes
 - Built the PHP/SQLite MVP from an empty repository.
@@ -85,20 +88,24 @@
 - Added admin email delivery for new Mystery Box links through Brevo SMTP, including a branded HTML email template, admin email settings page, and `.env.example`/deployment documentation.
 - Added admin email delivery history with per-attempt recipient, token, status, timestamp, and SMTP error message.
 - Redesigned the mobile navbar as a centered glass/pill horizontal navigation so admin/public links stay aligned on small screens.
+- Added idempotent n8n order fulfillment with API key authentication, JSON responses, configurable quantity/rate limits, order/item audit tables, shared admin/API delivery service, partial retry handling, and SMTP unknown-outcome protection.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
 - Configure Brevo SMTP values through `/admin/email` and send a real test email from the admin panel.
+- Enable and configure `API_ENABLED`, `N8N_API_KEY`, `N8N_API_MAX_QUANTITY`, and `N8N_API_RATE_LIMIT_PER_MINUTE` only when the n8n workflow is ready.
+- Configure the n8n HTTP Request node according to the API section in `README.md`.
 - Confirm production cPanel PHP extensions and document root mapping to `public/`.
 - Add real customer support/contact instructions in FAQ and prize redemption copy.
 - Perform final testing on real mobile devices before public launch.
 
 ## Known Issues
 - Local validation cannot prove physical 60/90/120 Hz device smoothness; browser screenshot checks passed, but real-device QA is still recommended.
+- API `NeedsReview` records require manual verification if SMTP accepted a message but the application could not confirm the final database status; they must not be automatically retried.
 
 ## LLM Handoff Notes
 - Read `README.md`, `DEPLOYMENT.md`, `public/index.php`, and `app/Services/DrawService.php` first.
 - Keep the project simple and cPanel-friendly.
-- Do not introduce paid services or external APIs.
+- Do not introduce unrelated paid services or external integrations.
 - Never store secrets or real customer data in this file.
 - `.env` is ignored; use `.env.example` as the production template and never commit secrets.

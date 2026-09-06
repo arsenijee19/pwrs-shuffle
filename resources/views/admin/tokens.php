@@ -3,6 +3,7 @@
     <h1>Tokeni</h1>
     <div class="actions">
       <a class="ghost" href="/admin/email-history">Istorija slanja</a>
+      <a class="ghost" href="/admin/fulfillments">n8n isporuke</a>
       <a class="ghost" href="/admin/email">Email podešavanja</a>
       <a class="ghost" href="/admin/tokens.csv">Export CSV</a>
     </div>

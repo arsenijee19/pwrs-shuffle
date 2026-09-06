@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= e(($title ?? 'PlayWorld Mystery Box') . ' | PlayWorld') ?></title>
-  <link rel="stylesheet" href="/assets/app.css?v=20260802-nav">
+  <link rel="stylesheet" href="/assets/app.css?v=20260906-api">
   <script defer src="/assets/app.js?v=20260729-verify"></script>
 </head>
 <body>

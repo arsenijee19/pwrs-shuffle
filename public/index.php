@@ -7,8 +7,8 @@ require __DIR__ . '/../vendor/autoload.php';
 use PlayWorld\MysteryBox\Middleware\RateLimiter;
 use PlayWorld\MysteryBox\Services\AuthService;
 use PlayWorld\MysteryBox\Services\DrawService;
-use PlayWorld\MysteryBox\Services\EmailDeliveryService;
-use PlayWorld\MysteryBox\Services\MailService;
+use PlayWorld\MysteryBox\Services\MysteryBoxFulfillmentService;
+use PlayWorld\MysteryBox\Services\N8nMysteryBoxApi;
 use PlayWorld\MysteryBox\Services\PdfService;
 use PlayWorld\MysteryBox\Services\PrizeService;
 use PlayWorld\MysteryBox\Services\SettingsService;
@@ -19,7 +19,10 @@ use PlayWorld\MysteryBox\Support\Router;
 
 App::bootstrap(dirname(__DIR__));
 Database::migrate();
-RateLimiter::hit('global');
+$requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$queryRoute = (string) ($_GET['route'] ?? '');
+$isApiRequest = str_starts_with($requestPath, '/api/') || str_starts_with($queryRoute, '/api/');
+RateLimiter::hit('global', $isApiRequest);
 
 header('X-Frame-Options: DENY');
 header('X-Content-Type-Options: nosniff');
@@ -30,6 +33,32 @@ if ((bool) env_value('SESSION_SECURE', true)) {
 }
 
 $router = new Router();
+
+$router->post('/api/v1/mystery-box/fulfill', function (): void {
+    header('Cache-Control: no-store');
+    header('Content-Type: application/json; charset=utf-8');
+    RateLimiter::hit('n8n-api', true, (int) env_value('N8N_API_RATE_LIMIT_PER_MINUTE', 30));
+
+    $headers = function_exists('getallheaders') ? getallheaders() : [];
+    if (!is_array($headers)) {
+        $headers = [];
+    }
+    if (!isset($headers['Authorization']) && isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        $headers['Authorization'] = (string) $_SERVER['HTTP_AUTHORIZATION'];
+    }
+    if (!isset($headers['Content-Type']) && isset($_SERVER['CONTENT_TYPE'])) {
+        $headers['Content-Type'] = (string) $_SERVER['CONTENT_TYPE'];
+    }
+
+    $response = (new N8nMysteryBoxApi())->handle(
+        $_SERVER['REQUEST_METHOD'] ?? 'POST',
+        array_map(static fn (mixed $value): string => is_string($value) ? $value : '', $headers),
+        (string) file_get_contents('php://input')
+    );
+
+    http_response_code($response['status']);
+    echo json_encode($response['body'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+});
 
 $router->get('/', fn () => render('public/home', [
     'title' => 'PlayWorld Mystery Box',
@@ -153,6 +182,13 @@ $router->get('/admin/tokens', function (): void {
     unset($_SESSION['created_tokens']);
     unset($_SESSION['flash'], $_SESSION['flash_type']);
 });
+$router->get('/admin/fulfillments', function (): void {
+    AuthService::requireAdmin();
+    render('admin/fulfillments', [
+        'title' => 'n8n isporuke',
+        'fulfillments' => (new MysteryBoxFulfillmentService())->recent(),
+    ]);
+});
 $router->post('/admin/tokens/generate', function (): void {
     AuthService::requireAdmin();
     verify_csrf();
@@ -174,17 +210,12 @@ $router->post('/admin/tokens/send-email', function (): void {
         redirect('/admin/tokens');
     }
 
-    $created = (new TokenService())->generate(1);
-    $_SESSION['created_tokens'] = $created;
-    $deliveries = new EmailDeliveryService();
-
     try {
-        (new MailService())->sendMysteryBoxLink($email, $name, $created[0]['link']);
-        $deliveries->record((int) $created[0]['id'], $email, $name, 'Sent');
+        $created = [(new MysteryBoxFulfillmentService())->createAndSend($email, $name)];
+        $_SESSION['created_tokens'] = $created;
         $_SESSION['flash'] = 'Mystery Box link je kreiran i poslat na ' . $email . '.';
         $_SESSION['flash_type'] = 'success';
     } catch (Throwable $e) {
-        $deliveries->record((int) $created[0]['id'], $email, $name, 'Failed', $e->getMessage());
         $_SESSION['flash'] = 'Link je kreiran, ali email nije poslat: ' . $e->getMessage();
         $_SESSION['flash_type'] = 'error';
     }

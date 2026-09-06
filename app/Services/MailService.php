@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PlayWorld\MysteryBox\Services;
 
 use RuntimeException;
+use Throwable;
 
 final class MailService
 {
@@ -162,9 +163,11 @@ final class MailService
         );
 
         if (!is_resource($socket)) {
-            throw new RuntimeException('Nije moguće povezivanje sa SMTP serverom.');
+            throw new MailDeliveryException('Nije moguće povezivanje sa SMTP serverom.', false, 'smtp_connection_failed');
         }
 
+        $afterData = false;
+        $accepted = false;
         try {
             stream_set_timeout($socket, $timeout);
             $this->expectGreeting($socket);
@@ -182,8 +185,22 @@ final class MailService
             $this->smtpCommand($socket, 'MAIL FROM:<' . $from . '>', [250]);
             $this->smtpCommand($socket, 'RCPT TO:<' . $to . '>', [250, 251]);
             $this->smtpCommand($socket, 'DATA', [354]);
+            $afterData = true;
             $this->smtpCommand($socket, $this->normalizeMessage($message) . "\r\n.", [250]);
+            $accepted = true;
             $this->smtpCommand($socket, 'QUIT', [221]);
+        } catch (MailDeliveryException $error) {
+            throw $error;
+        } catch (Throwable $error) {
+            if ($afterData && !$accepted) {
+                throw new MailDeliveryException(
+                    'SMTP server nije pouzdano potvrdio prijem emaila.',
+                    true,
+                    'smtp_unknown'
+                );
+            }
+
+            throw new MailDeliveryException($error->getMessage(), false, 'smtp_failed');
         } finally {
             fclose($socket);
         }

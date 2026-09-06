@@ -188,11 +188,14 @@ dd { margin: 4px 0 0; font-weight: 750; }
 .copy-row button.copied { border-color: #bde8d8; background: #eef7f3; color: #17624a; }
 .copied-row { border-color: #bde8d8; background: rgba(47,158,117,.07); }
 .copy-status { align-self: center; justify-self: end; color: var(--muted); font-size: 12px; white-space: nowrap; }
+.item-statuses { display: flex; flex-wrap: wrap; gap: 6px; min-width: 220px; }
 .status-pill { display: inline-flex; align-items: center; min-height: 28px; border-radius: 999px; padding: 0 10px; font-size: 12px; font-weight: 850; }
 .status-active { background: #e4f6ef; color: #17624a; }
 .status-used { background: #e5f0fb; color: #174c83; }
 .status-sent { background: #e4f6ef; color: #17624a; }
 .status-failed { background: #fff1ef; color: var(--danger); }
+.status-needsreview { background: #fff4d8; color: #8a5b00; }
+.status-processing, .status-partial { background: #e5f0fb; color: #174c83; }
 .status-expired { background: #fff4d8; color: #8a5b00; }
 .status-revoked { background: #fff1ef; color: var(--danger); }
 
