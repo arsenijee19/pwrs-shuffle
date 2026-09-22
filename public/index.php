@@ -163,6 +163,18 @@ $router->post('/admin/prizes/seed-playworld', function (): void {
     $_SESSION['flash'] = (new PrizeService())->seedPlayWorldCatalog();
     redirect('/admin/prizes');
 });
+$router->post('/admin/prizes/seed-bonus', function (): void {
+    AuthService::requireAdmin();
+    verify_csrf();
+    $_SESSION['flash'] = (new PrizeService())->seedBonusCatalog();
+    redirect('/admin/prizes');
+});
+$router->post('/admin/prizes/{id}/toggle', function (string $id): void {
+    AuthService::requireAdmin();
+    verify_csrf();
+    (new PrizeService())->toggle((int) $id);
+    redirect('/admin/prizes');
+});
 $router->post('/admin/prizes/{id}/delete', function (string $id): void {
     AuthService::requireAdmin();
     verify_csrf();

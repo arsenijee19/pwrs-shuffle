@@ -16,7 +16,8 @@
           'Da li su sve nagrade iste dostupnosti?' => 'Ne. Neke nagrade se pojavljuju ređe jer imaju veću vrednost ili ograničenu dostupnost. Svaki validan link prolazi kroz isti automatizovani proces izvlačenja.',
           'Koliko nagrada ima u fondu?' => 'PlayWorld garantuje da se u nagradnom fondu u svakom trenutku nalazi najmanje 25 aktivnih nagrada. Spisak može da se menja u skladu sa dostupnošću proizvoda i aktuelnom ponudom.',
           'Da li se glavne nagrade menjaju?' => 'Glavne nagrade ostaju deo promocije dok su dostupne. Ako neka nagrada više nije dostupna, može biti zamenjena nagradom iste ili slične vrednosti.',
-          'Šta ako već imam igru koju osvojim?' => 'Osvojenu nagradu nije moguće zameniti za drugu igru, novac, popust ili drugi proizvod. Rezultat se smatra konačnim nakon otvaranja Mystery Box-a.',
+          'Kako funkcionišu popusti i bonus nagrade?' => 'Popust od 5% može se ostvariti više puta i sabirati do maksimalnih 30%. Popusti veći od 20% ne mogu se kombinovati sa drugim popustima u jednoj kupovini. Ostale bonus nagrade važe prema uslovima navedenim uz konkretnu nagradu.',
+          'Šta ako već imam igru koju osvojim?' => 'Nema zamene za novac, drugi proizvod ili refundacije nakon otvaranja. Ako već imate osvojenu igru, novi Mystery Box može biti odobren samo ako PlayWorld evidencija potvrdi da je ta ista igra prethodno kupljena preko PlayWorld-a. U svim ostalim slučajevima rezultat ostaje važeći.',
       ],
       'Sigurnost, potvrda i pomoć' => [
           'Kako znam da rezultat nije naknadno promenjen?' => 'Kada otvorite box, rezultat se vezuje za token, vreme otvaranja i jedinstveni Draw ID. Nakon toga administrator ne može da promeni već osvojenu nagradu, a isti link uvek prikazuje isti rezultat.',
@@ -27,6 +28,7 @@
           'Kako evidentiram nagradu?' => 'Pošaljite nam screenshot rezultata ili PDF potvrdu. PDF sadrži naziv nagrade, vreme izvlačenja, Draw ID i maskirani token.',
           'Šta ako izgubim link?' => 'Kontaktirajte nas što pre. Ako Mystery Box nije otvoren, pomoći ćemo Vam da ponovo pristupite linku.',
           'Kome da se javim?' => 'Javite se PlayWorld podršci ili kontakt osobi koja Vam je poslala Mystery Box link.',
+          'Da li su mogući naknadni povraćaj ili zamena?' => 'Ne. Mystery Box je proizvod iznenađenja, a rezultat postaje konačan nakon otvaranja. Naknadne zamene, refundacije i isplate u novcu nisu moguće, osim provere i eventualnog novog boxa u posebno navedenom slučaju duplikata igre kupljene preko PlayWorld-a.',
       ],
   ];
   ?>

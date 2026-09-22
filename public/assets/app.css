@@ -88,6 +88,14 @@ th, td { text-align: left; padding: 13px 10px; border-bottom: 1px solid var(--li
 th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
 .table-note { max-width: 340px; color: var(--muted); white-space: normal; }
 .thumb { width: 54px; height: 54px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); }
+.status-toggle { display: inline-flex; align-items: center; gap: 8px; min-height: 34px; padding: 0 10px 0 5px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 900; }
+.status-toggle.is-on { border-color: #bde8d8; background: #eef7f3; color: #17624a; }
+.status-toggle.is-off { background: #f5f7fb; color: #667085; }
+.toggle-track { display: inline-flex; align-items: center; width: 30px; height: 18px; padding: 2px; border-radius: 999px; background: #b8c2cf; transition: background 160ms ease; }
+.toggle-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(16,24,40,.24); transform: translateX(0); transition: transform 160ms ease; }
+.status-toggle.is-on .toggle-track { background: var(--green); }
+.status-toggle.is-on .toggle-thumb { transform: translateX(12px); }
+.status-toggle:focus-visible { outline: 3px solid rgba(36,87,197,.24); outline-offset: 2px; }
 .cover { width: min(260px, 100%); aspect-ratio: 4/3; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); }
 .result-shell { display: grid; grid-template-columns: 1fr; width: min(940px, 100%); margin: 0 auto; gap: 34px; align-items: stretch; }
 .result { display: grid; justify-items: center; gap: 22px; text-align: center; padding: clamp(34px, 5vw, 58px); }

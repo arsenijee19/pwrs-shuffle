@@ -23,6 +23,8 @@
       <li>Nakon otvaranja rezultat nije moguće promeniti.</li>
       <li>Rezultat će biti dostupan narednih 5 dana.</li>
       <li>Po želji možete preuzeti PDF potvrdu.</li>
+      <li>Popust od 5% može se sabirati do ukupno 30%; popusti veći od 20% se ne kombinuju.</li>
+      <li>Ako već imate osvojenu igru, novi box je moguć samo uz proveru PlayWorld kupovine te igre.</li>
     </ul>
   </div>
   <a class="text-link" href="/faq">Pročitaj više</a>

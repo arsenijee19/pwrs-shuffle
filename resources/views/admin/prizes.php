@@ -6,6 +6,10 @@
         <?= csrf_field() ?>
         <button class="ghost" type="submit">Dodaj PlayWorld katalog</button>
       </form>
+      <form method="post" action="/admin/prizes/seed-bonus" class="inline">
+        <?= csrf_field() ?>
+        <button class="ghost" type="submit">Dodaj bonus nagrade</button>
+      </form>
       <a class="primary" href="/admin/prizes/new">Dodaj nagradu</a>
     </div>
   </div>
@@ -25,7 +29,15 @@
           <td><?= e((string) $prize['max_quantity']) ?></td>
           <td><?= e((string) $prize['won_count']) ?></td>
           <td><?= e((string) max(0, (int) $prize['max_quantity'] - (int) $prize['won_count'])) ?></td>
-          <td><?= ((int) $prize['active']) === 1 ? 'Aktivna' : 'Neaktivna' ?></td>
+          <td>
+            <form method="post" action="/admin/prizes/<?= e((string) $prize['id']) ?>/toggle" class="inline">
+              <?= csrf_field() ?>
+              <button class="status-toggle <?= ((int) $prize['active']) === 1 ? 'is-on' : 'is-off' ?>" type="submit" role="switch" aria-checked="<?= ((int) $prize['active']) === 1 ? 'true' : 'false' ?>">
+                <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+                <span><?= ((int) $prize['active']) === 1 ? 'On' : 'Off' ?></span>
+              </button>
+            </form>
+          </td>
           <td class="row-actions">
             <a class="ghost" href="/admin/prizes/<?= e((string) $prize['id']) ?>/edit">Izmeni</a>
             <?php if ((int) $prize['won_count'] === 0): ?>

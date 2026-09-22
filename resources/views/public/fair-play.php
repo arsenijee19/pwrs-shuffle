@@ -9,7 +9,9 @@
     <li>Administrator ne može promeniti već osvojenu nagradu.</li>
     <li>U fondu je uvek najmanje 25 aktivnih nagrada.</li>
     <li>Spisak nagrada može se menjati u skladu sa dostupnošću.</li>
-    <li>Osvojenu nagradu nije moguće zameniti ako je već posedujete.</li>
+    <li>Popust od 5% može se sabirati do najviše 30%; popusti veći od 20% ne mogu se kombinovati sa drugim popustima.</li>
+    <li>Ako kupac već ima osvojenu igru, novi Mystery Box moguć je samo uz potvrdu da je ista igra ranije kupljena preko PlayWorld-a.</li>
+    <li>Nema naknadnih zamena, refundacija ili isplate u novcu nakon otvaranja, osim jasno definisane provere duplikata igre kupljene preko PlayWorld-a.</li>
     <li>Neke nagrade su ređe jer imaju manju dostupnost ili veće ograničenje količine.</li>
     <li>Sva izvlačenja ostaju evidentirana kroz Draw ID i vreme otvaranja.</li>
   </ul>

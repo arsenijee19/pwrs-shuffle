@@ -7,6 +7,7 @@ Standalone PHP/SQLite MVP aplikacija za PlayWorld Mystery Box promociju.
 - Admin login i promena lozinke.
 - Dashboard sa tokenima, otvaranjima i nagradama.
 - Upravljanje nagradama, uključujući cover upload.
+- Uključivanje i isključivanje nagrada preko On/Off prekidača i idempotentno dodavanje bonus kataloga.
 - Generisanje jednog ili više sigurnih tokena.
 - Generisanje i slanje Mystery Box linka kupcu putem Brevo SMTP emaila.
 - Admin istorija slanja emailova sa statusom uspeha ili greške.
@@ -18,6 +19,8 @@ Standalone PHP/SQLite MVP aplikacija za PlayWorld Mystery Box promociju.
 - PDF potvrda sa QR kodom ka rezultatu.
 - Javna provera rezultata preko Draw ID-ja na `/verify`.
 - FAQ i Fair Play stranice.
+
+Na `/admin/prizes` dugme **Dodaj bonus nagrade** dodaje novih 15 bonus nagrada bez brisanja postojećih rezultata. Ista akcija može bezbedno da se pokrene ponovo. Nagrada `1 Mystery Box` koristi weight 10 kao podrazumevanu Common vrednost jer weight nije bio naveden u zahtevu; sve nove nagrade imaju maksimalno 100000 osvajanja, osim `GTA 6 Ultimate` koji ima maksimum 2.
 
 ## Provera rezultata
 

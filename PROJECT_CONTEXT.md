@@ -89,6 +89,8 @@
 - Added admin email delivery history with per-attempt recipient, token, status, timestamp, and SMTP error message.
 - Redesigned the mobile navbar as a centered glass/pill horizontal navigation so admin/public links stay aligned on small screens.
 - Added idempotent n8n order fulfillment with API key authentication, JSON responses, configurable quantity/rate limits, order/item audit tables, shared admin/API delivery service, partial retry handling, and SMTP unknown-outcome protection.
+- Added an authenticated prize On/Off toggle and a repeatable admin seed action for 15 requested bonus rewards, preserving existing prizes and draw history.
+- Added customer-facing rules for discount stacking, no refunds/exchanges, and the PlayWorld-purchase-only duplicate-game replacement exception.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.

@@ -89,6 +89,24 @@ final class PrizeService
         return true;
     }
 
+    public function toggle(int $id): bool
+    {
+        $prize = $this->find($id);
+        if (!$prize) {
+            return false;
+        }
+
+        Database::pdo()->prepare(
+            'UPDATE prizes SET active = :active, updated_at = :updated_at WHERE id = :id'
+        )->execute([
+            'active' => (int) $prize['active'] === 1 ? 0 : 1,
+            'updated_at' => date('c'),
+            'id' => $id,
+        ]);
+
+        return true;
+    }
+
     public function seedPlayWorldCatalog(): array
     {
         $created = 0;
@@ -137,6 +155,76 @@ final class PrizeService
         }
 
         return ['created' => $created, 'updated' => $updated];
+    }
+
+    public function seedBonusCatalog(): array
+    {
+        $created = 0;
+        $updated = 0;
+        $now = date('c');
+        $pdo = Database::pdo();
+
+        $find = $pdo->prepare('SELECT id FROM prizes WHERE lower(name) = lower(:name) LIMIT 1');
+        $insert = $pdo->prepare(
+            'INSERT INTO prizes (name, description, instructions, cover_path, rarity, weight, max_quantity, won_count, active, created_at, updated_at)
+            VALUES (:name, :description, :instructions, :cover_path, :rarity, :weight, :max_quantity, 0, 1, :created_at, :updated_at)'
+        );
+        $update = $pdo->prepare(
+            'UPDATE prizes SET description=:description, instructions=:instructions, cover_path=:cover_path,
+            rarity=:rarity, weight=:weight, max_quantity=max(won_count, :max_quantity), active=1, updated_at=:updated_at
+            WHERE id=:id'
+        );
+
+        foreach ($this->bonusCatalog() as $item) {
+            $payload = [
+                'name' => $item['name'],
+                'description' => $this->catalogDescription($item['name']),
+                'instructions' => 'Sačuvajte PDF potvrdu i javite se PlayWorld timu za preuzimanje nagrade.',
+                'cover_path' => '/assets/placeholder-cover.svg',
+                'rarity' => $item['rarity'],
+                'weight' => $item['weight'],
+                'max_quantity' => $item['max_quantity'],
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+
+            $find->execute(['name' => $item['name']]);
+            $id = $find->fetchColumn();
+
+            if ($id) {
+                unset($payload['name'], $payload['created_at']);
+                $payload['id'] = (int) $id;
+                $update->execute($payload);
+                $updated++;
+                continue;
+            }
+
+            $insert->execute($payload);
+            $created++;
+        }
+
+        return ['created' => $created, 'updated' => $updated];
+    }
+
+    public function bonusCatalog(): array
+    {
+        return [
+            ['name' => '2 Mystery Box-a + 5% popusta', 'weight' => 10, 'rarity' => 'Rare', 'max_quantity' => 100000],
+            ['name' => '5 Mystery Box-ova + 50% popusta', 'weight' => 1, 'rarity' => 'Ultra Rare', 'max_quantity' => 100000],
+            ['name' => '10 Mystery Box-ova', 'weight' => 1, 'rarity' => 'Ultra Rare', 'max_quantity' => 100000],
+            ['name' => 'Besplatna igra po izboru', 'weight' => 1, 'rarity' => 'Ultra Rare', 'max_quantity' => 100000],
+            ['name' => 'PlayStation Plus Deluxe - 1 mesec', 'weight' => 7, 'rarity' => 'Rare', 'max_quantity' => 100000],
+            ['name' => 'PlayStation Plus Extra - 1 mesec', 'weight' => 8, 'rarity' => 'Rare', 'max_quantity' => 100000],
+            ['name' => 'PlayStation Plus Essential - 24 meseca', 'weight' => 3, 'rarity' => 'Ultra Rare', 'max_quantity' => 100000],
+            ['name' => 'PlayStation Plus Deluxe - 3 meseca', 'weight' => 5, 'rarity' => 'Rare', 'max_quantity' => 100000],
+            ['name' => 'PlayStation Plus Deluxe - 12 meseci', 'weight' => 2, 'rarity' => 'Ultra Rare', 'max_quantity' => 100000],
+            ['name' => '3 Mystery Box-a', 'weight' => 9, 'rarity' => 'Rare', 'max_quantity' => 100000],
+            ['name' => '1 Mystery Box', 'weight' => 10, 'rarity' => 'Common', 'max_quantity' => 100000],
+            ['name' => '2 Mystery Box-a + 10% popusta', 'weight' => 6, 'rarity' => 'Rare', 'max_quantity' => 100000],
+            ['name' => '1 Mystery Box + 15% popusta', 'weight' => 6, 'rarity' => 'Rare', 'max_quantity' => 100000],
+            ['name' => 'GTA 6 Ultimate', 'weight' => 1, 'rarity' => 'Ultra Rare', 'max_quantity' => 2],
+            ['name' => 'Red Dead Redemption 2', 'weight' => 8, 'rarity' => 'Common', 'max_quantity' => 100000],
+        ];
     }
 
     public function playWorldCatalog(): array

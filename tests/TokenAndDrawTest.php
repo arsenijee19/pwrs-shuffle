@@ -107,4 +107,44 @@ final class TokenAndDrawTest extends TestCase
         $this->assertSame(28, $second['updated']);
         $this->assertSame(28, (int) Database::pdo()->query('SELECT COUNT(*) FROM prizes')->fetchColumn());
     }
+
+    public function testBonusCatalogSeedIsRepeatableAndUsesRequestedLimits(): void
+    {
+        $service = new PrizeService();
+
+        $first = $service->seedBonusCatalog();
+        $second = $service->seedBonusCatalog();
+
+        $this->assertSame(15, $first['created']);
+        $this->assertSame(0, $first['updated']);
+        $this->assertSame(0, $second['created']);
+        $this->assertSame(15, $second['updated']);
+
+        $gta = Database::pdo()->query("SELECT rarity, weight, max_quantity, active FROM prizes WHERE name = 'GTA 6 Ultimate'")->fetch();
+        $this->assertSame('Ultra Rare', $gta['rarity']);
+        $this->assertSame(1, (int) $gta['weight']);
+        $this->assertSame(2, (int) $gta['max_quantity']);
+        $this->assertSame(1, (int) $gta['active']);
+
+        $common = Database::pdo()->query("SELECT rarity, weight, max_quantity FROM prizes WHERE name = '1 Mystery Box'")->fetch();
+        $this->assertSame('Common', $common['rarity']);
+        $this->assertSame(10, (int) $common['weight']);
+        $this->assertSame(100000, (int) $common['max_quantity']);
+    }
+
+    public function testPrizeCanBeToggledWithoutChangingItsDrawCount(): void
+    {
+        $service = new PrizeService();
+        $service->seedBonusCatalog();
+        $prize = $service->all()[0];
+
+        $this->assertTrue($service->toggle((int) $prize['id']));
+        $disabled = $service->find((int) $prize['id']);
+        $this->assertSame(0, (int) $disabled['active']);
+        $this->assertSame(0, (int) $disabled['won_count']);
+
+        $this->assertTrue($service->toggle((int) $prize['id']));
+        $enabled = $service->find((int) $prize['id']);
+        $this->assertSame(1, (int) $enabled['active']);
+    }
 }
