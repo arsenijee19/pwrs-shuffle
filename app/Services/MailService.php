@@ -44,6 +44,31 @@ final class MailService
         );
     }
 
+    /** @param array<int,string> $links */
+    public function sendMysteryBoxLinks(string $recipientEmail, string $recipientName, array $links): void
+    {
+        $config = $this->config();
+        if (!$config['enabled']) {
+            throw new RuntimeException('Email slanje nije uključeno.');
+        }
+        if ($config['host'] === '' || $config['username'] === '' || $config['password'] === '' || $config['from'] === '') {
+            throw new RuntimeException('SMTP podešavanja nisu kompletna.');
+        }
+
+        $html = $this->mysteryBoxLinksHtml($links, $recipientName);
+        $text = $this->mysteryBoxLinksText($links, $recipientName);
+        $message = $this->buildMessage(
+            $config['from'],
+            $config['from_name'],
+            $recipientEmail,
+            'Vaši PlayWorld Mystery Box linkovi',
+            $html,
+            $text
+        );
+
+        $this->smtpSend($config['host'], $config['port'], $config['username'], $config['password'], $config['from'], $recipientEmail, $message, $config['timeout']);
+    }
+
     public function mysteryBoxHtml(string $link, string $recipientName = ''): string
     {
         ob_start();
@@ -63,6 +88,26 @@ final class MailService
             'Nakon otvaranja pošaljite nam screenshot osvojene nagrade ili PDF potvrdu koju možete preuzeti na stranici rezultata.',
             'Hvala Vam na učešću i želimo Vam puno sreće!',
             'Srdačno, PlayWorld tim',
+        ]);
+    }
+
+    /** @param array<int,string> $links */
+    public function mysteryBoxLinksHtml(array $links, string $recipientName = ''): string
+    {
+        ob_start();
+        require app_path('resources/views/emails/mystery-box-links.php');
+        return (string) ob_get_clean();
+    }
+
+    /** @param array<int,string> $links */
+    public function mysteryBoxLinksText(array $links, string $recipientName = ''): string
+    {
+        $greeting = trim($recipientName) !== '' ? 'Poštovani/a ' . trim($recipientName) . ',' : 'Poštovani,';
+        return implode("\n\n", [
+            $greeting,
+            'Osvojili ste dodatne PlayWorld Mystery Box linkove. Svaki link se otvara zasebno i može se iskoristiti samo jednom.',
+            implode("\n", array_map(static fn (string $link, int $index): string => ($index + 1) . '. ' . $link, $links, array_keys($links))),
+            'Hvala Vam na učešću! PlayWorld tim',
         ]);
     }
 

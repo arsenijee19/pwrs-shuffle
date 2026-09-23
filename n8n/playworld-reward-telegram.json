@@ -1,0 +1,112 @@
+{
+  "name": "PlayWorld Reward Claims - Telegram",
+  "nodes": [
+    {
+      "parameters": {"triggerTimes": {"item": [{"mode": "everyMinute"}]}},
+      "id": "schedule-reward-claims",
+      "name": "Every minute",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://shuffle.playworld.rs/api/v1/reward-claims/lease",
+        "sendHeaders": true,
+        "headerParameters": {"parameters": [{"name": "Authorization", "value": "=Bearer {{$env.PWRS_N8N_API_KEY}}"}, {"name": "Content-Type", "value": "application/json"}]},
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"limit\":20,\"worker\":\"telegram\"}",
+        "options": {"timeout": 15000}
+      },
+      "id": "lease-playworld-claims",
+      "name": "Lease PlayWorld Claims",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const claims = $json.claims || [];\nreturn claims.map((claim) => {\n  const esc = (value) => String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\n  const text = `🎁 <b>NOVA MYSTERY BOX NAGRADA</b>\\n\\n<b>${esc(claim.prize_name)}</b>\\n\\nDraw ID: <code>${esc(claim.draw_id)}</code>\\n📧 ${esc(claim.email)}\\n📱 ${esc(claim.phone)}\\n\\nClaim #${esc(claim.claim_id)}\\n${esc(claim.created_at)}`;\n  return { json: { ...claim, telegram_payload: { chat_id: 'REPLACE_TELEGRAM_GROUP_ID', parse_mode: 'HTML', disable_web_page_preview: true, text, reply_markup: { inline_keyboard: [[{ text: 'Otvori zahtev', url: claim.admin_url }]] } } } };\n});"
+      },
+      "id": "prepare-telegram-claims",
+      "name": "Prepare Claims",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{$env.PWRS_TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.telegram_payload) }}",
+        "options": {"timeout": 15000}
+      },
+      "id": "send-telegram-message",
+      "name": "Send Telegram Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [960, 300],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {"conditions": {"boolean": [{"value1": "={{$json.ok}}", "operation": "isTrue"}]}},
+      "id": "telegram-succeeded",
+      "name": "Telegram succeeded?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1200, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://shuffle.playworld.rs/api/v1/reward-claims/{{$node['Prepare Claims'].json.claim_id}}/notification-result",
+        "sendHeaders": true,
+        "headerParameters": {"parameters": [{"name": "Authorization", "value": "=Bearer {{$env.PWRS_N8N_API_KEY}}"}, {"name": "Content-Type", "value": "application/json"}]},
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ worker: 'telegram', status: 'Sent', provider: 'Telegram', provider_message_id: String($json.result?.message_id || '') }) }}",
+        "options": {"timeout": 15000}
+      },
+      "id": "mark-claim-sent",
+      "name": "Mark Notification Sent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1440, 220],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://shuffle.playworld.rs/api/v1/reward-claims/{{$node['Prepare Claims'].json.claim_id}}/notification-result",
+        "sendHeaders": true,
+        "headerParameters": {"parameters": [{"name": "Authorization", "value": "=Bearer {{$env.PWRS_N8N_API_KEY}}"}, {"name": "Content-Type", "value": "application/json"}]},
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ worker: 'telegram', status: 'Failed', provider: 'Telegram', error: 'Telegram nije prihvatio poruku.' }) }}",
+        "options": {"timeout": 15000}
+      },
+      "id": "mark-claim-failed",
+      "name": "Mark Notification Failed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1440, 380],
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Every minute": {"main": [[{"node": "Lease PlayWorld Claims", "type": "main", "index": 0}]]},
+    "Lease PlayWorld Claims": {"main": [[{"node": "Prepare Claims", "type": "main", "index": 0}]]},
+    "Prepare Claims": {"main": [[{"node": "Send Telegram Message", "type": "main", "index": 0}]]},
+    "Send Telegram Message": {"main": [[{"node": "Telegram succeeded?", "type": "main", "index": 0}]]},
+    "Telegram succeeded?": {"main": [[{"node": "Mark Notification Sent", "type": "main", "index": 0}], [{"node": "Mark Notification Failed", "type": "main", "index": 0}]]}
+  },
+  "active": false,
+  "settings": {"executionOrder": "v1"},
+  "versionId": "playworld-reward-telegram-v1",
+  "meta": {"templateCredsSetupCompleted": true},
+  "tags": []
+}

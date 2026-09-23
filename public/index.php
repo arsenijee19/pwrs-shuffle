@@ -9,8 +9,12 @@ use PlayWorld\MysteryBox\Services\AuthService;
 use PlayWorld\MysteryBox\Services\DrawService;
 use PlayWorld\MysteryBox\Services\MysteryBoxFulfillmentService;
 use PlayWorld\MysteryBox\Services\N8nMysteryBoxApi;
+use PlayWorld\MysteryBox\Services\N8nRewardClaimsApi;
+use PlayWorld\MysteryBox\Services\DiscountCodeService;
 use PlayWorld\MysteryBox\Services\PdfService;
 use PlayWorld\MysteryBox\Services\PrizeService;
+use PlayWorld\MysteryBox\Services\RewardClaimService;
+use PlayWorld\MysteryBox\Services\RewardDeliveryService;
 use PlayWorld\MysteryBox\Services\SettingsService;
 use PlayWorld\MysteryBox\Services\TokenService;
 use PlayWorld\MysteryBox\Support\App;
@@ -28,17 +32,16 @@ header('X-Frame-Options: DENY');
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
+if (str_starts_with($requestPath, '/admin') || str_starts_with($requestPath, '/box/')) {
+    header('Cache-Control: no-store, private');
+}
 if ((bool) env_value('SESSION_SECURE', true)) {
     header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
 }
 
 $router = new Router();
 
-$router->post('/api/v1/mystery-box/fulfill', function (): void {
-    header('Cache-Control: no-store');
-    header('Content-Type: application/json; charset=utf-8');
-    RateLimiter::hit('n8n-api', true, (int) env_value('N8N_API_RATE_LIMIT_PER_MINUTE', 30));
-
+$apiHeaders = static function (): array {
     $headers = function_exists('getallheaders') ? getallheaders() : [];
     if (!is_array($headers)) {
         $headers = [];
@@ -49,13 +52,36 @@ $router->post('/api/v1/mystery-box/fulfill', function (): void {
     if (!isset($headers['Content-Type']) && isset($_SERVER['CONTENT_TYPE'])) {
         $headers['Content-Type'] = (string) $_SERVER['CONTENT_TYPE'];
     }
+    return array_map(static fn (mixed $value): string => is_string($value) ? $value : '', $headers);
+};
+
+$router->post('/api/v1/mystery-box/fulfill', function () use ($apiHeaders): void {
+    header('Cache-Control: no-store');
+    header('Content-Type: application/json; charset=utf-8');
+    RateLimiter::hit('n8n-api', true, (int) env_value('N8N_API_RATE_LIMIT_PER_MINUTE', 30));
 
     $response = (new N8nMysteryBoxApi())->handle(
         $_SERVER['REQUEST_METHOD'] ?? 'POST',
-        array_map(static fn (mixed $value): string => is_string($value) ? $value : '', $headers),
+        $apiHeaders(),
         (string) file_get_contents('php://input')
     );
 
+    http_response_code($response['status']);
+    echo json_encode($response['body'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+});
+$router->post('/api/v1/reward-claims/lease', function () use ($apiHeaders): void {
+    header('Cache-Control: no-store');
+    header('Content-Type: application/json; charset=utf-8');
+    RateLimiter::hit('n8n-reward-api', true, (int) env_value('N8N_API_RATE_LIMIT_PER_MINUTE', 30));
+    $response = (new N8nRewardClaimsApi())->lease($_SERVER['REQUEST_METHOD'] ?? 'POST', $apiHeaders(), (string) file_get_contents('php://input'));
+    http_response_code($response['status']);
+    echo json_encode($response['body'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+});
+$router->post('/api/v1/reward-claims/{id}/notification-result', function (string $id) use ($apiHeaders): void {
+    header('Cache-Control: no-store');
+    header('Content-Type: application/json; charset=utf-8');
+    RateLimiter::hit('n8n-reward-api', true, (int) env_value('N8N_API_RATE_LIMIT_PER_MINUTE', 30));
+    $response = (new N8nRewardClaimsApi())->notificationResult((int) $id, $_SERVER['REQUEST_METHOD'] ?? 'POST', $apiHeaders(), (string) file_get_contents('php://input'));
     http_response_code($response['status']);
     echo json_encode($response['body'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 });
@@ -154,8 +180,26 @@ $router->get('/admin/prizes/{id}/edit', function (string $id): void {
 $router->post('/admin/prizes/save', function (): void {
     AuthService::requireAdmin();
     verify_csrf();
-    (new PrizeService())->save($_POST, $_FILES['cover'] ?? null);
+    try {
+        (new PrizeService())->save($_POST, $_FILES['cover'] ?? null);
+        $_SESSION['flash'] = ['type' => 'success', 'message' => 'Nagrada je sačuvana.'];
+    } catch (Throwable $error) {
+        $_SESSION['flash'] = ['type' => 'error', 'message' => $error->getMessage()];
+    }
     redirect('/admin/prizes');
+});
+$router->post('/admin/prizes/{id}/inline', function (string $id): void {
+    AuthService::requireAdmin();
+    verify_csrf();
+    header('Cache-Control: no-store');
+    header('Content-Type: application/json; charset=utf-8');
+    try {
+        $prize = (new PrizeService())->inlineUpdate((int) $id, trim((string) ($_POST['field'] ?? '')), trim((string) ($_POST['value'] ?? '')));
+        echo json_encode(['ok' => true, 'prize' => $prize], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    } catch (Throwable $error) {
+        http_response_code(422);
+        echo json_encode(['ok' => false, 'error' => $error->getMessage()], JSON_UNESCAPED_UNICODE);
+    }
 });
 $router->post('/admin/prizes/seed-playworld', function (): void {
     AuthService::requireAdmin();
@@ -200,6 +244,48 @@ $router->get('/admin/fulfillments', function (): void {
         'title' => 'n8n isporuke',
         'fulfillments' => (new MysteryBoxFulfillmentService())->recent(),
     ]);
+});
+$router->get('/admin/discount-codes', function (): void {
+    AuthService::requireAdmin();
+    $search = trim((string) ($_GET['q'] ?? ''));
+    $percentage = (int) ($_GET['percentage'] ?? 0);
+    $status = trim((string) ($_GET['status'] ?? ''));
+    render('admin/discount-codes', [
+        'title' => 'Kodovi za popust',
+        'codes' => (new DiscountCodeService())->recent(500, $search, $percentage > 0 ? $percentage : null, $status !== '' ? $status : null),
+        'stats' => (new DiscountCodeService())->stats(),
+        'filters' => compact('search', 'percentage', 'status'),
+    ]);
+});
+$router->post('/admin/discount-codes/import', function (): void {
+    AuthService::requireAdmin();
+    verify_csrf();
+    try {
+        $result = (new DiscountCodeService())->import((string) ($_POST['codes'] ?? ''), (int) ($_POST['percentage'] ?? 0), (int) $_SESSION['admin_id']);
+        $_SESSION['flash'] = ['type' => 'success', 'message' => "Uvezeno: {$result['created']}; duplikati: {$result['duplicates']}; nevalidni: {$result['invalid']}." ];
+    } catch (Throwable $error) {
+        $_SESSION['flash'] = ['type' => 'error', 'message' => $error->getMessage()];
+    }
+    redirect('/admin/discount-codes');
+});
+$router->get('/admin/reward-deliveries', function (): void {
+    AuthService::requireAdmin();
+    render('admin/reward-deliveries', ['title' => 'Bonus isporuke', 'deliveries' => (new RewardDeliveryService())->recent()]);
+});
+$router->get('/admin/reward-claims', function (): void {
+    AuthService::requireAdmin();
+    render('admin/reward-claims', ['title' => 'Zahtevi za nagrade', 'claims' => (new RewardClaimService())->recent()]);
+});
+$router->get('/admin/reward-claims/{id}', function (string $id): void {
+    AuthService::requireAdmin();
+    $claim = (new RewardClaimService())->findById((int) $id);
+    render('admin/reward-claim', ['title' => 'Zahtev za nagradu', 'claim' => $claim], $claim ? 200 : 404);
+});
+$router->post('/admin/reward-claims/{id}/status', function (string $id): void {
+    AuthService::requireAdmin();
+    verify_csrf();
+    (new RewardClaimService())->updateStatus((int) $id, (string) ($_POST['status'] ?? ''));
+    redirect('/admin/reward-claims/' . (int) $id);
 });
 $router->post('/admin/tokens/generate', function (): void {
     AuthService::requireAdmin();
@@ -314,7 +400,12 @@ $router->get('/box/{token}', function (string $plain): void {
             render('public/invalid', ['title' => 'Rezultat je istekao', 'reason' => 'Rezultat je bio dostupan 5 dana nakon otvaranja.'], 410);
             return;
         }
-        render('public/result', ['title' => 'Rezultat', 'draw' => $draw, 'token' => $plain]);
+        render('public/result', [
+            'title' => 'Rezultat', 'draw' => $draw, 'token' => $plain,
+            'discountCode' => (new DiscountCodeService())->forDraw((string) $draw['draw_id']),
+            'bonusDelivery' => (new RewardDeliveryService())->forDraw((string) $draw['draw_id']),
+            'rewardClaim' => (new RewardClaimService())->forDraw((string) $draw['draw_id']),
+        ]);
         return;
     }
     if ($token['status'] !== 'Active') {
@@ -332,10 +423,61 @@ $router->post('/box/{token}/open', function (string $plain): void {
     $plain = (new TokenService())->normalizePlain($plain);
     try {
         $draw = (new DrawService())->open($plain);
-        render('public/result', ['title' => 'Congratulations', 'draw' => $draw, 'token' => $plain, 'openedNow' => true]);
+        render('public/result', [
+            'title' => 'Congratulations', 'draw' => $draw, 'token' => $plain, 'openedNow' => true,
+            'discountCode' => (new DiscountCodeService())->forDraw((string) $draw['draw_id']),
+            'bonusDelivery' => (new RewardDeliveryService())->forDraw((string) $draw['draw_id']),
+            'rewardClaim' => (new RewardClaimService())->forDraw((string) $draw['draw_id']),
+        ]);
     } catch (Throwable $e) {
-        render('public/invalid', ['title' => 'Mystery Box nije dostupan', 'reason' => $e->getMessage()], 422);
+        $known = [
+            'Token nije pronađen.', 'Token nije aktivan.', 'Token je istekao.',
+            'Trenutno nema dostupnih nagrada.', 'Nagrada više nije dostupna.',
+            'Kod za popust više nije dostupan.',
+        ];
+        $reason = in_array($e->getMessage(), $known, true)
+            ? $e->getMessage()
+            : 'Otvaranje trenutno nije moguće. Molimo osvežite stranicu ili kontaktirajte PlayWorld tim.';
+        render('public/invalid', ['title' => 'Mystery Box nije dostupan', 'reason' => $reason], 422);
     }
+});
+$router->post('/box/{token}/bonus', function (string $plain): void {
+    verify_csrf();
+    RateLimiter::hit('customer-bonus-claim', true, 10);
+    $tokens = new TokenService();
+    $plain = $tokens->normalizePlain($plain);
+    $token = $tokens->findPlain($plain);
+    $draw = $token ? (new DrawService())->resultForToken((int) $token['id']) : null;
+    if (!$draw || !(new DrawService())->isVisible($draw)) {
+        render('public/invalid', ['title' => 'Bonus nije dostupan', 'reason' => 'Rezultat nije dostupan.'], 410);
+        return;
+    }
+    try {
+        (new RewardDeliveryService())->claim($draw, (string) ($_POST['email'] ?? ''), (string) ($_POST['name'] ?? ''));
+        $_SESSION['flash'] = 'Linkovi će biti poslati na unetu email adresu.';
+    } catch (Throwable $error) {
+        $_SESSION['flash'] = $error->getMessage();
+    }
+    redirect('/box/' . rawurlencode($plain));
+});
+$router->post('/box/{token}/claim', function (string $plain): void {
+    verify_csrf();
+    RateLimiter::hit('customer-reward-claim', true, 10);
+    $tokens = new TokenService();
+    $plain = $tokens->normalizePlain($plain);
+    $token = $tokens->findPlain($plain);
+    $draw = $token ? (new DrawService())->resultForToken((int) $token['id']) : null;
+    if (!$draw || !(new DrawService())->isVisible($draw)) {
+        render('public/invalid', ['title' => 'Zahtev nije dostupan', 'reason' => 'Rezultat nije dostupan.'], 410);
+        return;
+    }
+    try {
+        (new RewardClaimService())->create($draw, (string) ($_POST['email'] ?? ''), (string) ($_POST['phone'] ?? ''));
+        $_SESSION['flash'] = 'Zahtev je primljen. PlayWorld tim će Vam se javiti.';
+    } catch (Throwable $error) {
+        $_SESSION['flash'] = $error->getMessage();
+    }
+    redirect('/box/' . rawurlencode($plain));
 });
 $router->get('/box/{token}/certificate', function (string $plain): void {
     $tokens = new TokenService();

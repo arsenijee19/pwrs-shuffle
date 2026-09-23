@@ -17,6 +17,7 @@
           'Koliko nagrada ima u fondu?' => 'PlayWorld garantuje da se u nagradnom fondu u svakom trenutku nalazi najmanje 25 aktivnih nagrada. Spisak može da se menja u skladu sa dostupnošću proizvoda i aktuelnom ponudom.',
           'Da li se glavne nagrade menjaju?' => 'Glavne nagrade ostaju deo promocije dok su dostupne. Ako neka nagrada više nije dostupna, može biti zamenjena nagradom iste ili slične vrednosti.',
           'Kako funkcionišu popusti i bonus nagrade?' => 'Popust od 5% može se ostvariti više puta i sabirati do maksimalnih 30%. Popusti veći od 20% ne mogu se kombinovati sa drugim popustima u jednoj kupovini. Ostale bonus nagrade važe prema uslovima navedenim uz konkretnu nagradu.',
+          'Da li zaštita od ponavljanja utiče na izvlačenje?' => 'Radi raznovrsnijeg iskustva, kada postoji druga dostupna nagrada, ista nagrada se istom anonimizovanom mrežnom identifikatoru ne dodeljuje ponovo tokom 60 minuta. Ovo nije zamena za težine nagrada: server i dalje koristi aktivni status, preostalu količinu, podešene težine i dostupnost koda za popust. Ako bi zaštita ostavila samo jednu validnu nagradu, izvlačenje se normalno nastavlja.',
           'Šta ako već imam igru koju osvojim?' => 'Nema zamene za novac, drugi proizvod ili refundacije nakon otvaranja. Ako već imate osvojenu igru, novi Mystery Box može biti odobren samo ako PlayWorld evidencija potvrdi da je ta ista igra prethodno kupljena preko PlayWorld-a. U svim ostalim slučajevima rezultat ostaje važeći.',
       ],
       'Sigurnost, potvrda i pomoć' => [

@@ -8,6 +8,12 @@ Standalone PHP/SQLite MVP aplikacija za PlayWorld Mystery Box promociju.
 - Dashboard sa tokenima, otvaranjima i nagradama.
 - Upravljanje nagradama, uključujući cover upload.
 - Uključivanje i isključivanje nagrada preko On/Off prekidača i idempotentno dodavanje bonus kataloga.
+- Inline izmena `weight`, `max_quantity` i `rarity` uz validaciju i audit log.
+- Strukturisano ponašanje nagrade: dodatni boxovi, procenat popusta i ručna isporuka.
+- Snapshot nagrade na Draw ID-ju, tako da naknadna izmena nagrade ne menja stare rezultate.
+- Uvoz i sigurna dodela kodova za popust sa proverom dostupnog fonda.
+- Idempotentna email isporuka dodatnih Mystery Box linkova i ručni zahtevi za nagrade.
+- Anti-repeat zaštita sa HMAC fingerprintom bez čuvanja sirovog IP-a.
 - Generisanje jednog ili više sigurnih tokena.
 - Generisanje i slanje Mystery Box linka kupcu putem Brevo SMTP emaila.
 - Admin istorija slanja emailova sa statusom uspeha ili greške.
@@ -64,6 +70,12 @@ Detaljno uputstvo je u [DEPLOYMENT.md](DEPLOYMENT.md).
 - `RESULT_RETENTION_DAYS` - koliko dana kupac vidi rezultat.
 - `RATE_LIMIT_PER_MINUTE` - osnovni rate limit po IP adresi.
 - `APP_QUERY_ROUTES` - postavite na `true` ako hosting ne podržava normalne rewrite rute.
+- `APP_KEY` - dugačak slučajan ključ za šifrovanje kodova i bonus linkova; ne commitovati.
+- `ANTI_REPEAT_ENABLED` - uključuje anti-repeat zaštitu.
+- `ANTI_REPEAT_WINDOW_MINUTES` - trajanje zaštite, podrazumevano 60 minuta.
+- `ANTI_REPEAT_SECRET` - odvojeni dugačak HMAC ključ; ne commitovati.
+- `TRUST_CLOUDFLARE` - `true` samo kada aplikacija zaista radi iza Cloudflare-a.
+- `DISCOUNT_LOW_STOCK_THRESHOLD` - prag za upozorenje o malom broju dostupnih kodova, podrazumevano 10.
 - `API_ENABLED` - `true` uključuje n8n fulfillment API; podrazumevano `false`.
 - `N8N_API_KEY` - tajni Bearer ključ za n8n; nikada ga ne commitovati.
 - `N8N_API_MAX_QUANTITY` - maksimalan broj box linkova po jednom API pozivu, podrazumevano `20`.
@@ -111,5 +123,27 @@ Uspešan odgovor je `200` i sadrži `status: "Completed"`, `requested_quantity`,
 Admin može da pregleda order/item evidenciju na `/admin/fulfillments`, uključujući isporuke koje zahtevaju ručnu proveru.
 
 `401` znači da Bearer ključ nije validan. `409` znači konflikt podataka za postojeći `order_id` ili da je isporuka zaustavljena radi ručne provere. `422` znači da podaci nisu validni. `429` znači da je prekoračen rate limit. `502` znači da je isporuka parcijalna i isti zahtev može bezbedno da se ponovi; već poslati item-i se neće ponovo slati. Kod `5xx` greške n8n može ponoviti zahtev sa exponential backoff-om, ali `409 needs_manual_review` ne treba automatski retry-ovati.
+
+## Reward funkcije
+
+Na `/admin/prizes` klik na `weight`, `max_quantity` ili `rarity` čuva vrednost bez reload-a. Maksimalna količina ne može biti manja od već osvojenog broja, a izmene se upisuju u `prize_change_log`.
+
+Na detaljnoj formi nagrade podesite broj dodatnih boxova, procenat popusta i da li se nagrada ručno isporučuje. Ove vrednosti se čuvaju kao posebna polja i ne izvode se iz naziva nagrade.
+
+Kodove za popust uvezite na `/admin/discount-codes`, jedan po liniji. Kodovi se čuvaju šifrovano uz `APP_KEY`, a jedan kod i jedan Draw ID mogu biti povezani samo jednom. Ako nema dostupnog koda, odgovarajuća nagrada se privremeno izuzima iz pool-a i automatski se vraća kada dodate nove kodove.
+
+Ako rezultat sadrži bonus boxove, kupac unosi email i dobija sve nove linkove u jednoj poruci. `reward_deliveries` sprečava dupliranje pri refresh-u, drugom tabu ili ponovljenom zahtevu. Status `NeedsReview` znači da ishod slanja nije pouzdano potvrđen i ne treba automatski praviti novi paket.
+
+Ručni zahtevi se vode na `/admin/reward-claims`. Kupac unosi email i telefon/Viber, a PlayWorld tim zatim preuzima zahtev. Aplikacija je izvor istine; Telegram/n8n služi samo za obaveštenje.
+
+## Anti-repeat privatnost
+
+Pre izvlačenja proveravaju se aktivnost, težina, preostala količina, dostupnost koda i anti-repeat pravilo. Ako postoji druga nagrada, ista nagrada se istom HMAC mrežnom fingerprintu ne dodeljuje ponovo tokom `ANTI_REPEAT_WINDOW_MINUTES`. Ako bi filtriranje ostavilo prazan pool, koristi se originalni validan pool. Sirov IP se ne čuva, a proxy zaglavlja se ne veruju bez eksplicitnog Cloudflare podešavanja.
+
+Težine nisu procenti niti garantuju jednake šanse. Trenutni pool zavisi od aktivnog statusa, `max_quantity`, kodova i anti-repeat zaštite.
+
+## Reward Telegram workflow
+
+Gotov n8n workflow je u `n8n/playworld-reward-telegram.json`, a jednostavno uputstvo u `n8n/README-REWARD-TELEGRAM.md`. Potrebno je podesiti `PWRS_N8N_API_KEY`, `PWRS_TELEGRAM_BOT_TOKEN`, Telegram grupu i aktivirati workflow.
 
 Preporučeni n8n retry: uključiti retry samo za `502`, `429` i privremene `5xx` odgovore, sa 3 do 5 pokušaja i rastućim čekanjem. Ne retry-ovati `401`, `409` i `422` bez izmene ili ručne provere podataka.

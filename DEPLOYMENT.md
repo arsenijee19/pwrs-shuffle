@@ -8,6 +8,8 @@
 4. Kopirati `.env.example` u `.env` i podesiti produkcione vrednosti.
 5. Pokrenuti `php bin/setup.php`.
 
+Pre prvog produkcionog zahteva podesiti `APP_KEY` i `ANTI_REPEAT_SECRET` na dugačke slučajne vrednosti. Ne koristiti vrednosti iz `.env.example`.
+
 ## cPanel
 
 1. Document root domena ili subdomena treba da pokazuje na `public/`.
@@ -43,7 +45,7 @@ N8N_API_MAX_QUANTITY=20
 N8N_API_RATE_LIMIT_PER_MINUTE=30
 ```
 
-Posle cPanel Git pull-a proverite da je nova migracija `database/migrations/004_create_api_fulfillments.sql` na serveru. `Database::migrate()` je pokreće automatski pri sledećem zahtevu; postojeća baza i postojeći draw/token podaci se ne brišu.
+Posle cPanel Git pull-a `Database::migrate()` automatski pokreće nove migracije pri sledećem zahtevu. Migracije su dodatne i ne brišu postojeću bazu, tokene, Draw ID-jeve, `won_count` ili email istoriju.
 
 n8n koristi `POST /api/v1/mystery-box/fulfill` sa `Authorization: Bearer ...`, `Content-Type: application/json` i body-em koji sadrži `order_id`, `email`, opciono `name` i `quantity`. Jedinstveni `order_id` sprečava duplu isporuku. Ponovljeni isti poziv nastavlja samo poznato neuspešne item-e; već poslati item-i se preskaču.
 
@@ -73,6 +75,14 @@ MAIL_TIMEOUT=15
 
 Ne upisivati stvarni SMTP key u git. Ako koristite admin formu, key se čuva u lokalnoj SQLite bazi servera i ne ide u GitHub.
 Istorija slanja dostupna je u admin panelu na `/admin/email-history`.
+
+## Bonus nagrade i ručni zahtevi
+
+Na `/admin/discount-codes` prvo uvezite kodove za procente koje koristite. Na `/admin/reward-deliveries` pratite bonus pakete, a na `/admin/reward-claims` pratite igre i pretplate za ručnu isporuku.
+
+## Telegram workflow
+
+Importujte `n8n/playworld-reward-telegram.json`, podesite `PWRS_N8N_API_KEY` i `PWRS_TELEGRAM_BOT_TOKEN`, dodajte bot u grupu, zamenite `REPLACE_TELEGRAM_GROUP_ID`, pa aktivirajte workflow. Detalji su u `n8n/README-REWARD-TELEGRAM.md`.
 
 ## Build
 

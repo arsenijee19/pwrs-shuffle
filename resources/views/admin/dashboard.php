@@ -11,6 +11,9 @@
       <a class="ghost" href="/admin/prizes">Nagrade</a>
       <a class="ghost" href="/admin/email">Email</a>
       <a class="ghost" href="/admin/email-history">Slanja</a>
+      <a class="ghost" href="/admin/discount-codes">Kodovi</a>
+      <a class="ghost" href="/admin/reward-deliveries">Bonus isporuke</a>
+      <a class="ghost" href="/admin/reward-claims">Zahtevi</a>
       <a class="ghost" href="/admin/password">Lozinka</a>
     </div>
   </div>

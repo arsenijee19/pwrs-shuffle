@@ -6,19 +6,20 @@
 - Intended users: PlayWorld administrators and promotion customers.
 
 ## Current Project Status
-- MVP implementation completed for local validation.
-- Completed functionality: admin login/logout, password change, dashboard stats, prize CRUD, token generation/revocation/listing, email delivery/history for newly generated Mystery Box links, CSV export, public token opening flow, idempotent draw result, 5-day result visibility, PDF certificate with QR code, FAQ, Fair Play page, rate limiting, CSRF protection, secure session settings, responsive UI, and an authenticated n8n fulfillment API.
-- Partially implemented functionality: sound is a short browser-generated success tone with user toggle; it is intentionally simple for MVP.
-- Unfinished work: production branding assets and real PlayWorld contact details should be added before launch.
-- Known limitations: no external PlayWorld integrations beyond the optional n8n fulfillment endpoint and SMTP sender, no user accounts, no multi-campaign support, no SMS sender, no physical device testing. Email sender requires production SMTP environment variables.
-- Known bugs: none found in local validation.
-- Untested areas: real cPanel runtime, real mobile devices, and real 90/120 Hz hardware performance.
+- MVP plus reward automation upgrade implemented for local validation.
+- Completed functionality: existing MVP flows, structured reward behavior, immutable draw snapshots, inline prize editing with audit log, discount-code inventory and allocation, idempotent bonus-box email delivery, manual reward claims, anti-repeat HMAC identity, protected reward-claim n8n API, importable Telegram workflow, responsive customer/admin additions, and backwards-compatible migrations.
+- Partially implemented functionality: Telegram workflow still requires owner configuration; sound remains a short browser-generated success tone with user toggle.
+- Unfinished work: production branding assets, real Telegram group ID, production secrets, cPanel runtime verification, and real device testing.
+- Known limitations: no PlayWorld redemption verification for discount codes, no SMS sender, no user accounts, no multi-campaign support, and no physical 60/90/120 Hz device test.
+- Known bugs: none found in local validation; SMTP/Telegram external delivery requires production smoke testing.
+- Untested areas: real cPanel runtime, real Brevo delivery, real Telegram delivery, real mobile devices, and proxy configuration.
 
 ## File Structure
 - `public/` - web root, front controller, assets, uploaded covers.
 - `app/` - application controllers, services, middleware, support classes.
 - `bin/` - setup, migration, and admin seed commands.
 - `database/migrations/` - SQLite schema.
+- `n8n/` - importable Telegram reward-claim workflow and setup guide.
 - `tests/` - PHPUnit tests.
 - `storage/` - SQLite database, logs, sessions, rate-limit state.
 
@@ -30,6 +31,9 @@
 - Authentication: session-based admin login with CSRF protection.
 - Email: direct SMTP over Brevo using admin-saved database settings first, with `.env` fallback; no SMTP secrets are committed. Delivery attempts are logged in `email_deliveries`.
 - n8n API: `POST /api/v1/mystery-box/fulfill`, JSON-only, Bearer-authenticated with `N8N_API_KEY`, disabled by default, rate-limited independently, and capped by `N8N_API_MAX_QUANTITY`.
+- Reward claims API: protected lease/result endpoints under `/api/v1/reward-claims/*`, with short leases and idempotent state transitions.
+- Secret handling: `APP_KEY` protects discount codes and bonus links at rest; raw IP is never stored for anti-repeat.
+- Draw metadata: reward behavior is snapshotted in `draws`; legacy rows use a live-prize fallback when snapshot fields are null.
 - Draw logic: server-side weighted random selection in a transaction; animation is display-only.
 - Fulfillment logic: `MysteryBoxFulfillmentService` is the shared source of truth for admin single-link delivery and n8n order fulfillment. `mystery_box_fulfillments` stores one unique order record and `mystery_box_fulfillment_items` stores each requested link independently. `Sending`/unknown SMTP outcomes become `NeedsReview` and are never automatically retried.
 - Security: CSRF tokens on POST actions, hashed token storage, PHP secure cookie settings, basic file-based rate limiting, PDO prepared statements, output escaping, and security headers.
@@ -47,12 +51,17 @@
 ## Important Business Logic
 - Tokens are cryptographically generated and stored hashed.
 - Email delivery creates a new token and sends that one-time link immediately; existing token links cannot be reconstructed from hashes. SMTP settings can be saved in `/admin/email`, and attempts are visible in `/admin/email-history`.
+- Bonus rewards create exactly the configured number of tokens and send them in one email; `reward_deliveries.draw_id` is the idempotency key.
+- Discount codes are assigned transactionally only to a draw with an available code for the exact percentage.
+- Manual claims are unique per Draw ID and are notified by n8n/Telegram without treating Telegram as the source of truth.
+- Manual claim status changes are recorded in `reward_claim_events` with the admin ID when available.
 - Tokens can be used once and have statuses: Active, Used, Expired, Revoked.
 - If a draw result already exists, the same result is always returned.
 - Results remain viewable for `RESULT_RETENTION_DAYS`, default 5.
 - Animation never determines the result; the server persists the result first.
 - Screenshots are not authoritative by themselves; verify suspicious results by Draw ID through `/verify` or the admin/database record.
 - n8n fulfillment resumes only known `Failed` items. A completed `order_id` is an idempotent replay; a changed email or quantity returns a conflict.
+- Anti-repeat removes recently won prize IDs for the same HMAC fingerprint only when another valid prize remains; otherwise the original pool is used.
 
 ## Recent Changes
 - Built the PHP/SQLite MVP from an empty repository.
@@ -91,12 +100,15 @@
 - Added idempotent n8n order fulfillment with API key authentication, JSON responses, configurable quantity/rate limits, order/item audit tables, shared admin/API delivery service, partial retry handling, and SMTP unknown-outcome protection.
 - Added an authenticated prize On/Off toggle and a repeatable admin seed action for 15 requested bonus rewards, preserving existing prizes and draw history.
 - Added customer-facing rules for discount stacking, no refunds/exchanges, and the PlayWorld-purchase-only duplicate-game replacement exception.
+- Added reward behavior/snapshot migrations, discount code pool, bonus delivery, manual claim service, protected n8n Telegram workflow, and tests for reward idempotency, snapshots, code allocation, max quantity, and anti-repeat privacy.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
 - Configure Brevo SMTP values through `/admin/email` and send a real test email from the admin panel.
 - Enable and configure `API_ENABLED`, `N8N_API_KEY`, `N8N_API_MAX_QUANTITY`, and `N8N_API_RATE_LIMIT_PER_MINUTE` only when the n8n workflow is ready.
 - Configure the n8n HTTP Request node according to the API section in `README.md`.
+- Configure `APP_KEY`, `ANTI_REPEAT_SECRET`, `ANTI_REPEAT_ENABLED`, and Cloudflare trust settings.
+- Import and configure `n8n/playworld-reward-telegram.json`.
 - Confirm production cPanel PHP extensions and document root mapping to `public/`.
 - Add real customer support/contact instructions in FAQ and prize redemption copy.
 - Perform final testing on real mobile devices before public launch.
@@ -104,6 +116,8 @@
 ## Known Issues
 - Local validation cannot prove physical 60/90/120 Hz device smoothness; browser screenshot checks passed, but real-device QA is still recommended.
 - API `NeedsReview` records require manual verification if SMTP accepted a message but the application could not confirm the final database status; they must not be automatically retried.
+- Discount codes cannot be marked redeemed automatically until PlayWorld exposes a trusted redemption signal.
+- Existing production databases need the new `APP_KEY` before any assigned discount/bonus payload can be decrypted.
 
 ## LLM Handoff Notes
 - Read `README.md`, `DEPLOYMENT.md`, `public/index.php`, and `app/Services/DrawService.php` first.

@@ -126,6 +126,48 @@ PlayWorld tim`;
     });
   });
 
+  document.querySelectorAll('[data-prize-id][data-field]').forEach((input) => {
+    const original = () => input.dataset.currentValue || '';
+    let timer;
+    const state = input.parentElement?.querySelector('[data-inline-state]');
+    const setState = (value, className = '') => {
+      if (!state) return;
+      state.textContent = value;
+      state.className = `inline-save-state ${className}`;
+    };
+    const save = async () => {
+      const value = input.value.trim();
+      if (value === original()) return;
+      input.disabled = true;
+      setState('Čuvam...', 'is-saving');
+      const form = new FormData();
+      form.append('_csrf', document.querySelector('input[name="_csrf"]')?.value || '');
+      form.append('field', input.dataset.field || '');
+      form.append('value', value);
+      try {
+        const response = await fetch(`/admin/prizes/${encodeURIComponent(input.dataset.prizeId || '')}/inline`, {
+          method: 'POST', body: form, credentials: 'same-origin', headers: { 'Accept': 'application/json' }
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(data.error || 'Izmena nije sačuvana.');
+        input.dataset.currentValue = value;
+        setState('Sačuvano', 'is-saved');
+        setTimeout(() => setState(''), 1800);
+      } catch (error) {
+        input.value = original();
+        setState(error.message || 'Greška', 'is-error');
+      } finally {
+        input.disabled = false;
+      }
+    };
+    input.addEventListener('change', save);
+    input.addEventListener('blur', () => { clearTimeout(timer); timer = setTimeout(save, 80); });
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') { event.preventDefault(); input.blur(); }
+      if (event.key === 'Escape') { input.value = original(); input.blur(); }
+    });
+  });
+
   const soundButton = document.querySelector('[data-sound-toggle]');
   if (soundButton) {
     let muted = localStorage.getItem('pw-sound-muted') === '1';

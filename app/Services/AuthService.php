@@ -31,6 +31,7 @@ final class AuthService
 
     public static function requireAdmin(): void
     {
+        header('Cache-Control: no-store');
         if (!\PlayWorld\MysteryBox\Support\Database::hasAdmins()) {
             redirect('/setup');
         }
@@ -81,6 +82,8 @@ final class AuthService
             'updated' => date('c'),
             'id' => $admin['id'],
         ]);
+
+        session_regenerate_id(true);
 
         return true;
     }

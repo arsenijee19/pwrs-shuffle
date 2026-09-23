@@ -11,10 +11,16 @@
         <button class="ghost" type="submit">Dodaj bonus nagrade</button>
       </form>
       <a class="primary" href="/admin/prizes/new">Dodaj nagradu</a>
+      <a class="ghost" href="/admin/discount-codes">Kodovi za popust</a>
+      <a class="ghost" href="/admin/reward-deliveries">Bonus isporuke</a>
+      <a class="ghost" href="/admin/reward-claims">Zahtevi</a>
     </div>
   </div>
   <?php if (!empty($_SESSION['flash'])): ?>
-    <p class="notice">Katalog je dodat. Novo: <?= e((string) $_SESSION['flash']['created']) ?>, osveženo: <?= e((string) $_SESSION['flash']['updated']) ?>.</p>
+    <?php $flash = $_SESSION['flash']; unset($_SESSION['flash']); ?>
+    <p class="notice <?= is_array($flash) && ($flash['type'] ?? '') === 'error' ? 'alert' : '' ?>">
+      <?= is_array($flash) ? e((string) ($flash['message'] ?? '')) : 'Katalog je dodat. Novo: ' . e((string) ($flash['created'] ?? 0)) . ', osveženo: ' . e((string) ($flash['updated'] ?? 0)) . '.' ?>
+    </p>
     <?php unset($_SESSION['flash']); ?>
   <?php endif; ?>
   <table>
@@ -24,9 +30,9 @@
         <tr>
           <td><img class="thumb" src="<?= e($prize['cover_path']) ?>" alt=""></td>
           <td><?= e($prize['name']) ?></td>
-          <td><?= e($prize['rarity']) ?></td>
-          <td><?= e((string) $prize['weight']) ?></td>
-          <td><?= e((string) $prize['max_quantity']) ?></td>
+          <td><select class="inline-editor" data-prize-id="<?= e((string) $prize['id']) ?>" data-field="rarity" data-current-value="<?= e($prize['rarity']) ?>"><option value="Ultra Rare" <?= $prize['rarity'] === 'Ultra Rare' ? 'selected' : '' ?>>Ultra Rare</option><option value="Rare" <?= $prize['rarity'] === 'Rare' ? 'selected' : '' ?>>Rare</option><option value="Special" <?= $prize['rarity'] === 'Special' ? 'selected' : '' ?>>Special</option><option value="Standard" <?= $prize['rarity'] === 'Standard' ? 'selected' : '' ?>>Standard</option><option value="Common" <?= $prize['rarity'] === 'Common' ? 'selected' : '' ?>>Common</option></select><span class="inline-save-state" data-inline-state></span></td>
+          <td><input class="inline-editor inline-number" data-prize-id="<?= e((string) $prize['id']) ?>" data-field="weight" data-current-value="<?= e((string) $prize['weight']) ?>" type="number" min="0" value="<?= e((string) $prize['weight']) ?>"><span class="inline-save-state" data-inline-state></span></td>
+          <td><input class="inline-editor inline-number" data-prize-id="<?= e((string) $prize['id']) ?>" data-field="max_quantity" data-current-value="<?= e((string) $prize['max_quantity']) ?>" type="number" min="<?= e((string) max(1, (int) $prize['won_count'])) ?>" value="<?= e((string) $prize['max_quantity']) ?>"><span class="inline-save-state" data-inline-state></span></td>
           <td><?= e((string) $prize['won_count']) ?></td>
           <td><?= e((string) max(0, (int) $prize['max_quantity'] - (int) $prize['won_count'])) ?></td>
           <td>

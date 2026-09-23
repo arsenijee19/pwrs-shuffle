@@ -34,7 +34,6 @@
       <dl class="meta">
         <div><dt>Nagrada</dt><dd><?= e($draw['prize_name']) ?></dd></div>
         <div><dt>Datum i vreme</dt><dd><?= e(format_date($draw['created_at'])) ?></dd></div>
-        <div><dt>Token</dt><dd><?= e($draw['token_mask']) ?></dd></div>
       </dl>
       <p class="notice">Uporedite ove podatke sa screenshotom ili PDF potvrdom. Validan rezultat mora imati isti Draw ID, naziv nagrade, datum i vreme.</p>
     </div>

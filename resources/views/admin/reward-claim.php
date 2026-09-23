@@ -1,0 +1,6 @@
+<section class="panel narrow"><div class="section-head"><div><p class="eyebrow">Zahtev #<?= e((string) ($claim['id'] ?? '')) ?></p><h1><?= e((string) ($claim['prize_name'] ?? 'Zahtev nije pronađen')) ?></h1></div><a class="ghost" href="/admin/reward-claims">Nazad</a></div>
+  <?php if ($claim): ?>
+    <dl class="meta"><div><dt>Draw ID</dt><dd><?= e($claim['draw_id']) ?></dd></div><div><dt>Email</dt><dd><?= e($claim['recipient_email']) ?></dd></div><div><dt>Telefon / Viber</dt><dd><?= e($claim['recipient_phone']) ?></dd></div><div><dt>Telegram status</dt><dd><?= e($claim['notification_status']) ?></dd></div></dl>
+    <form method="post" action="/admin/reward-claims/<?= e((string) $claim['id']) ?>/status" class="form"><input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>"><label>Status<select name="status"><option>New</option><option <?= $claim['status'] === 'InProgress' ? 'selected' : '' ?>>InProgress</option><option <?= $claim['status'] === 'Delivered' ? 'selected' : '' ?>>Delivered</option><option <?= $claim['status'] === 'Cancelled' ? 'selected' : '' ?>>Cancelled</option></select></label><button class="primary">Sačuvaj status</button></form>
+  <?php else: ?><p class="alert">Zahtev nije pronađen.</p><?php endif; ?>
+</section>

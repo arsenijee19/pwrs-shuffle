@@ -39,8 +39,36 @@ final class Database
     public static function migrate(): void
     {
         $pdo = self::pdo();
-        foreach (glob(app_path('database/migrations/*.sql')) as $migration) {
-            $pdo->exec((string) file_get_contents($migration));
+        $pdo->exec(
+            'CREATE TABLE IF NOT EXISTS schema_migrations (
+                migration TEXT PRIMARY KEY,
+                applied_at TEXT NOT NULL
+            )'
+        );
+
+        $applied = $pdo->query('SELECT migration FROM schema_migrations')->fetchAll(\PDO::FETCH_COLUMN);
+        $applied = array_fill_keys($applied, true);
+        $migrations = glob(app_path('database/migrations/*.sql')) ?: [];
+        sort($migrations, SORT_STRING);
+
+        foreach ($migrations as $migration) {
+            $name = basename($migration);
+            if (isset($applied[$name])) {
+                continue;
+            }
+
+            $pdo->exec('BEGIN IMMEDIATE');
+            try {
+                $pdo->exec((string) file_get_contents($migration));
+                $pdo->prepare('INSERT INTO schema_migrations (migration, applied_at) VALUES (:migration, :applied_at)')
+                    ->execute(['migration' => $name, 'applied_at' => date('c')]);
+                $pdo->commit();
+            } catch (\Throwable $error) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                throw $error;
+            }
         }
     }
 
