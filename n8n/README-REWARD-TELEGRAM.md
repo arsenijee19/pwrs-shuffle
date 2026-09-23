@@ -8,7 +8,7 @@ Ovaj workflow je spreman za import u n8n i obaveštava PlayWorld tim o novim zah
 2. Podesite `PWRS_N8N_API_KEY` u n8n environment-u. Mora odgovarati `N8N_API_KEY` ili `PWRS_N8N_API_KEY` vrednosti u PlayWorld `.env` fajlu.
 3. Podesite `PWRS_TELEGRAM_BOT_TOKEN` u n8n environment-u. Bot token se ne upisuje u workflow niti u GitHub.
 4. Dodajte bot u željenu Telegram grupu i dozvolite mu slanje poruka.
-5. U node-u `Prepare Claims` zamenite `REPLACE_TELEGRAM_GROUP_ID` stvarnim Group ID-jem.
+5. Workflow je već podešen za Telegram grupu sa peer ID-jem `5462042109`.
 6. Aktivirajte workflow.
 7. Pošaljite test zahtev za nagradu sa stranice rezultata.
 8. Proverite Telegram poruku i da li je status u admin panelu postao `Sent`.
