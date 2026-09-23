@@ -71,7 +71,7 @@ final class DrawService
         $tokenService = new TokenService();
         $plainToken = $tokenService->normalizePlain($plainToken);
         $tokenHash = hash('sha256', $plainToken);
-        $pdo->exec('BEGIN IMMEDIATE');
+        Database::beginImmediate($pdo);
 
         try {
             $tokenStmt = $pdo->prepare('SELECT * FROM tokens WHERE token_hash = :hash LIMIT 1');
@@ -83,7 +83,7 @@ final class DrawService
 
             $existing = $this->resultForToken((int) $token['id']);
             if ($existing) {
-                $pdo->commit();
+                Database::commit($pdo);
                 return $existing;
             }
             if ($token['status'] !== 'Active') {
@@ -160,12 +160,10 @@ final class DrawService
             if ($updatedToken->rowCount() !== 1) {
                 throw new RuntimeException('Token status nije moguće sačuvati.');
             }
-            $pdo->commit();
+            Database::commit($pdo);
             return $this->resultForToken((int) $token['id']) ?? throw new RuntimeException('Rezultat nije pronađen.');
         } catch (Throwable $e) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
+            Database::rollback($pdo);
             throw $e;
         }
     }

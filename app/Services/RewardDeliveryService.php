@@ -34,7 +34,7 @@ final class RewardDeliveryService
         }
 
         $pdo = Database::pdo();
-        $pdo->exec('BEGIN IMMEDIATE');
+        Database::beginImmediate($pdo);
         try {
             $existing = $this->findByDrawId($drawId);
             if ($existing) {
@@ -95,9 +95,7 @@ final class RewardDeliveryService
                 throw new \RuntimeException('Bonus isporuka nije kreirana.');
             }
         } catch (Throwable $error) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
+            Database::rollback($pdo);
             throw $error;
         }
 
@@ -235,8 +233,6 @@ final class RewardDeliveryService
 
     private function commit(PDO $pdo): void
     {
-        if ($pdo->inTransaction()) {
-            $pdo->commit();
-        }
+        Database::commit($pdo);
     }
 }

@@ -36,6 +36,28 @@ final class Database
         self::$pdo = null;
     }
 
+    public static function beginImmediate(PDO $pdo): void
+    {
+        // PDO SQLite does not reliably expose a manually issued BEGIN IMMEDIATE
+        // through inTransaction() on every hosting build, so pair it with SQL
+        // COMMIT/ROLLBACK instead of PDO's transaction methods.
+        $pdo->exec('BEGIN IMMEDIATE');
+    }
+
+    public static function commit(PDO $pdo): void
+    {
+        $pdo->exec('COMMIT');
+    }
+
+    public static function rollback(PDO $pdo): void
+    {
+        try {
+            $pdo->exec('ROLLBACK');
+        } catch (\Throwable) {
+            // The transaction may already have been closed after a commit.
+        }
+    }
+
     public static function migrate(): void
     {
         $pdo = self::pdo();
@@ -57,16 +79,14 @@ final class Database
                 continue;
             }
 
-            $pdo->exec('BEGIN IMMEDIATE');
+            self::beginImmediate($pdo);
             try {
                 $pdo->exec((string) file_get_contents($migration));
                 $pdo->prepare('INSERT INTO schema_migrations (migration, applied_at) VALUES (:migration, :applied_at)')
                     ->execute(['migration' => $name, 'applied_at' => date('c')]);
-                $pdo->commit();
+                self::commit($pdo);
             } catch (\Throwable $error) {
-                if ($pdo->inTransaction()) {
-                    $pdo->rollBack();
-                }
+                self::rollback($pdo);
                 throw $error;
             }
         }

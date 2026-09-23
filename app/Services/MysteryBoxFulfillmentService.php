@@ -231,9 +231,7 @@ final class MysteryBoxFulfillmentService
 
             return [$created, false, false];
         } catch (Throwable $error) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
+            $this->rollback($pdo);
             throw $error;
         }
     }
@@ -335,9 +333,7 @@ final class MysteryBoxFulfillmentService
             }
             $this->commit($pdo);
         } catch (Throwable $error) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
+            $this->rollback($pdo);
             throw $error;
         }
 
@@ -375,9 +371,7 @@ final class MysteryBoxFulfillmentService
             $this->commit($pdo);
             return true;
         } catch (Throwable $error) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
+            $this->rollback($pdo);
             throw $error;
         }
     }
@@ -399,9 +393,7 @@ final class MysteryBoxFulfillmentService
             }
             $this->commit($pdo);
         } catch (Throwable $error) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
+            $this->rollback($pdo);
             throw $error;
         }
     }
@@ -434,9 +426,7 @@ final class MysteryBoxFulfillmentService
             ]);
             $this->commit($pdo);
         } catch (Throwable $error) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
+            $this->rollback($pdo);
             throw $error;
         }
     }
@@ -479,9 +469,7 @@ final class MysteryBoxFulfillmentService
             ]);
             $this->commit($pdo);
         } catch (Throwable $error) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
+            $this->rollback($pdo);
             throw $error;
         }
     }
@@ -605,22 +593,16 @@ final class MysteryBoxFulfillmentService
 
     private function beginImmediate(PDO $pdo): void
     {
-        if (!$pdo->inTransaction()) {
-            $pdo->exec('BEGIN IMMEDIATE');
-        }
+        Database::beginImmediate($pdo);
     }
 
     private function commit(PDO $pdo): void
     {
-        if ($pdo->inTransaction()) {
-            $pdo->commit();
-        }
+        Database::commit($pdo);
     }
 
     private function rollback(PDO $pdo): void
     {
-        if ($pdo->inTransaction()) {
-            $pdo->rollBack();
-        }
+        Database::rollback($pdo);
     }
 }

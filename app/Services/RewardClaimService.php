@@ -29,14 +29,14 @@ final class RewardClaimService
         }
 
         $pdo = Database::pdo();
-        $pdo->exec('BEGIN IMMEDIATE');
+        Database::beginImmediate($pdo);
         try {
             $existing = $this->findByDrawId($drawId);
             if ($existing) {
                 if ($existing['recipient_email'] !== $email || $existing['recipient_phone'] !== $phone) {
                     throw new \RuntimeException('Za ovaj rezultat je već poslat zahtev sa drugim kontaktom.');
                 }
-                $pdo->commit();
+                Database::commit($pdo);
                 return $this->public($existing, true);
             }
 
@@ -54,12 +54,10 @@ final class RewardClaimService
                 'updated_at' => $now,
             ]);
             $id = (int) $pdo->lastInsertId();
-            $pdo->commit();
+            Database::commit($pdo);
             return $this->public($this->findById($id) ?? throw new \RuntimeException('Zahtev nije kreiran.'), false);
         } catch (Throwable $error) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
+            Database::rollback($pdo);
             throw $error;
         }
     }
@@ -121,7 +119,7 @@ final class RewardClaimService
         }
 
         $pdo = Database::pdo();
-        $pdo->exec('BEGIN IMMEDIATE');
+        Database::beginImmediate($pdo);
         try {
             $now = date('c');
             $stmt = $pdo->prepare(
@@ -146,7 +144,7 @@ final class RewardClaimService
                 $row['notification_worker'] = $worker;
             }
             unset($row);
-            $pdo->commit();
+            Database::commit($pdo);
 
             return array_map(static fn (array $row): array => [
                 'claim_id' => (int) $row['id'],
@@ -159,9 +157,7 @@ final class RewardClaimService
                 'worker' => $worker,
             ], $rows);
         } catch (Throwable $error) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
+            Database::rollback($pdo);
             throw $error;
         }
     }
