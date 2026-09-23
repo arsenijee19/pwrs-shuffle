@@ -4,7 +4,7 @@
   <div class="stat"><span>Neiskorišćeni</span><strong><?= e((string) $stats['unused']) ?></strong></div>
 </section>
 <section class="panel">
-  <div class="section-head admin-page-head">
+  <div class="section-head admin-page-head dashboard-page-head">
     <h1>Dashboard</h1>
     <div class="actions admin-actions">
       <a class="primary" href="/admin/tokens">Tokeni</a>
