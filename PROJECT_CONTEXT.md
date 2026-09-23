@@ -9,6 +9,7 @@
 - MVP plus reward automation upgrade implemented for local validation.
 - Completed functionality: existing MVP flows, structured reward behavior, immutable draw snapshots, inline prize editing with audit log, discount-code inventory and allocation, idempotent bonus-box email delivery, manual reward claims, anti-repeat HMAC identity, protected reward-claim n8n API, importable Telegram workflow, responsive customer/admin additions, and backwards-compatible migrations.
 - Partially implemented functionality: Telegram workflow still requires owner configuration; sound remains a short browser-generated success tone with user toggle.
+- Newly added integration artifact: inactive n8n workflow for MerchantPro shipped orders -> PlayWorld Mystery Box fulfillment, with pagination, per-order quantity calculation, idempotent replay handling, delivered status reconciliation, and Telegram operations alerts.
 - Unfinished work: production branding assets, real Telegram group ID, production secrets, cPanel runtime verification, and real device testing.
 - Known limitations: no PlayWorld redemption verification for discount codes, no SMS sender, no user accounts, no multi-campaign support, and no physical 60/90/120 Hz device test.
 - Known bugs: none found in local validation; SMTP/Telegram external delivery requires production smoke testing. PHPUnit is not installed in the current cPanel deployment checkout, so automated tests must run in the development checkout or after installing dev dependencies.
@@ -19,7 +20,7 @@
 - `app/` - application controllers, services, middleware, support classes.
 - `bin/` - setup, migration, and admin seed commands.
 - `database/migrations/` - SQLite schema.
-- `n8n/` - importable Telegram reward-claim workflow and setup guide.
+- `n8n/` - importable Telegram reward-claim workflow plus MerchantPro fulfillment workflow and setup guides.
 - `tests/` - PHPUnit tests.
 - `storage/` - SQLite database, logs, sessions, rate-limit state.
 
@@ -108,6 +109,7 @@
 - Added an authenticated prize On/Off toggle and a repeatable admin seed action for 15 requested bonus rewards, preserving existing prizes and draw history.
 - Added customer-facing rules for discount stacking, no refunds/exchanges, and the PlayWorld-purchase-only duplicate-game replacement exception.
 - Added reward behavior/snapshot migrations, discount code pool, bonus delivery, manual claim service, protected n8n Telegram workflow, and tests for reward idempotency, snapshots, code allocation, legacy-max eligibility, and anti-repeat privacy.
+- Added inactive `n8n/merchantpro-playworld-mystery-box.json` and its setup/test guide for MerchantPro order fulfillment through the existing PlayWorld API; validated workflow structure and mocked fulfillment branches locally.
 - Fixed cPanel SQLite/PDO compatibility for `BEGIN IMMEDIATE`: transaction commits and rollbacks now use SQL-level helpers so production migrations and draw writes do not fail with `There is no active transaction`.
 - Hardened admin inline prize autosave: asset URLs now use file modification versions to avoid stale browser JavaScript, inline edits use the row CSRF token, duplicate blur/change saves are suppressed, and server-normalized values are written back into the field.
 - Added the localized `/admin/slanja` alias for email delivery history while retaining `/admin/email-history`, and reorganized the prizes admin actions into an equal-width responsive grid.
@@ -122,6 +124,7 @@
 - Configure the n8n HTTP Request node according to the API section in `README.md`.
 - Configure `APP_KEY`, `ANTI_REPEAT_SECRET`, `ANTI_REPEAT_ENABLED`, and Cloudflare trust settings.
 - Import and configure `n8n/playworld-reward-telegram.json`.
+- Import and configure `n8n/merchantpro-playworld-mystery-box.json` using `n8n/README-MERCHANTPRO-MYSTERY-BOX.md`; it is not production-tested or activated yet.
 - Confirm production cPanel PHP extensions and document root mapping to `public/`.
 - Add real customer support/contact instructions in FAQ and prize redemption copy.
 - Perform final testing on real mobile devices before public launch.
@@ -132,10 +135,12 @@
 - Discount codes cannot be marked redeemed automatically until PlayWorld exposes a trusted redemption signal.
 - Existing production databases need the new `APP_KEY` before any assigned discount/bonus payload can be decrypted.
 - The legacy Shuffle + 5% display compatibility can only create new bonus links when the SMTP settings and discount-code stock are configured correctly; old draw history itself remains unchanged.
+- The MerchantPro workflow requires n8n Code node environment access and a real staging/production smoke test before activation; PHP unit tests cannot run in this checkout because the `phpunit` executable is not installed.
 
 ## LLM Handoff Notes
 - Read `README.md`, `DEPLOYMENT.md`, `public/index.php`, and `app/Services/DrawService.php` first.
 - Keep the project simple and cPanel-friendly.
 - Do not introduce unrelated paid services or external integrations.
 - Never store secrets or real customer data in this file.
+- The MerchantPro workflow must remain the orchestrator only: do not move token generation or customer email delivery into n8n.
 - `.env` is ignored; use `.env.example` as the production template and never commit secrets.
