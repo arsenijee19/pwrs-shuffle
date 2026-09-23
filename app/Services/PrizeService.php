@@ -119,7 +119,7 @@ final class PrizeService
     /** @return array<string,mixed> */
     public function inlineUpdate(int $id, string $field, string $value): array
     {
-        $allowed = ['weight', 'max_quantity', 'rarity'];
+        $allowed = ['weight', 'max_quantity', 'rarity', 'bonus_box_count', 'discount_percent'];
         if (!in_array($field, $allowed, true)) {
             throw new \InvalidArgumentException('Polje nije moguće menjati ovim putem.');
         }
@@ -128,6 +128,9 @@ final class PrizeService
             throw new \InvalidArgumentException('Nagrada nije pronađena.');
         }
         $next = $field === 'rarity' ? trim($value) : filter_var($value, FILTER_VALIDATE_INT);
+        if ($field === 'discount_percent' && trim($value) === '') {
+            $next = null;
+        }
         if ($field === 'rarity' && !in_array($next, self::RARITIES, true)) {
             throw new \InvalidArgumentException('Rarity vrednost nije dozvoljena.');
         }
@@ -136,6 +139,12 @@ final class PrizeService
         }
         if ($field === 'max_quantity' && ($next === false || $next < (int) $prize['won_count'] || $next < 1)) {
             throw new \InvalidArgumentException('Maksimalan broj ne može biti manji od osvojenog broja.');
+        }
+        if ($field === 'bonus_box_count' && ($next === false || $next < 0 || $next > 50)) {
+            throw new \InvalidArgumentException('Broj dodatnih Mystery Box-ova mora biti između 0 i 50.');
+        }
+        if ($field === 'discount_percent' && $next !== null && ($next === false || $next < 1 || $next > 100)) {
+            throw new \InvalidArgumentException('Procenat popusta mora biti između 1 i 100 ili prazno.');
         }
 
         Database::pdo()->prepare("UPDATE prizes SET {$field} = :value, updated_at = :updated_at WHERE id = :id")
@@ -270,6 +279,10 @@ final class PrizeService
             $find->execute(['name' => $item['name']]);
             $id = $find->fetchColumn();
 
+            if (!$id && !empty($item['legacy_existing_only'])) {
+                continue;
+            }
+
             if ($id) {
                 unset($payload['name'], $payload['created_at']);
                 $payload['id'] = (int) $id;
@@ -288,6 +301,7 @@ final class PrizeService
     public function bonusCatalog(): array
     {
         return [
+            ['name' => 'Besplatan Shuffle + 5% na sledeću kupovinu', 'weight' => 10, 'rarity' => 'Rare', 'max_quantity' => 100000, 'bonus_box_count' => 1, 'discount_percent' => 5, 'manual_claim' => 0, 'legacy_existing_only' => true],
             ['name' => '2 Mystery Box-a + 5% popusta', 'weight' => 10, 'rarity' => 'Rare', 'max_quantity' => 100000, 'bonus_box_count' => 2, 'discount_percent' => 5, 'manual_claim' => 0],
             ['name' => '5 Mystery Box-ova + 50% popusta', 'weight' => 1, 'rarity' => 'Ultra Rare', 'max_quantity' => 100000, 'bonus_box_count' => 5, 'discount_percent' => 50, 'manual_claim' => 0],
             ['name' => '10 Mystery Box-ova', 'weight' => 1, 'rarity' => 'Ultra Rare', 'max_quantity' => 100000, 'bonus_box_count' => 10, 'discount_percent' => null, 'manual_claim' => 0],

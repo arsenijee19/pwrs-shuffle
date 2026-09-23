@@ -36,7 +36,9 @@ Ako `/setup` ne radi zbog rewrite podešavanja hostinga, otvorite `/setup.php`. 
 
 ## n8n automatska isporuka
 
-API je namerno isključen dok ga ne uključite. U produkcionom `.env` fajlu dodajte:
+API je namerno isključen dok ga ne uključite. Preporučeni način je da se, nakon prijave u admin panel, otvori **Admin > API / n8n** i tamo uključi API i unese ključ. Podešavanja se čuvaju šifrovano u lokalnoj SQLite bazi, pa za ovu izmenu nije potreban File Manager.
+
+Ako se API podešava kroz `.env` tokom prvog deploy-a, vrednosti su:
 
 ```bash
 API_ENABLED=true
@@ -45,13 +47,15 @@ N8N_API_MAX_QUANTITY=20
 N8N_API_RATE_LIMIT_PER_MINUTE=30
 ```
 
-Na cPanel Git Version Control instalaciji ovaj fajl je iznad web root-a, na putanji:
+Na cPanel Git Version Control instalaciji `.env` je iznad web root-a, na putanji:
 `/home/playworl/public_html/shuffle.playworld.rs/git/.env`.
 Ne upisivati ove promenljive u `public/.env`, `.env.example` ili `public/.htaccess`.
 Za ovaj domen proverite da u istom fajlu stoji `APP_URL=https://shuffle.playworld.rs`,
 jer se ta vrednost koristi za linkove u emailu i PDF potvrdi.
 `API_ENABLED=true` uključuje samo n8n API i nema veze sa slanjem emaila. Ista vrednost
 `N8N_API_KEY` mora biti podešena kao tajni ključ u n8n HTTP Request node-u.
+
+Ako je ključ već sačuvan u admin panelu, polje za ključ na stranici API može ostati prazno. Za promenu ključa unesite novi ključ i sačuvajte formu. Podešeni rate limit se koristi na sve tri n8n API rute.
 
 Posle cPanel Git pull-a `Database::migrate()` automatski pokreće nove migracije pri sledećem zahtevu. Migracije su dodatne i ne brišu postojeću bazu, tokene, Draw ID-jeve, `won_count` ili email istoriju.
 

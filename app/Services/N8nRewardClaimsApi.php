@@ -18,7 +18,8 @@ final class N8nRewardClaimsApi
         if (strtoupper($method) !== 'POST') {
             return $this->error(405, 'method_not_allowed', 'Dozvoljen je samo POST zahtev.');
         }
-        if (!$this->authorized($headers) || !(bool) env_value('API_ENABLED', false)) {
+        $api = (new SettingsService())->apiConfig();
+        if (!$this->authorized($headers, $api['key']) || !$api['enabled']) {
             return $this->error(401, 'unauthorized', 'API autorizacija nije uspešna.');
         }
         $payload = $this->json($body);
@@ -40,7 +41,8 @@ final class N8nRewardClaimsApi
         if (strtoupper($method) !== 'POST') {
             return $this->error(405, 'method_not_allowed', 'Dozvoljen je samo POST zahtev.');
         }
-        if (!$this->authorized($headers) || !(bool) env_value('API_ENABLED', false)) {
+        $api = (new SettingsService())->apiConfig();
+        if (!$this->authorized($headers, $api['key']) || !$api['enabled']) {
             return $this->error(401, 'unauthorized', 'API autorizacija nije uspešna.');
         }
         $payload = $this->json($body);
@@ -74,10 +76,9 @@ final class N8nRewardClaimsApi
     }
 
     /** @param array<string,string> $headers */
-    private function authorized(array $headers): bool
+    private function authorized(array $headers, string $key): bool
     {
         $authorization = $headers['Authorization'] ?? $headers['authorization'] ?? '';
-        $key = (string) env_value('N8N_API_KEY', env_value('PWRS_N8N_API_KEY', ''));
         return $key !== '' && preg_match('/^Bearer\s+(.+)$/i', $authorization, $match) === 1 && hash_equals($key, trim($match[1]));
     }
 

@@ -25,11 +25,12 @@ final class N8nMysteryBoxApi
             return $this->error(405, 'method_not_allowed', 'Dozvoljen je samo POST zahtev.');
         }
 
-        if (!$this->authorized($headers)) {
+        $api = (new SettingsService())->apiConfig();
+        if (!$this->authorized($headers, $api['key'])) {
             return $this->error(401, 'invalid_api_key', 'API autorizacija nije uspešna.');
         }
 
-        if (!(bool) env_value('API_ENABLED', false)) {
+        if (!$api['enabled']) {
             return $this->error(503, 'api_disabled', 'Mystery Box API trenutno nije uključen.');
         }
 
@@ -51,7 +52,7 @@ final class N8nMysteryBoxApi
         $email = $this->stringValue($payload['email'] ?? null);
         $name = $this->stringValue($payload['name'] ?? '');
         $quantity = $this->integerValue($payload['quantity'] ?? null);
-        $maxQuantity = max(1, (int) env_value('N8N_API_MAX_QUANTITY', 20));
+        $maxQuantity = $api['max_quantity'];
 
         if ($orderId === null) {
             return $this->error(422, 'invalid_order_id', 'Polje order_id je obavezno.');
@@ -116,9 +117,8 @@ final class N8nMysteryBoxApi
     }
 
     /** @param array<string, string> $headers */
-    private function authorized(array $headers): bool
+    private function authorized(array $headers, string $expected): bool
     {
-        $expected = (string) env_value('N8N_API_KEY', '');
         $authorization = '';
         foreach ($headers as $name => $value) {
             if (strtolower($name) === 'authorization') {

@@ -59,7 +59,7 @@ $apiHeaders = static function (): array {
 $router->post('/api/v1/mystery-box/fulfill', function () use ($apiHeaders): void {
     header('Cache-Control: no-store');
     header('Content-Type: application/json; charset=utf-8');
-    RateLimiter::hit('n8n-api', true, (int) env_value('N8N_API_RATE_LIMIT_PER_MINUTE', 30));
+    RateLimiter::hit('n8n-api', true, (new SettingsService())->apiConfig()['rate_limit_per_minute']);
 
     $response = (new N8nMysteryBoxApi())->handle(
         $_SERVER['REQUEST_METHOD'] ?? 'POST',
@@ -73,7 +73,7 @@ $router->post('/api/v1/mystery-box/fulfill', function () use ($apiHeaders): void
 $router->post('/api/v1/reward-claims/lease', function () use ($apiHeaders): void {
     header('Cache-Control: no-store');
     header('Content-Type: application/json; charset=utf-8');
-    RateLimiter::hit('n8n-reward-api', true, (int) env_value('N8N_API_RATE_LIMIT_PER_MINUTE', 30));
+    RateLimiter::hit('n8n-reward-api', true, (new SettingsService())->apiConfig()['rate_limit_per_minute']);
     $response = (new N8nRewardClaimsApi())->lease($_SERVER['REQUEST_METHOD'] ?? 'POST', $apiHeaders(), (string) file_get_contents('php://input'));
     http_response_code($response['status']);
     echo json_encode($response['body'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -81,7 +81,7 @@ $router->post('/api/v1/reward-claims/lease', function () use ($apiHeaders): void
 $router->post('/api/v1/reward-claims/{id}/notification-result', function (string $id) use ($apiHeaders): void {
     header('Cache-Control: no-store');
     header('Content-Type: application/json; charset=utf-8');
-    RateLimiter::hit('n8n-reward-api', true, (int) env_value('N8N_API_RATE_LIMIT_PER_MINUTE', 30));
+    RateLimiter::hit('n8n-reward-api', true, (new SettingsService())->apiConfig()['rate_limit_per_minute']);
     $response = (new N8nRewardClaimsApi())->notificationResult((int) $id, $_SERVER['REQUEST_METHOD'] ?? 'POST', $apiHeaders(), (string) file_get_contents('php://input'));
     http_response_code($response['status']);
     echo json_encode($response['body'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -357,6 +357,32 @@ $router->get('/admin/email', function (): void {
         'flashType' => $_SESSION['flash_type'] ?? 'success',
     ]);
     unset($_SESSION['flash'], $_SESSION['flash_type']);
+});
+$router->get('/admin/api', function (): void {
+    AuthService::requireAdmin();
+    $settings = new SettingsService();
+    render('admin/api-settings', [
+        'title' => 'API podešavanja',
+        'settings' => $settings->apiSettingsForAdmin(),
+        'flash' => $_SESSION['flash'] ?? null,
+        'flashType' => $_SESSION['flash_type'] ?? 'success',
+    ]);
+    unset($_SESSION['flash'], $_SESSION['flash_type']);
+});
+$router->post('/admin/api', function (): void {
+    AuthService::requireAdmin();
+    verify_csrf();
+
+    try {
+        (new SettingsService())->saveApiSettings($_POST);
+        $_SESSION['flash'] = 'API podešavanja su sačuvana.';
+        $_SESSION['flash_type'] = 'success';
+    } catch (Throwable $error) {
+        $_SESSION['flash'] = $error->getMessage();
+        $_SESSION['flash_type'] = 'error';
+    }
+
+    redirect('/admin/api');
 });
 $emailHistoryPage = static function (): void {
     AuthService::requireAdmin();

@@ -27,7 +27,7 @@
     <?php unset($_SESSION['flash']); ?>
   <?php endif; ?>
   <table>
-    <thead><tr><th>Cover</th><th>Naziv</th><th>Rarity</th><th>Weight</th><th>Max</th><th>Osvojeno</th><th>Preostalo</th><th>Status</th><th></th></tr></thead>
+    <thead><tr><th>Cover</th><th>Naziv</th><th>Rarity</th><th>Weight</th><th>Max</th><th>Automatika</th><th>Osvojeno</th><th>Preostalo</th><th>Status</th><th></th></tr></thead>
     <tbody>
       <?php foreach ($prizes as $prize): ?>
         <tr>
@@ -36,6 +36,11 @@
           <td><select class="inline-editor" data-prize-id="<?= e((string) $prize['id']) ?>" data-field="rarity" data-current-value="<?= e($prize['rarity']) ?>"><option value="Ultra Rare" <?= $prize['rarity'] === 'Ultra Rare' ? 'selected' : '' ?>>Ultra Rare</option><option value="Rare" <?= $prize['rarity'] === 'Rare' ? 'selected' : '' ?>>Rare</option><option value="Special" <?= $prize['rarity'] === 'Special' ? 'selected' : '' ?>>Special</option><option value="Standard" <?= $prize['rarity'] === 'Standard' ? 'selected' : '' ?>>Standard</option><option value="Common" <?= $prize['rarity'] === 'Common' ? 'selected' : '' ?>>Common</option></select><span class="inline-save-state" data-inline-state></span></td>
           <td><input class="inline-editor inline-number" data-prize-id="<?= e((string) $prize['id']) ?>" data-field="weight" data-current-value="<?= e((string) $prize['weight']) ?>" type="number" min="0" value="<?= e((string) $prize['weight']) ?>"><span class="inline-save-state" data-inline-state></span></td>
           <td><input class="inline-editor inline-number" data-prize-id="<?= e((string) $prize['id']) ?>" data-field="max_quantity" data-current-value="<?= e((string) $prize['max_quantity']) ?>" type="number" min="<?= e((string) max(1, (int) $prize['won_count'])) ?>" value="<?= e((string) $prize['max_quantity']) ?>"><span class="inline-save-state" data-inline-state></span></td>
+          <td class="prize-automation">
+            <label><span>Box</span><input class="inline-editor inline-number" data-prize-id="<?= e((string) $prize['id']) ?>" data-field="bonus_box_count" data-current-value="<?= e((string) ($prize['bonus_box_count'] ?? 0)) ?>" type="number" min="0" max="50" value="<?= e((string) ($prize['bonus_box_count'] ?? 0)) ?>"><small class="inline-save-state" data-inline-state></small></label>
+            <label><span>Popust %</span><input class="inline-editor inline-number" data-prize-id="<?= e((string) $prize['id']) ?>" data-field="discount_percent" data-current-value="<?= e((string) ($prize['discount_percent'] ?? '')) ?>" type="number" min="1" max="100" value="<?= e((string) ($prize['discount_percent'] ?? '')) ?>"><small class="inline-save-state" data-inline-state></small></label>
+            <span class="automation-note"><?= !empty($prize['manual_claim']) ? 'Preuzimanje: ručno' : 'Isporuka: automatska' ?></span>
+          </td>
           <td data-prize-won><?= e((string) $prize['won_count']) ?></td>
           <td data-prize-remaining><?= e((string) max(0, (int) $prize['max_quantity'] - (int) $prize['won_count'])) ?></td>
           <td>

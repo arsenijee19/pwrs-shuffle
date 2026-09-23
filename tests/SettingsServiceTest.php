@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PlayWorld\MysteryBox\Tests;
 
 use PlayWorld\MysteryBox\Services\SettingsService;
+use PlayWorld\MysteryBox\Support\Database;
 
 final class SettingsServiceTest extends TestCase
 {
@@ -29,5 +30,27 @@ final class SettingsServiceTest extends TestCase
         $this->assertSame('login@example.com', $config['username']);
         $this->assertSame('xsmtpsib-test', $config['password']);
         $this->assertSame('usluge@playworld.rs', $config['from']);
+    }
+
+    public function testApiSettingsAreSavedEncryptedAndUsedByProtectedServices(): void
+    {
+        $service = new SettingsService();
+        $key = 'test-n8n-key-with-more-than-24-chars';
+
+        $service->saveApiSettings([
+            'api_enabled' => '1',
+            'n8n_api_key' => $key,
+            'n8n_api_max_quantity' => '40',
+            'n8n_api_rate_limit_per_minute' => '70',
+        ]);
+
+        $config = $service->apiConfig();
+        $this->assertTrue($config['enabled']);
+        $this->assertSame($key, $config['key']);
+        $this->assertSame(40, $config['max_quantity']);
+        $this->assertSame(70, $config['rate_limit_per_minute']);
+        $stored = Database::pdo()->query("SELECT value FROM app_settings WHERE key = 'n8n_api_key_ciphertext'")->fetchColumn();
+        $this->assertNotSame($key, $stored);
+        $this->assertStringStartsWith('v1.', (string) $stored);
     }
 }

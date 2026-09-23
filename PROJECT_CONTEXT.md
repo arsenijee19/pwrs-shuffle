@@ -30,7 +30,7 @@
 - Dependencies: Dotenv, Dompdf, chillerlan/php-qrcode, PHPUnit for tests.
 - Authentication: session-based admin login with CSRF protection.
 - Email: direct SMTP over Brevo using admin-saved database settings first, with `.env` fallback; no SMTP secrets are committed. Delivery attempts are logged in `email_deliveries`.
-- n8n API: `POST /api/v1/mystery-box/fulfill`, JSON-only, Bearer-authenticated with `N8N_API_KEY`, disabled by default, rate-limited independently, and capped by `N8N_API_MAX_QUANTITY`.
+- n8n API: `POST /api/v1/mystery-box/fulfill`, JSON-only, Bearer-authenticated, disabled by default, rate-limited independently, and capped by the API settings. It can be configured from `/admin/api`; the key is encrypted at rest with `APP_KEY`, with `.env` as fallback.
 - Reward claims API: protected lease/result endpoints under `/api/v1/reward-claims/*`, with short leases and idempotent state transitions.
 - Secret handling: `APP_KEY` protects discount codes and bonus links at rest; raw IP is never stored for anti-repeat.
 - Draw metadata: reward behavior is snapshotted in `draws`; legacy rows use a live-prize fallback when snapshot fields are null.
@@ -97,6 +97,9 @@
 - Added admin email delivery for new Mystery Box links through Brevo SMTP, including a branded HTML email template, admin email settings page, and `.env.example`/deployment documentation.
 - Added admin email delivery history with per-attempt recipient, token, status, timestamp, and SMTP error message.
 - Added an admin SMTP test-email action, bounded the total SMTP wait time, and made cPanel SQLite migration commits tolerate the known `There is no active transaction` driver mismatch.
+- Added an admin API settings page for enabling n8n, storing the API key encrypted, and configuring API quantity/rate limits without File Manager.
+- Added legacy compatibility for the existing “Besplatan Shuffle + 5% na sledeću kupovinu” prize, plus visible discount fallback and customer claim CTA for legacy/game results.
+- Added inline admin controls for bonus box count and discount percentage, with blank discount values saved correctly.
 - Hardened full prize saves against duplicate browser submissions and malformed cover uploads, with a clear saving state.
 - Redesigned the mobile navbar as a centered glass/pill horizontal navigation so admin/public links stay aligned on small screens.
 - Added idempotent n8n order fulfillment with API key authentication, JSON responses, configurable quantity/rate limits, order/item audit tables, shared admin/API delivery service, partial retry handling, and SMTP unknown-outcome protection.
@@ -113,7 +116,7 @@
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
 - Configure Brevo SMTP values through `/admin/email` and send a real test email from the admin panel.
 - Pull the latest commit on cPanel before testing prize saves, because the older deployment logged a migration transaction fatal before routing admin POST requests.
-- Enable and configure `API_ENABLED`, `N8N_API_KEY`, `N8N_API_MAX_QUANTITY`, and `N8N_API_RATE_LIMIT_PER_MINUTE` only when the n8n workflow is ready.
+- Pull the latest commit on cPanel, open `/admin/api`, and enable/configure n8n only when the workflow is ready.
 - Configure the n8n HTTP Request node according to the API section in `README.md`.
 - Configure `APP_KEY`, `ANTI_REPEAT_SECRET`, `ANTI_REPEAT_ENABLED`, and Cloudflare trust settings.
 - Import and configure `n8n/playworld-reward-telegram.json`.
@@ -126,6 +129,7 @@
 - API `NeedsReview` records require manual verification if SMTP accepted a message but the application could not confirm the final database status; they must not be automatically retried.
 - Discount codes cannot be marked redeemed automatically until PlayWorld exposes a trusted redemption signal.
 - Existing production databases need the new `APP_KEY` before any assigned discount/bonus payload can be decrypted.
+- The legacy Shuffle + 5% display compatibility can only create new bonus links when the SMTP settings and discount-code stock are configured correctly; old draw history itself remains unchanged.
 
 ## LLM Handoff Notes
 - Read `README.md`, `DEPLOYMENT.md`, `public/index.php`, and `app/Services/DrawService.php` first.

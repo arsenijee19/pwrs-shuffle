@@ -166,7 +166,8 @@ PlayWorld tim`;
     };
     const syncRow = (prize) => {
       if (!prize) return;
-      const savedValue = String(prize[input.dataset.field || ''] ?? input.value);
+      const rawValue = prize[input.dataset.field || ''];
+      const savedValue = rawValue === null || rawValue === undefined ? '' : String(rawValue);
       input.value = savedValue;
       input.dataset.currentValue = savedValue;
 

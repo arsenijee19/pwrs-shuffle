@@ -10,6 +10,7 @@
       <a class="primary" href="/admin/tokens">Tokeni</a>
       <a class="ghost" href="/admin/prizes">Nagrade</a>
       <a class="ghost" href="/admin/email">Email</a>
+      <a class="ghost" href="/admin/api">API / n8n</a>
       <a class="ghost" href="/admin/slanja">Slanja</a>
       <a class="ghost" href="/admin/discount-codes">Kodovi</a>
       <a class="ghost" href="/admin/reward-deliveries">Bonus isporuke</a>

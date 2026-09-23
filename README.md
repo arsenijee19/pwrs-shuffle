@@ -136,6 +136,10 @@ Ako rezultat sadrži bonus boxove, kupac unosi email i dobija sve nove linkove u
 
 Ručni zahtevi se vode na `/admin/reward-claims`. Kupac unosi email i telefon/Viber, a PlayWorld tim zatim preuzima zahtev. Aplikacija je izvor istine; Telegram/n8n služi samo za obaveštenje.
 
+Bonus nagrade se podešavaju na `/admin/prizes` preko **Dodaj bonus nagrade**. Za nagradu koja sadrži Mystery Box, kupac nakon rezultata dobija formu za email i svi novi linkovi se kreiraju idempotentno i vode na `/admin/reward-deliveries`. Kodovi za popust se uvoze na `/admin/discount-codes` i moraju postojati za odgovarajući procenat pre izvlačenja.
+
+n8n API se uključuje direktno iz admin panela na `/admin/api`. Tamo se unosi Bearer ključ, maksimalna količina i limit zahteva; ključ se čuva šifrovano u SQLite bazi i ne prikazuje se ponovo. Podešavanja iz admin panela imaju prednost nad `.env` vrednostima.
+
 ## Anti-repeat privatnost
 
 Pre izvlačenja proveravaju se aktivnost, težina, preostala količina, dostupnost koda i anti-repeat pravilo. Ako postoji druga nagrada, ista nagrada se istom HMAC mrežnom fingerprintu ne dodeljuje ponovo tokom `ANTI_REPEAT_WINDOW_MINUTES`. Ako bi filtriranje ostavilo prazan pool, koristi se originalni validan pool. Sirov IP se ne čuva, a proxy zaglavlja se ne veruju bez eksplicitnog Cloudflare podešavanja.

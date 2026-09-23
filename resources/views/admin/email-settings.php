@@ -7,6 +7,7 @@
     </div>
     <div class="actions">
       <a class="ghost" href="/admin/slanja">Istorija slanja</a>
+      <a class="ghost" href="/admin/api">API / n8n</a>
       <a class="ghost" href="/admin/tokens">Nazad na tokene</a>
     </div>
   </div>

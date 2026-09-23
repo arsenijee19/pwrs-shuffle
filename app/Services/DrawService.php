@@ -27,7 +27,7 @@ final class DrawService
         );
         $stmt->execute(['token_id' => $tokenId]);
         $draw = $stmt->fetch();
-        return $draw ?: null;
+        return $draw ? $this->normalizeLegacyReward($draw) : null;
     }
 
     public function findByDrawId(string $drawId): ?array
@@ -49,7 +49,7 @@ final class DrawService
         );
         $stmt->execute(['draw_id' => $drawId]);
         $draw = $stmt->fetch();
-        return $draw ?: null;
+        return $draw ? $this->normalizeLegacyReward($draw) : null;
     }
 
     public function recent(int $limit = 8): array
@@ -173,6 +173,24 @@ final class DrawService
         $days = (int) env_value('RESULT_RETENTION_DAYS', 5);
         $expires = (new \DateTimeImmutable($draw['created_at']))->modify('+' . $days . ' days');
         return $expires >= new \DateTimeImmutable();
+    }
+
+    /**
+     * Keep results created before bonus metadata was introduced usable without
+     * changing the stored draw record or its immutable history.
+     *
+     * @param array<string,mixed> $draw
+     * @return array<string,mixed>
+     */
+    private function normalizeLegacyReward(array $draw): array
+    {
+        $name = mb_strtolower(trim((string) ($draw['prize_name'] ?? '')));
+        if ($name === 'besplatan shuffle + 5% na sledeću kupovinu') {
+            $draw['bonus_box_count'] = max(1, (int) ($draw['bonus_box_count'] ?? 0));
+            $draw['discount_percent'] = max(5, (int) ($draw['discount_percent'] ?? 0));
+        }
+
+        return $draw;
     }
 
     private function pickPrize(array $prizes): array
