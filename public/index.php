@@ -348,7 +348,7 @@ $router->get('/admin/email', function (): void {
     ]);
     unset($_SESSION['flash'], $_SESSION['flash_type']);
 });
-$router->get('/admin/email-history', function (): void {
+$emailHistoryPage = static function (): void {
     AuthService::requireAdmin();
     $deliveries = new EmailDeliveryService();
     render('admin/email-history', [
@@ -356,7 +356,9 @@ $router->get('/admin/email-history', function (): void {
         'deliveries' => $deliveries->recent(),
         'stats' => $deliveries->stats(),
     ]);
-});
+};
+$router->get('/admin/email-history', $emailHistoryPage);
+$router->get('/admin/slanja', $emailHistoryPage);
 $router->post('/admin/email', function (): void {
     AuthService::requireAdmin();
     verify_csrf();

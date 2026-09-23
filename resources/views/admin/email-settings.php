@@ -6,7 +6,7 @@
       <p class="lead">Unesite Brevo SMTP podatke jednom. Nakon toga admin može direktno da šalje Mystery Box link kupcu.</p>
     </div>
     <div class="actions">
-      <a class="ghost" href="/admin/email-history">Istorija slanja</a>
+      <a class="ghost" href="/admin/slanja">Istorija slanja</a>
       <a class="ghost" href="/admin/tokens">Nazad na tokene</a>
     </div>
   </div>

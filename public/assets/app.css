@@ -79,6 +79,12 @@ textarea { min-height: 110px; resize: vertical; }
 .compact-head h2 { margin: 0 0 4px; }
 .compact-head p { margin: 0; color: var(--muted); font-size: 13px; }
 .actions, .row-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.admin-page-head { align-items: flex-start; gap: 32px; }
+.admin-page-head > :first-child { flex: 1 1 300px; min-width: 0; }
+.admin-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: min(100%, 680px); align-items: stretch; }
+.admin-actions > * { width: 100%; min-width: 0; }
+.admin-actions form.inline { display: block; }
+.admin-actions .primary, .admin-actions .ghost, .admin-actions .danger { width: 100%; min-height: 50px; padding: 0 12px; text-align: center; }
 .admin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
 .stat { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 20px; box-shadow: var(--shadow); }
 .stat span { display: block; color: var(--muted); font-size: 13px; margin-bottom: 8px; }
@@ -267,6 +273,8 @@ dd { margin: 4px 0 0; font-weight: 750; }
   .cover { width: min(220px, 100%); }
   .meta { margin: 18px 0; }
   .section-head { align-items: flex-start; flex-direction: column; }
+  .admin-page-head { gap: 18px; }
+  .admin-actions { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .token-tools { grid-template-columns: 1fr; }
   .token-tool-card .primary { width: 100%; }
   table { display: block; overflow-x: auto; white-space: nowrap; }
@@ -282,6 +290,7 @@ dd { margin: 4px 0 0; font-weight: 750; }
   nav a, .inline button { min-height: 32px; padding: 0 10px; font-size: 11px; }
   .panel { padding: 16px; }
   .hero h1, .panel h1 { font-size: 31px; }
+  .admin-actions { grid-template-columns: 1fr; }
   .prize-item strong { font-size: 14px; }
   .box-animation { transform: scale(.74); margin: -28px 0 -38px; }
   .copy-row { grid-template-columns: 1fr; }

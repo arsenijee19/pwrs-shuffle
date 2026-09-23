@@ -1,7 +1,10 @@
 <section class="panel">
-  <div class="section-head">
-    <h1>Nagrade</h1>
-    <div class="actions">
+  <div class="section-head admin-page-head">
+    <div>
+      <p class="eyebrow">Nagradni fond</p>
+      <h1>Nagrade</h1>
+    </div>
+    <div class="actions admin-actions">
       <form method="post" action="/admin/prizes/seed-playworld" class="inline">
         <?= csrf_field() ?>
         <button class="ghost" type="submit">Dodaj PlayWorld katalog</button>

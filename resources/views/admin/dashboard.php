@@ -4,13 +4,13 @@
   <div class="stat"><span>Neiskorišćeni</span><strong><?= e((string) $stats['unused']) ?></strong></div>
 </section>
 <section class="panel">
-  <div class="section-head">
+  <div class="section-head admin-page-head">
     <h1>Dashboard</h1>
-    <div class="actions">
+    <div class="actions admin-actions">
       <a class="primary" href="/admin/tokens">Tokeni</a>
       <a class="ghost" href="/admin/prizes">Nagrade</a>
       <a class="ghost" href="/admin/email">Email</a>
-      <a class="ghost" href="/admin/email-history">Slanja</a>
+      <a class="ghost" href="/admin/slanja">Slanja</a>
       <a class="ghost" href="/admin/discount-codes">Kodovi</a>
       <a class="ghost" href="/admin/reward-deliveries">Bonus isporuke</a>
       <a class="ghost" href="/admin/reward-claims">Zahtevi</a>
