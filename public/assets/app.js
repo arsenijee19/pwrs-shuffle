@@ -126,6 +126,23 @@ PlayWorld tim`;
     });
   });
 
+  document.querySelectorAll('form[data-prize-save]').forEach((form) => {
+    let submitted = false;
+    form.addEventListener('submit', (event) => {
+      if (submitted) {
+        event.preventDefault();
+        return;
+      }
+
+      submitted = true;
+      const button = form.querySelector('button[type="submit"]');
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Čuvam nagradu...';
+      }
+    });
+  });
+
   document.querySelectorAll('[data-code-import]').forEach((textarea) => {
     const counter = textarea.parentElement?.querySelector('[data-code-count]');
     const updateCount = () => {

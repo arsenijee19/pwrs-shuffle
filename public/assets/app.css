@@ -199,6 +199,12 @@ dd { margin: 4px 0 0; font-weight: 750; }
 .token-tool-card p { margin: 0; color: var(--muted); line-height: 1.5; font-size: 14px; }
 .token-tool-card .primary { width: fit-content; }
 .featured-mail { border-color: #cfe0ff; background: linear-gradient(145deg, #ffffff 0, #f4f8ff 58%, #f7f4ff 100%); }
+.email-test-card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .8fr); gap: 20px; align-items: end; margin-top: 24px; padding: 20px; border: 1px solid #d8e5ff; border-radius: 12px; background: linear-gradient(145deg, #f6f9ff, #fff); }
+.email-test-card h2 { margin: 0 0 6px; font-size: 22px; }
+.email-test-card p { margin: 0; }
+.email-test-form { display: grid; gap: 12px; }
+.email-test-form label { display: grid; gap: 6px; font-weight: 800; }
+.email-test-form button { width: fit-content; }
 .created-links { border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin: 18px 0; background: var(--soft); }
 .copy-row { display: grid; grid-template-columns: minmax(260px, 1fr) auto auto minmax(136px, auto); gap: 8px; margin-top: 8px; align-items: stretch; padding: 8px; border: 1px solid transparent; border-radius: 8px; }
 .copy-row button { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 0 14px; cursor: pointer; }
@@ -271,6 +277,8 @@ dd { margin: 4px 0 0; font-weight: 750; }
   .verify-form .primary { width: 100%; }
   .form-grid { grid-template-columns: 1fr; }
   .email-settings-form .primary { width: 100%; }
+  .email-test-card { grid-template-columns: 1fr; }
+  .email-test-form button { width: 100%; }
   .verification-card-head { align-items: flex-start; flex-direction: column; }
   .verification-card-head p { text-align: left; }
   .cover { width: min(220px, 100%); }

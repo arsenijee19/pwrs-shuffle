@@ -96,6 +96,8 @@
 - Centered public box/result content, CTA blocks, verification strips, and prize-list headers while keeping scan-heavy lists/meta content readable.
 - Added admin email delivery for new Mystery Box links through Brevo SMTP, including a branded HTML email template, admin email settings page, and `.env.example`/deployment documentation.
 - Added admin email delivery history with per-attempt recipient, token, status, timestamp, and SMTP error message.
+- Added an admin SMTP test-email action, bounded the total SMTP wait time, and made cPanel SQLite migration commits tolerate the known `There is no active transaction` driver mismatch.
+- Hardened full prize saves against duplicate browser submissions and malformed cover uploads, with a clear saving state.
 - Redesigned the mobile navbar as a centered glass/pill horizontal navigation so admin/public links stay aligned on small screens.
 - Added idempotent n8n order fulfillment with API key authentication, JSON responses, configurable quantity/rate limits, order/item audit tables, shared admin/API delivery service, partial retry handling, and SMTP unknown-outcome protection.
 - Added an authenticated prize On/Off toggle and a repeatable admin seed action for 15 requested bonus rewards, preserving existing prizes and draw history.
@@ -110,6 +112,7 @@
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
 - Configure Brevo SMTP values through `/admin/email` and send a real test email from the admin panel.
+- Pull the latest commit on cPanel before testing prize saves, because the older deployment logged a migration transaction fatal before routing admin POST requests.
 - Enable and configure `API_ENABLED`, `N8N_API_KEY`, `N8N_API_MAX_QUANTITY`, and `N8N_API_RATE_LIMIT_PER_MINUTE` only when the n8n workflow is ready.
 - Configure the n8n HTTP Request node according to the API section in `README.md`.
 - Configure `APP_KEY`, `ANTI_REPEAT_SECRET`, `ANTI_REPEAT_ENABLED`, and Cloudflare trust settings.

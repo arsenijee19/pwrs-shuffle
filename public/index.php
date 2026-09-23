@@ -8,6 +8,7 @@ use PlayWorld\MysteryBox\Middleware\RateLimiter;
 use PlayWorld\MysteryBox\Services\AuthService;
 use PlayWorld\MysteryBox\Services\DrawService;
 use PlayWorld\MysteryBox\Services\MysteryBoxFulfillmentService;
+use PlayWorld\MysteryBox\Services\MailService;
 use PlayWorld\MysteryBox\Services\N8nMysteryBoxApi;
 use PlayWorld\MysteryBox\Services\N8nRewardClaimsApi;
 use PlayWorld\MysteryBox\Services\DiscountCodeService;
@@ -384,6 +385,29 @@ $router->post('/admin/email', function (): void {
     (new SettingsService())->saveEmailSettings($_POST);
     $_SESSION['flash'] = 'Email podešavanja su sačuvana.';
     $_SESSION['flash_type'] = 'success';
+    redirect('/admin/email');
+});
+$router->post('/admin/email/test', function (): void {
+    AuthService::requireAdmin();
+    verify_csrf();
+    RateLimiter::hit('admin-email-test');
+
+    $email = trim((string) ($_POST['test_email'] ?? ''));
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['flash'] = 'Unesite ispravan email za test.';
+        $_SESSION['flash_type'] = 'error';
+        redirect('/admin/email');
+    }
+
+    try {
+        (new MailService())->sendTestEmail($email);
+        $_SESSION['flash'] = 'Test email je poslat na ' . $email . '.';
+        $_SESSION['flash_type'] = 'success';
+    } catch (Throwable $error) {
+        $_SESSION['flash'] = 'Test email nije poslat: ' . $error->getMessage();
+        $_SESSION['flash_type'] = 'error';
+    }
+
     redirect('/admin/email');
 });
 $router->get('/admin/password', function (): void {

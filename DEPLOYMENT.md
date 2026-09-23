@@ -45,6 +45,14 @@ N8N_API_MAX_QUANTITY=20
 N8N_API_RATE_LIMIT_PER_MINUTE=30
 ```
 
+Na cPanel Git Version Control instalaciji ovaj fajl je iznad web root-a, na putanji:
+`/home/playworl/public_html/shuffle.playworld.rs/git/.env`.
+Ne upisivati ove promenljive u `public/.env`, `.env.example` ili `public/.htaccess`.
+Za ovaj domen proverite da u istom fajlu stoji `APP_URL=https://shuffle.playworld.rs`,
+jer se ta vrednost koristi za linkove u emailu i PDF potvrdi.
+`API_ENABLED=true` uključuje samo n8n API i nema veze sa slanjem emaila. Ista vrednost
+`N8N_API_KEY` mora biti podešena kao tajni ključ u n8n HTTP Request node-u.
+
 Posle cPanel Git pull-a `Database::migrate()` automatski pokreće nove migracije pri sledećem zahtevu. Migracije su dodatne i ne brišu postojeću bazu, tokene, Draw ID-jeve, `won_count` ili email istoriju.
 
 n8n koristi `POST /api/v1/mystery-box/fulfill` sa `Authorization: Bearer ...`, `Content-Type: application/json` i body-em koji sadrži `order_id`, `email`, opciono `name` i `quantity`. Jedinstveni `order_id` sprečava duplu isporuku. Ponovljeni isti poziv nastavlja samo poznato neuspešne item-e; već poslati item-i se preskaču.
@@ -59,6 +67,10 @@ API ne vraća plaintext Mystery Box tokene u odgovoru. Linkovi se šalju kupcu k
 
 Admin panel može da kreira novi Mystery Box link i pošalje ga kupcu putem Brevo SMTP-a.
 Najlakši način na cPanelu je da otvorite `/admin/email`, unesete Brevo podatke i sačuvate ih kroz browser.
+
+Posle čuvanja koristite dugme **Pošalji test email** na istoj stranici. Ako test prođe,
+slanje Mystery Box linka dostupno je na `/admin/tokens`. Ako su email podešavanja sačuvana
+u admin panelu, ona imaju prednost nad vrednostima iz `.env` fajla.
 
 Alternativno, u produkcionom `.env` fajlu možete podesiti:
 

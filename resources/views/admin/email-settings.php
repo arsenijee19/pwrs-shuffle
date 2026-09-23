@@ -34,6 +34,18 @@
     </div>
     <label>Timeout<input type="number" min="3" name="mail_timeout" value="<?= e($settings['mail_timeout'] ?? '15') ?>"></label>
     <div class="notice">SMTP key se ne prikazuje ponovo posle čuvanja. Ako želite da ga promenite, samo nalepite novi key i sačuvajte.</div>
-    <button class="primary">Sačuvaj email podešavanja</button>
+    <button class="primary" type="submit">Sačuvaj email podešavanja</button>
   </form>
+  <section class="email-test-card">
+    <div>
+      <p class="eyebrow">Brza provera</p>
+      <h2>Pošalji test email</h2>
+      <p class="muted">Prvo sačuvajte podešavanja, zatim pošaljite test. Ovo ne kreira Mystery Box token.</p>
+    </div>
+    <form method="post" action="/admin/email/test" class="email-test-form">
+      <?= csrf_field() ?>
+      <label>Email za test<input type="email" name="test_email" value="<?= e($settings['mail_from'] ?? (string) env_value('MAIL_FROM', '')) ?>" required></label>
+      <button class="ghost" type="submit">Pošalji test email</button>
+    </form>
+  </section>
 </section>

@@ -46,7 +46,16 @@ final class Database
 
     public static function commit(PDO $pdo): void
     {
-        $pdo->exec('COMMIT');
+        try {
+            $pdo->exec('COMMIT');
+        } catch (\PDOException $error) {
+            // Some cPanel PDO/SQLite builds report a manually started
+            // transaction as inactive even though SQLite already committed it.
+            // Treat only that specific driver mismatch as a successful commit.
+            if (!str_contains(strtolower($error->getMessage()), 'no active transaction')) {
+                throw $error;
+            }
+        }
     }
 
     public static function rollback(PDO $pdo): void

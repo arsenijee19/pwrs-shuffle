@@ -1,6 +1,6 @@
 <section class="panel narrow">
   <h1><?= $prize ? 'Izmena nagrade' : 'Nova nagrada' ?></h1>
-  <form method="post" action="/admin/prizes/save" enctype="multipart/form-data" class="form">
+  <form method="post" action="/admin/prizes/save" enctype="multipart/form-data" class="form" data-prize-save>
     <?= csrf_field() ?>
     <?php if ($prize): ?>
       <input type="hidden" name="id" value="<?= e((string) $prize['id']) ?>">
@@ -22,6 +22,6 @@
       <p class="muted">Ove vrednosti se čuvaju odvojeno od naziva nagrade i koriste se na serveru.</p>
     </fieldset>
     <label class="checkbox"><input type="checkbox" name="active" <?= !$prize || (int) $prize['active'] === 1 ? 'checked' : '' ?>> Aktivna</label>
-    <button class="primary">Sačuvaj</button>
+    <button class="primary" type="submit">Sačuvaj nagradu</button>
   </form>
 </section>

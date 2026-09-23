@@ -9,6 +9,8 @@ use Throwable;
 
 final class MailService
 {
+    private float $smtpDeadline = 0.0;
+
     public function sendMysteryBoxLink(string $recipientEmail, string $recipientName, string $link): void
     {
         $config = $this->config();
@@ -67,6 +69,43 @@ final class MailService
         );
 
         $this->smtpSend($config['host'], $config['port'], $config['username'], $config['password'], $config['from'], $recipientEmail, $message, $config['timeout']);
+    }
+
+    public function sendTestEmail(string $recipientEmail): void
+    {
+        $config = $this->config();
+
+        if (!$config['enabled']) {
+            throw new RuntimeException('Email slanje nije uključeno. Otvorite Admin > Email i uključite isporuku.');
+        }
+
+        if ($config['host'] === '' || $config['username'] === '' || $config['password'] === '' || $config['from'] === '') {
+            throw new RuntimeException('SMTP podešavanja nisu kompletna. Otvorite Admin > Email i proverite podatke.');
+        }
+
+        $html = '<!doctype html><html lang="sr"><body style="font-family:Arial,sans-serif;color:#121826">'
+            . '<h1>PlayWorld Mystery Box</h1><p>Ovo je test email. Brevo SMTP podešavanja rade ispravno.</p>'
+            . '</body></html>';
+        $text = "PlayWorld Mystery Box\n\nOvo je test email. Brevo SMTP podešavanja rade ispravno.";
+        $message = $this->buildMessage(
+            $config['from'],
+            $config['from_name'],
+            $recipientEmail,
+            'PlayWorld Mystery Box - test email',
+            $html,
+            $text
+        );
+
+        $this->smtpSend(
+            $config['host'],
+            $config['port'],
+            $config['username'],
+            $config['password'],
+            $config['from'],
+            $recipientEmail,
+            $message,
+            $config['timeout']
+        );
     }
 
     public function mysteryBoxHtml(string $link, string $recipientName = ''): string
@@ -174,8 +213,17 @@ final class MailService
     private function smtpRead($socket): string
     {
         $response = '';
+        $deadline = $this->smtpDeadline > 0 ? $this->smtpDeadline : microtime(true) + 15;
 
-        while (($line = fgets($socket, 515)) !== false) {
+        while (microtime(true) < $deadline) {
+            $line = fgets($socket, 515);
+            if ($line === false) {
+                $meta = stream_get_meta_data($socket);
+                if (!empty($meta['timed_out'])) {
+                    continue;
+                }
+                break;
+            }
             $response .= $line;
             if (strlen($line) >= 4 && $line[3] === ' ') {
                 break;
@@ -183,7 +231,7 @@ final class MailService
         }
 
         if ($response === '') {
-            throw new RuntimeException('SMTP server nije vratio odgovor.');
+            throw new RuntimeException('SMTP server nije vratio odgovor u predviđenom roku.');
         }
 
         return $response;
@@ -211,10 +259,14 @@ final class MailService
             throw new MailDeliveryException('Nije moguće povezivanje sa SMTP serverom.', false, 'smtp_connection_failed');
         }
 
+        $this->smtpDeadline = microtime(true) + max(3, min($timeout, 30));
         $afterData = false;
         $accepted = false;
         try {
-            stream_set_timeout($socket, $timeout);
+            // stream_set_timeout applies to each read. smtpRead also uses the
+            // deadline so one broken SMTP response cannot keep the request open
+            // for the timeout once per SMTP command.
+            stream_set_timeout($socket, 1);
             $this->expectGreeting($socket);
             $this->smtpCommand($socket, 'EHLO ' . (parse_url(url('/'), PHP_URL_HOST) ?: 'localhost'), [250]);
             $this->smtpCommand($socket, 'STARTTLS', [220]);
@@ -247,6 +299,7 @@ final class MailService
 
             throw new MailDeliveryException($error->getMessage(), false, 'smtp_failed');
         } finally {
+            $this->smtpDeadline = 0.0;
             fclose($socket);
         }
     }

@@ -57,9 +57,14 @@ final class PrizeService
     {
         $id = !empty($data['id']) ? (int) $data['id'] : null;
         $existing = $id ? $this->find($id) : null;
+        $name = trim((string) ($data['name'] ?? ''));
+        $description = trim((string) ($data['description'] ?? ''));
         $weight = filter_var($data['weight'] ?? null, FILTER_VALIDATE_INT);
         $maxQuantity = filter_var($data['max_quantity'] ?? null, FILTER_VALIDATE_INT);
         $discount = ($data['discount_enabled'] ?? null) ? (int) ($data['discount_percent'] ?? 0) : null;
+        if ($name === '' || $description === '') {
+            throw new \InvalidArgumentException('Naziv i opis nagrade su obavezni.');
+        }
         if ($weight === false || $weight < 0 || $maxQuantity === false || $maxQuantity < 1) {
             throw new \InvalidArgumentException('Weight mora biti najmanje 0, a maksimalan broj najmanje 1.');
         }
@@ -79,8 +84,8 @@ final class PrizeService
 
         $coverPath = $this->handleCoverUpload($cover, $data['existing_cover'] ?? null);
         $params = [
-            'name' => trim($data['name']),
-            'description' => trim($data['description']),
+            'name' => $name,
+            'description' => $description,
             'instructions' => trim($data['instructions'] ?? ''),
             'cover_path' => $coverPath,
             'rarity' => trim($data['rarity']),
@@ -346,7 +351,7 @@ final class PrizeService
 
     private function handleCoverUpload(?array $cover, ?string $existing): string
     {
-        if (!$cover || ($cover['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        if (!is_array($cover) || ($cover['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
             return $existing ?: '/assets/placeholder-cover.svg';
         }
 
@@ -354,19 +359,28 @@ final class PrizeService
             return $existing ?: '/assets/placeholder-cover.svg';
         }
 
+        $temporaryPath = (string) ($cover['tmp_name'] ?? '');
+        if ($temporaryPath === '' || !is_file($temporaryPath)) {
+            return $existing ?: '/assets/placeholder-cover.svg';
+        }
+
         $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
-        $type = mime_content_type($cover['tmp_name']);
+        $type = @mime_content_type($temporaryPath);
         if (!isset($allowed[$type])) {
             return $existing ?: '/assets/placeholder-cover.svg';
         }
 
         $dir = app_path('public/uploads');
         if (!is_dir($dir)) {
-            mkdir($dir, 0775, true);
+            if (!mkdir($dir, 0775, true) && !is_dir($dir)) {
+                throw new \RuntimeException('Folder za cover slike nije moguće pripremiti.');
+            }
         }
 
         $name = bin2hex(random_bytes(16)) . '.' . $allowed[$type];
-        move_uploaded_file($cover['tmp_name'], $dir . DIRECTORY_SEPARATOR . $name);
+        if (!move_uploaded_file($temporaryPath, $dir . DIRECTORY_SEPARATOR . $name)) {
+            throw new \RuntimeException('Cover slika nije mogla da se sačuva.');
+        }
 
         return '/uploads/' . $name;
     }
