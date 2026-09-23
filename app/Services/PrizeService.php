@@ -25,7 +25,7 @@ final class PrizeService
     public function activeAvailable(): array
     {
         $rows = Database::pdo()->query(
-            "SELECT * FROM prizes WHERE active = 1 AND won_count < max_quantity AND weight > 0
+            "SELECT * FROM prizes WHERE active = 1 AND weight > 0
             ORDER BY
                 CASE rarity
                     WHEN 'Ultra Rare' THEN 1
@@ -66,10 +66,7 @@ final class PrizeService
             throw new \InvalidArgumentException('Naziv i opis nagrade su obavezni.');
         }
         if ($weight === false || $weight < 0 || $maxQuantity === false || $maxQuantity < 1) {
-            throw new \InvalidArgumentException('Weight mora biti najmanje 0, a maksimalan broj najmanje 1.');
-        }
-        if ($existing && $maxQuantity < (int) $existing['won_count']) {
-            throw new \InvalidArgumentException('Maksimalan broj ne može biti manji od već osvojenog broja.');
+            throw new \InvalidArgumentException('Weight mora biti najmanje 0, a legacy max vrednost najmanje 1.');
         }
         if (!in_array(trim((string) ($data['rarity'] ?? '')), self::RARITIES, true)) {
             throw new \InvalidArgumentException('Rarity vrednost nije dozvoljena.');
@@ -137,8 +134,8 @@ final class PrizeService
         if ($field === 'weight' && ($next === false || $next < 0)) {
             throw new \InvalidArgumentException('Weight mora biti ceo broj 0 ili veći.');
         }
-        if ($field === 'max_quantity' && ($next === false || $next < (int) $prize['won_count'] || $next < 1)) {
-            throw new \InvalidArgumentException('Maksimalan broj ne može biti manji od osvojenog broja.');
+        if ($field === 'max_quantity' && ($next === false || $next < 1)) {
+            throw new \InvalidArgumentException('Legacy max vrednost mora biti najmanje 1.');
         }
         if ($field === 'bonus_box_count' && ($next === false || $next < 0 || $next > 50)) {
             throw new \InvalidArgumentException('Broj dodatnih Mystery Box-ova mora biti između 0 i 50.');
@@ -201,7 +198,7 @@ final class PrizeService
         );
         $update = $pdo->prepare(
             'UPDATE prizes SET description=:description, instructions=:instructions, cover_path=:cover_path,
-            rarity=:rarity, weight=:weight, max_quantity=max(won_count, :max_quantity), bonus_box_count=:bonus_box_count,
+            rarity=:rarity, weight=:weight, max_quantity=:max_quantity, bonus_box_count=:bonus_box_count,
             discount_percent=:discount_percent, manual_claim=:manual_claim, active=1, updated_at=:updated_at
             WHERE id=:id'
         );
@@ -255,7 +252,7 @@ final class PrizeService
         );
         $update = $pdo->prepare(
             'UPDATE prizes SET description=:description, instructions=:instructions, cover_path=:cover_path,
-            rarity=:rarity, weight=:weight, max_quantity=max(won_count, :max_quantity), bonus_box_count=:bonus_box_count,
+            rarity=:rarity, weight=:weight, max_quantity=:max_quantity, bonus_box_count=:bonus_box_count,
             discount_percent=:discount_percent, manual_claim=:manual_claim, active=1, updated_at=:updated_at
             WHERE id=:id'
         );

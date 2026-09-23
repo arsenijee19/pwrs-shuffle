@@ -12,7 +12,7 @@
     <label>Cover<input type="file" name="cover" accept="image/png,image/jpeg,image/webp"></label>
     <label>Rarity<input name="rarity" required value="<?= e($prize['rarity'] ?? 'Standard') ?>"></label>
     <label>Weight<input type="number" name="weight" min="0" required value="<?= e((string) ($prize['weight'] ?? 10)) ?>"></label>
-    <label>Maksimalan broj<input type="number" name="max_quantity" min="1" required value="<?= e((string) ($prize['max_quantity'] ?? 1)) ?>"></label>
+    <label>Legacy max (informativno)<input type="number" name="max_quantity" min="1" required value="<?= e((string) ($prize['max_quantity'] ?? 1)) ?>"><span>Ne utiče na izvlačenje. Zadržano je zbog kompatibilnosti sa starom bazom.</span></label>
     <fieldset class="reward-behavior">
       <legend>Automatizacija nagrade</legend>
       <label>Broj dodatnih Mystery Box-ova<input type="number" name="bonus_box_count" min="0" max="50" value="<?= e((string) ($prize['bonus_box_count'] ?? 0)) ?>"></label>

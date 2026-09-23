@@ -12,8 +12,8 @@
     <li>Popust od 5% može se sabirati do najviše 30%; popusti veći od 20% ne mogu se kombinovati sa drugim popustima.</li>
     <li>Ako kupac već ima osvojenu igru, novi Mystery Box moguć je samo uz potvrdu da je ista igra ranije kupljena preko PlayWorld-a.</li>
     <li>Nema naknadnih zamena, refundacija ili isplate u novcu nakon otvaranja, osim jasno definisane provere duplikata igre kupljene preko PlayWorld-a.</li>
-    <li>Neke nagrade su ređe jer imaju manju dostupnost ili veće ograničenje količine.</li>
-    <li>Težina nagrade nije procenat. Trenutni pool zavisi od aktivnog statusa, preostale količine, podešene težine i dostupnosti koda za popust.</li>
+    <li>Nagrade nemaju količinski limit za random izbor. Njihova učestalost zavisi od podešene težine, dok se broj osvajanja vodi samo kao statistika.</li>
+    <li>Težina nagrade nije procenat. Pool zavisi od aktivnog statusa, podešene težine i trenutnih uslova isporuke, na primer dostupnosti koda za popust.</li>
     <li>Radi raznovrsnijeg iskustva, kada postoji druga dostupna nagrada, ista nagrada se istom anonimizovanom mrežnom identifikatoru ne dodeljuje ponovo tokom 60 minuta. Ako druga nagrada nije dostupna, standardno izvlačenje se nastavlja.</li>
     <li>Za anti-repeat zaštitu ne čuvamo sirovu IP adresu, već samo jednosmerni sigurnosni fingerprint.</li>
     <li>Sva izvlačenja ostaju evidentirana kroz Draw ID i vreme otvaranja.</li>

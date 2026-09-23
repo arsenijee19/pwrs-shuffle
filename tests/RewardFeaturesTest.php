@@ -39,14 +39,17 @@ final class RewardFeaturesTest extends TestCase
         $this->assertSame(0, (int) $again['bonus_box_count']);
     }
 
-    public function testPrizeStopsAtMaxQuantity(): void
+    public function testPrizeRemainsEligibleAfterLegacyMaxQuantity(): void
     {
         $this->insertPrize('Limited Prize', 10, 2, 2, null, 0);
-        $this->insertPrize('Other Prize', 10, 10, 0, null, 0);
         $available = (new PrizeService())->activeAvailable();
         $names = array_column($available, 'name');
-        $this->assertNotContains('Limited Prize', $names);
-        $this->assertContains('Other Prize', $names);
+        $this->assertContains('Limited Prize', $names);
+
+        $token = (new TokenService())->generate(1)[0]['token'];
+        $draw = (new DrawService())->open($token);
+        $this->assertSame('Limited Prize', $draw['prize_name']);
+        $this->assertSame(3, (int) Database::pdo()->query("SELECT won_count FROM prizes WHERE name = 'Limited Prize'")->fetchColumn());
     }
 
     public function testDiscountCodeIsAssignedOnceAndRefreshKeepsIt(): void

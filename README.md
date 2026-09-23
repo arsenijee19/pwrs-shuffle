@@ -8,7 +8,7 @@ Standalone PHP/SQLite MVP aplikacija za PlayWorld Mystery Box promociju.
 - Dashboard sa tokenima, otvaranjima i nagradama.
 - Upravljanje nagradama, uključujući cover upload.
 - Uključivanje i isključivanje nagrada preko On/Off prekidača i idempotentno dodavanje bonus kataloga.
-- Inline izmena `weight`, `max_quantity` i `rarity` uz validaciju i audit log.
+- Inline izmena `weight`, legacy max vrednosti i `rarity` uz validaciju i audit log.
 - Strukturisano ponašanje nagrade: dodatni boxovi, procenat popusta i ručna isporuka.
 - Snapshot nagrade na Draw ID-ju, tako da naknadna izmena nagrade ne menja stare rezultate.
 - Uvoz i sigurna dodela kodova za popust sa proverom dostupnog fonda.
@@ -26,7 +26,7 @@ Standalone PHP/SQLite MVP aplikacija za PlayWorld Mystery Box promociju.
 - Javna provera rezultata preko Draw ID-ja na `/verify`.
 - FAQ i Fair Play stranice.
 
-Na `/admin/prizes` dugme **Dodaj bonus nagrade** dodaje novih 15 bonus nagrada bez brisanja postojećih rezultata. Ista akcija može bezbedno da se pokrene ponovo. Nagrada `1 Mystery Box` koristi weight 10 kao podrazumevanu Common vrednost jer weight nije bio naveden u zahtevu; sve nove nagrade imaju maksimalno 100000 osvajanja, osim `GTA 6 Ultimate` koji ima maksimum 2.
+Na `/admin/prizes` dugme **Dodaj bonus nagrade** dodaje novih 15 bonus nagrada bez brisanja postojećih rezultata. Ista akcija može bezbedno da se pokrene ponovo. Nagrada `1 Mystery Box` koristi weight 10 kao podrazumevanu Common vrednost jer weight nije bio naveden u zahtevu. Legacy max vrednost ostaje zbog kompatibilnosti sa starom bazom, ali ne ograničava broj osvajanja.
 
 ## Provera rezultata
 
@@ -126,7 +126,7 @@ Admin može da pregleda order/item evidenciju na `/admin/fulfillments`, uključu
 
 ## Reward funkcije
 
-Na `/admin/prizes` klik na `weight`, `max_quantity` ili `rarity` čuva vrednost bez reload-a. Maksimalna količina ne može biti manja od već osvojenog broja, a izmene se upisuju u `prize_change_log`.
+Na `/admin/prizes` klik na `weight`, legacy max vrednost ili `rarity` čuva vrednost bez reload-a. Legacy max je samo informativan i ne utiče na izvlačenje; izmene se upisuju u `prize_change_log`.
 
 Na detaljnoj formi nagrade podesite broj dodatnih boxova, procenat popusta i da li se nagrada ručno isporučuje. Ove vrednosti se čuvaju kao posebna polja i ne izvode se iz naziva nagrade.
 
@@ -142,9 +142,9 @@ n8n API se uključuje direktno iz admin panela na `/admin/api`. Tamo se unosi Be
 
 ## Anti-repeat privatnost
 
-Pre izvlačenja proveravaju se aktivnost, težina, preostala količina, dostupnost koda i anti-repeat pravilo. Ako postoji druga nagrada, ista nagrada se istom HMAC mrežnom fingerprintu ne dodeljuje ponovo tokom `ANTI_REPEAT_WINDOW_MINUTES`. Ako bi filtriranje ostavilo prazan pool, koristi se originalni validan pool. Sirov IP se ne čuva, a proxy zaglavlja se ne veruju bez eksplicitnog Cloudflare podešavanja.
+Pre izvlačenja pool se gradi od aktivnih nagrada sa `weight > 0`. Zatim se privremeno izuzimaju nagrade koje trenutno ne mogu da se ispune, poput popusta bez dostupnog koda, a potom se primenjuje anti-repeat pravilo. Ako bi anti-repeat filtriranje ostavilo prazan pool, koristi se originalni validan pool. Sirov IP se ne čuva, a proxy zaglavlja se ne veruju bez eksplicitnog Cloudflare podešavanja.
 
-Težine nisu procenti niti garantuju jednake šanse. Trenutni pool zavisi od aktivnog statusa, `max_quantity`, kodova i anti-repeat zaštite.
+Težine nisu procenti niti garantuju jednake šanse. Verovatnoća zavisi od aktivnog statusa, podešene težine, trenutnih fulfillment uslova i anti-repeat zaštite. `won_count` se vodi samo kao statistika, a legacy max ne utiče na random izbor.
 
 ## Reward Telegram workflow
 

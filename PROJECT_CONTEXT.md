@@ -35,6 +35,7 @@
 - Secret handling: `APP_KEY` protects discount codes and bonus links at rest; raw IP is never stored for anti-repeat.
 - Draw metadata: reward behavior is snapshotted in `draws`; legacy rows use a live-prize fallback when snapshot fields are null.
 - Draw logic: server-side weighted random selection in a transaction; animation is display-only.
+- Draw eligibility: every active prize with `weight > 0` remains in the weighted pool regardless of `won_count` or legacy `max_quantity`. `won_count` is analytics only; only fulfillment constraints such as unavailable discount-code stock temporarily exclude a prize.
 - Fulfillment logic: `MysteryBoxFulfillmentService` is the shared source of truth for admin single-link delivery and n8n order fulfillment. `mystery_box_fulfillments` stores one unique order record and `mystery_box_fulfillment_items` stores each requested link independently. `Sending`/unknown SMTP outcomes become `NeedsReview` and are never automatically retried.
 - Security: CSRF tokens on POST actions, hashed token storage, PHP secure cookie settings, basic file-based rate limiting, PDO prepared statements, output escaping, and security headers.
 - Deployment: document root should point to `public/`.
@@ -100,14 +101,15 @@
 - Added an admin API settings page for enabling n8n, storing the API key encrypted, and configuring API quantity/rate limits without File Manager.
 - Added legacy compatibility for the existing “Besplatan Shuffle + 5% na sledeću kupovinu” prize, plus visible discount fallback and customer claim CTA for legacy/game results.
 - Added inline admin controls for bonus box count and discount percentage, with blank discount values saved correctly.
+- Changed draw selection so legacy `max_quantity` never limits eligibility; `won_count` remains an analytics counter and the admin labels the retained max field as informational.
 - Hardened full prize saves against duplicate browser submissions and malformed cover uploads, with a clear saving state.
 - Redesigned the mobile navbar as a centered glass/pill horizontal navigation so admin/public links stay aligned on small screens.
 - Added idempotent n8n order fulfillment with API key authentication, JSON responses, configurable quantity/rate limits, order/item audit tables, shared admin/API delivery service, partial retry handling, and SMTP unknown-outcome protection.
 - Added an authenticated prize On/Off toggle and a repeatable admin seed action for 15 requested bonus rewards, preserving existing prizes and draw history.
 - Added customer-facing rules for discount stacking, no refunds/exchanges, and the PlayWorld-purchase-only duplicate-game replacement exception.
-- Added reward behavior/snapshot migrations, discount code pool, bonus delivery, manual claim service, protected n8n Telegram workflow, and tests for reward idempotency, snapshots, code allocation, max quantity, and anti-repeat privacy.
+- Added reward behavior/snapshot migrations, discount code pool, bonus delivery, manual claim service, protected n8n Telegram workflow, and tests for reward idempotency, snapshots, code allocation, legacy-max eligibility, and anti-repeat privacy.
 - Fixed cPanel SQLite/PDO compatibility for `BEGIN IMMEDIATE`: transaction commits and rollbacks now use SQL-level helpers so production migrations and draw writes do not fail with `There is no active transaction`.
-- Hardened admin inline prize autosave: asset URLs now use file modification versions to avoid stale browser JavaScript, inline edits use the row CSRF token, duplicate blur/change saves are suppressed, server-normalized values are written back into the field, and remaining quantity updates immediately after changing Max.
+- Hardened admin inline prize autosave: asset URLs now use file modification versions to avoid stale browser JavaScript, inline edits use the row CSRF token, duplicate blur/change saves are suppressed, and server-normalized values are written back into the field.
 - Added the localized `/admin/slanja` alias for email delivery history while retaining `/admin/email-history`, and reorganized the prizes admin actions into an equal-width responsive grid.
 - Improved discount-code inventory: bulk imports now use a SQLite transaction, strip spreadsheet BOM characters, show visible import results, expose total/available/assigned stock, display stock by percentage, count pasted lines before submit, and use a scrollable responsive table for large inventories.
 - Corrected dashboard admin layout after visual review: the heading now occupies its own row and the eight navigation actions use a symmetric 4x2 desktop grid with responsive 2-column/1-column fallbacks.

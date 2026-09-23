@@ -94,7 +94,9 @@ final class DrawService
                 throw new RuntimeException('Token je istekao.');
             }
 
-            $allPrizes = $pdo->query('SELECT * FROM prizes WHERE active = 1 AND won_count < max_quantity AND weight > 0')->fetchAll();
+            // Prize frequency is controlled by active status and weight only.
+            // won_count is analytics; max_quantity is a legacy informational field.
+            $allPrizes = $pdo->query('SELECT * FROM prizes WHERE active = 1 AND weight > 0')->fetchAll();
             $codeService = new DiscountCodeService();
             $prizes = array_values(array_filter($allPrizes, static function (array $prize) use ($codeService, $pdo): bool {
                 $percentage = (int) ($prize['discount_percent'] ?? 0);
@@ -124,7 +126,7 @@ final class DrawService
             $prize = $this->pickPrize($prizes);
             $drawId = 'PW-' . strtoupper(bin2hex(random_bytes(5)));
             $now = date('c');
-            $updatePrize = $pdo->prepare('UPDATE prizes SET won_count = won_count + 1, updated_at = :now WHERE id = :id AND won_count < max_quantity');
+            $updatePrize = $pdo->prepare('UPDATE prizes SET won_count = won_count + 1, updated_at = :now WHERE id = :id');
             $updatePrize->execute(['now' => $now, 'id' => $prize['id']]);
             if ($updatePrize->rowCount() < 1) {
                 throw new RuntimeException('Nagrada više nije dostupna.');

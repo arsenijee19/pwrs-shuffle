@@ -171,13 +171,6 @@ PlayWorld tim`;
       input.value = savedValue;
       input.dataset.currentValue = savedValue;
 
-      if (input.dataset.field === 'max_quantity') {
-        const row = input.closest('tr');
-        const won = Number(prize.won_count || 0);
-        const max = Number(prize.max_quantity || 0);
-        const remaining = row?.querySelector('[data-prize-remaining]');
-        if (remaining) remaining.textContent = String(Math.max(0, max - won));
-      }
     };
     const save = async () => {
       if (saving) return;
