@@ -126,6 +126,22 @@ PlayWorld tim`;
     });
   });
 
+  document.querySelectorAll('[data-contact-toggle]').forEach((button) => {
+    const panel = document.getElementById(button.getAttribute('aria-controls') || '');
+    if (!panel) return;
+
+    button.addEventListener('click', () => {
+      const isOpen = panel.hasAttribute('hidden');
+      if (isOpen) {
+        panel.removeAttribute('hidden');
+      } else {
+        panel.setAttribute('hidden', '');
+      }
+      button.setAttribute('aria-expanded', String(isOpen));
+      button.textContent = isOpen ? 'ZATVORI KONTAKT' : 'KONTAKT';
+    });
+  });
+
   document.querySelectorAll('form[data-prize-save]').forEach((form) => {
     let submitted = false;
     form.addEventListener('submit', (event) => {

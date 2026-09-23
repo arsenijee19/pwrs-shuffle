@@ -3,7 +3,7 @@
     <div>
       <p class="eyebrow">Integracije</p>
       <h1>API podešavanja</h1>
-      <p class="lead">Uključite n8n API i sačuvajte ključ direktno u admin panelu. Ključ se čuva zaštićeno u lokalnoj bazi i nikada se ne prikazuje na ekranu.</p>
+      <p class="lead">Omogućite bezbednu vezu sa n8n automatizacijom i sačuvajte pristupni ključ direktno iz ovog panela. Ključ se šifruje pre upisa u lokalnu bazu i nikada se ponovo ne prikazuje na ekranu.</p>
     </div>
     <div class="actions">
       <a class="ghost" href="/admin">Dashboard</a>

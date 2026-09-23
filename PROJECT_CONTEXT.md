@@ -110,6 +110,7 @@
 - Added customer-facing rules for discount stacking, no refunds/exchanges, and the PlayWorld-purchase-only duplicate-game replacement exception.
 - Added reward behavior/snapshot migrations, discount code pool, bonus delivery, manual claim service, protected n8n Telegram workflow, and tests for reward idempotency, snapshots, code allocation, legacy-max eligibility, and anti-repeat privacy.
 - Added inactive `n8n/merchantpro-playworld-mystery-box.json` and its setup/test guide for MerchantPro order fulfillment through the existing PlayWorld API; validated workflow structure and mocked fulfillment branches locally.
+- Added a clearer reward-claim contact section with email, Instagram, Viber, and WhatsApp actions, plus an OpenSSL AES-256-GCM fallback for encrypted admin API settings when Sodium is unavailable.
 - Fixed cPanel SQLite/PDO compatibility for `BEGIN IMMEDIATE`: transaction commits and rollbacks now use SQL-level helpers so production migrations and draw writes do not fail with `There is no active transaction`.
 - Hardened admin inline prize autosave: asset URLs now use file modification versions to avoid stale browser JavaScript, inline edits use the row CSRF token, duplicate blur/change saves are suppressed, and server-normalized values are written back into the field.
 - Added the localized `/admin/slanja` alias for email delivery history while retaining `/admin/email-history`, and reorganized the prizes admin actions into an equal-width responsive grid.
@@ -136,6 +137,7 @@
 - Existing production databases need the new `APP_KEY` before any assigned discount/bonus payload can be decrypted.
 - The legacy Shuffle + 5% display compatibility can only create new bonus links when the SMTP settings and discount-code stock are configured correctly; old draw history itself remains unchanged.
 - The MerchantPro workflow requires n8n Code node environment access and a real staging/production smoke test before activation; PHP unit tests cannot run in this checkout because the `phpunit` executable is not installed.
+- SecretBox keeps existing Sodium v1 ciphertext compatible and writes new v2 ciphertext with OpenSSL only when Sodium is unavailable; a server still needs at least one of those extensions.
 
 ## LLM Handoff Notes
 - Read `README.md`, `DEPLOYMENT.md`, `public/index.php`, and `app/Services/DrawService.php` first.

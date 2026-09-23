@@ -69,13 +69,36 @@ $needsManualClaim = (int) ($draw['manual_claim'] ?? 0) === 1 || (!$hasBonusBoxes
         <?php if (!empty($rewardClaim)): ?>
           <p>Zahtev je primljen za <?= e((string) $rewardClaim['masked_email']) ?>. PlayWorld tim će Vam se javiti na ostavljeni email ili telefon.</p>
         <?php else: ?>
-          <p>Unesite kontakt podatke. Nema potrebe da šaljete screenshot ili PDF potvrdu kroz poruku.</p>
+          <p>Ostavite kontakt podatke kako bismo mogli da Vam se javimo i organizujemo preuzimanje nagrade. Nije potrebno da uz prijavu šaljete screenshot ili PDF potvrdu — rezultat proveravamo pomoću Draw ID-ja.</p>
           <form method="post" action="/box/<?= e($token) ?>/claim" class="claim-form">
             <?= csrf_field() ?>
             <label>Email adresa<input type="email" name="email" required autocomplete="email"></label>
             <label>Telefon / Viber<input type="tel" name="phone" required inputmode="tel" placeholder="+381 60 123 4567"></label>
             <button class="primary" type="submit">Pošalji podatke za preuzimanje</button>
           </form>
+          <div class="contact-actions">
+            <button class="ghost contact-toggle" type="button" data-contact-toggle aria-expanded="false" aria-controls="contact-options">KONTAKT</button>
+            <div class="contact-options" id="contact-options" data-contact-panel hidden>
+              <a class="contact-option" href="mailto:usluge@playworld.rs?subject=PlayWorld%20Mystery%20Box%20-%20Preuzimanje%20nagrade">
+                <strong>Email</strong><span>usluge@playworld.rs</span>
+              </a>
+              <a class="contact-option" href="https://www.instagram.com/playworldrs/" target="_blank" rel="noopener">
+                <strong>Instagram</strong><span>@playworldrs</span>
+              </a>
+              <a class="contact-option" href="viber://chat?number=%2B381655102425">
+                <strong>Viber</strong><span>+381 65 510 2425</span>
+              </a>
+              <a class="contact-option" href="https://wa.me/381655102425" target="_blank" rel="noopener">
+                <strong>WhatsApp</strong><span>+381 65 510 2425</span>
+              </a>
+              <a class="contact-option" href="viber://chat?number=%2B381606121906">
+                <strong>Viber</strong><span>+381 60 612 1906</span>
+              </a>
+              <a class="contact-option" href="https://wa.me/381606121906" target="_blank" rel="noopener">
+                <strong>WhatsApp</strong><span>+381 60 612 1906</span>
+              </a>
+            </div>
+          </div>
         <?php endif; ?>
       </section>
     <?php endif; ?>
