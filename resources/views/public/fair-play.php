@@ -14,7 +14,7 @@
     <li>Nema naknadnih zamena, refundacija ili isplate u novcu nakon otvaranja, osim jasno definisane provere duplikata igre kupljene preko PlayWorld-a.</li>
     <li>Nagrade nemaju količinski limit za random izbor. Njihova učestalost zavisi od podešene težine, dok se broj osvajanja vodi samo kao statistika.</li>
     <li>Težina nagrade nije procenat. Pool zavisi od aktivnog statusa, podešene težine i trenutnih uslova isporuke, na primer dostupnosti koda za popust.</li>
-    <li>Radi raznovrsnijeg iskustva, kada postoji druga dostupna nagrada, ista nagrada se istom anonimizovanom mrežnom identifikatoru ne dodeljuje ponovo tokom 60 minuta. Ako druga nagrada nije dostupna, standardno izvlačenje se nastavlja.</li>
+    <li>Anti-repeat sprečava samo da se ista nagrada istom anonimizovanom mrežnom identifikatoru dodeli dva puta uzastopno. Nakon bilo koje druge nagrade, prethodna se odmah vraća u weighted pool po svojoj punoj težini. Ovo ne garantuje jedinstvene nagrade u većoj kupovini.</li>
     <li>Za anti-repeat zaštitu ne čuvamo sirovu IP adresu, već samo jednosmerni sigurnosni fingerprint.</li>
     <li>Sva izvlačenja ostaju evidentirana kroz Draw ID i vreme otvaranja.</li>
   </ul>

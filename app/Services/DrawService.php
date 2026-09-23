@@ -109,14 +109,20 @@ final class DrawService
             $identity = (new ClientIpResolver())->identity();
             $fingerprint = $identity['fingerprint'];
             $identityApplied = $identity['applied'];
-            $windowMinutes = max(1, (int) env_value('ANTI_REPEAT_WINDOW_MINUTES', 60));
             $antiRepeatApplied = false;
             if ($identityApplied && $fingerprint !== null) {
-                $since = (new \DateTimeImmutable())->modify('-' . $windowMinutes . ' minutes')->format('c');
-                $recentStmt = $pdo->prepare('SELECT DISTINCT prize_id FROM draws WHERE client_fingerprint = :fingerprint AND created_at >= :since');
-                $recentStmt->execute(['fingerprint' => $fingerprint, 'since' => $since]);
-                $recentIds = array_map('intval', $recentStmt->fetchAll(PDO::FETCH_COLUMN));
-                $filtered = array_values(array_filter($prizes, static fn (array $prize): bool => !in_array((int) $prize['id'], $recentIds, true)));
+                // Only the immediately previous prize is excluded. Older wins
+                // become fully eligible again after any different result.
+                $previousStmt = $pdo->prepare(
+                    'SELECT prize_id FROM draws
+                     WHERE client_fingerprint = :fingerprint
+                     ORDER BY id DESC LIMIT 1'
+                );
+                $previousStmt->execute(['fingerprint' => $fingerprint]);
+                $previousPrizeId = $previousStmt->fetchColumn();
+                $filtered = $previousPrizeId === false
+                    ? $prizes
+                    : array_values(array_filter($prizes, static fn (array $prize): bool => (int) $prize['id'] !== (int) $previousPrizeId));
                 if ($filtered !== []) {
                     $antiRepeatApplied = count($filtered) !== count($prizes);
                     $prizes = $filtered;
@@ -150,7 +156,7 @@ final class DrawService
                 'snapshot_discount_percent' => $prize['discount_percent'] !== null ? (int) $prize['discount_percent'] : null,
                 'snapshot_manual_claim' => (int) ($prize['manual_claim'] ?? 0), 'client_fingerprint' => $fingerprint,
                 'anti_repeat_applied' => $antiRepeatApplied ? 1 : 0,
-                'anti_repeat_window_minutes' => $identityApplied ? $windowMinutes : null,
+                'anti_repeat_window_minutes' => null,
             ]);
 
             if ((int) ($prize['discount_percent'] ?? 0) > 0 && !$codeService->assignAvailable((int) $prize['discount_percent'], $drawId, $pdo)) {

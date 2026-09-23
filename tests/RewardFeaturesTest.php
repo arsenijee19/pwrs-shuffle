@@ -139,7 +139,7 @@ final class RewardFeaturesTest extends TestCase
         $this->assertSame('Sent', $replayed['body']['notification_status']);
     }
 
-    public function testAntiRepeatStoresOnlyFingerprintAndExcludesRecentPrize(): void
+    public function testAntiRepeatExcludesOnlyTheImmediatelyPreviousPrize(): void
     {
         $firstPrize = $this->insertPrize('First Prize', 10, 10, 1, null, 0);
         $secondPrize = $this->insertPrize('Second Prize', 10, 10, 0, null, 0);
@@ -160,6 +160,13 @@ final class RewardFeaturesTest extends TestCase
         $this->assertSame($fingerprint, $stored);
         $this->assertStringNotContainsString('192.0.2.10', (string) $stored);
         $this->assertNotSame($firstPrize, $secondPrize);
+
+        // Once a different prize has been drawn, the older prize is eligible again.
+        Database::pdo()->prepare('UPDATE prizes SET weight = 0 WHERE id = :id')->execute(['id' => $secondPrize]);
+        $thirdToken = (new TokenService())->generate(1)[0]['token'];
+        $thirdDraw = (new DrawService())->open($thirdToken);
+        $this->assertSame('First Prize', $thirdDraw['prize_name']);
+        $this->assertSame(0, (int) $thirdDraw['anti_repeat_applied']);
     }
 
     private function insertPrize(string $name, int $weight, int $max, int $won, ?int $discount, int $bonus, int $manual = 0): int

@@ -63,7 +63,7 @@
 - Animation never determines the result; the server persists the result first.
 - Screenshots are not authoritative by themselves; verify suspicious results by Draw ID through `/verify` or the admin/database record.
 - n8n fulfillment resumes only known `Failed` items. A completed `order_id` is an idempotent replay; a changed email or quantity returns a conflict.
-- Anti-repeat removes recently won prize IDs for the same HMAC fingerprint only when another valid prize remains; otherwise the original pool is used.
+- Anti-repeat excludes only the exact prize from the immediately previous draw for the same HMAC fingerprint, and only when another valid prize remains; older prizes immediately return at their full configured weight. There is no growing recent-prize list and no batch uniqueness guarantee.
 
 ## Recent Changes
 - Built the PHP/SQLite MVP from an empty repository.
@@ -111,6 +111,7 @@
 - Added reward behavior/snapshot migrations, discount code pool, bonus delivery, manual claim service, protected n8n Telegram workflow, and tests for reward idempotency, snapshots, code allocation, legacy-max eligibility, and anti-repeat privacy.
 - Added inactive `n8n/merchantpro-playworld-mystery-box.json` and its setup/test guide for MerchantPro order fulfillment through the existing PlayWorld API; validated workflow structure and mocked fulfillment branches locally.
 - Added a clearer reward-claim contact section with email, Instagram, Viber, and WhatsApp actions, plus an OpenSSL AES-256-GCM fallback for encrypted admin API settings when Sodium is unavailable.
+- Changed anti-repeat to immediate duplicate protection only: the previous exact prize is excluded for the next draw, then becomes fully eligible again after any different result. Removed the obsolete 60-minute configuration from the example environment and public copy.
 - Fixed cPanel SQLite/PDO compatibility for `BEGIN IMMEDIATE`: transaction commits and rollbacks now use SQL-level helpers so production migrations and draw writes do not fail with `There is no active transaction`.
 - Hardened admin inline prize autosave: asset URLs now use file modification versions to avoid stale browser JavaScript, inline edits use the row CSRF token, duplicate blur/change saves are suppressed, and server-normalized values are written back into the field.
 - Added the localized `/admin/slanja` alias for email delivery history while retaining `/admin/email-history`, and reorganized the prizes admin actions into an equal-width responsive grid.

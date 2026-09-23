@@ -72,7 +72,6 @@ Detaljno uputstvo je u [DEPLOYMENT.md](DEPLOYMENT.md).
 - `APP_QUERY_ROUTES` - postavite na `true` ako hosting ne podržava normalne rewrite rute.
 - `APP_KEY` - dugačak slučajan ključ za šifrovanje kodova i bonus linkova; ne commitovati.
 - `ANTI_REPEAT_ENABLED` - uključuje anti-repeat zaštitu.
-- `ANTI_REPEAT_WINDOW_MINUTES` - trajanje zaštite, podrazumevano 60 minuta.
 - `ANTI_REPEAT_SECRET` - odvojeni dugačak HMAC ključ; ne commitovati.
 - `TRUST_CLOUDFLARE` - `true` samo kada aplikacija zaista radi iza Cloudflare-a.
 - `DISCOUNT_LOW_STOCK_THRESHOLD` - prag za upozorenje o malom broju dostupnih kodova, podrazumevano 10.
@@ -142,7 +141,7 @@ n8n API se uključuje direktno iz admin panela na `/admin/api`. Tamo se unosi Be
 
 ## Anti-repeat privatnost
 
-Pre izvlačenja pool se gradi od aktivnih nagrada sa `weight > 0`. Zatim se privremeno izuzimaju nagrade koje trenutno ne mogu da se ispune, poput popusta bez dostupnog koda, a potom se primenjuje anti-repeat pravilo. Ako bi anti-repeat filtriranje ostavilo prazan pool, koristi se originalni validan pool. Sirov IP se ne čuva, a proxy zaglavlja se ne veruju bez eksplicitnog Cloudflare podešavanja.
+Pre izvlačenja pool se gradi od aktivnih nagrada sa `weight > 0`. Zatim se privremeno izuzimaju nagrade koje trenutno ne mogu da se ispune, poput popusta bez dostupnog koda, a potom se primenjuje anti-repeat pravilo. Anti-repeat proverava samo poslednju nagradu za isti HMAC fingerprint i privremeno izuzima samo tu nagradu iz narednog izvlačenja, ako postoji druga validna opcija. Čim se izvuče druga nagrada, ranija nagrada se odmah vraća u pool po svojoj punoj težini. Sistem ne gradi rastuću listu osvojenih nagrada, ne garantuje jedinstvene nagrade u batch-u i ne izbacuje nagrade progresivno iz kataloga. Ako bi filtriranje ostavilo prazan pool, koristi se originalni validan pool. Sirov IP se ne čuva, a proxy zaglavlja se ne veruju bez eksplicitnog Cloudflare podešavanja.
 
 Težine nisu procenti niti garantuju jednake šanse. Verovatnoća zavisi od aktivnog statusa, podešene težine, trenutnih fulfillment uslova i anti-repeat zaštite. `won_count` se vodi samo kao statistika, a legacy max ne utiče na random izbor.
 
