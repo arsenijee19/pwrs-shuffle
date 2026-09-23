@@ -129,42 +129,81 @@ PlayWorld tim`;
   document.querySelectorAll('[data-prize-id][data-field]').forEach((input) => {
     const original = () => input.dataset.currentValue || '';
     let timer;
+    let saving = false;
     const state = input.parentElement?.querySelector('[data-inline-state]');
     const setState = (value, className = '') => {
       if (!state) return;
       state.textContent = value;
       state.className = `inline-save-state ${className}`;
     };
+    const syncRow = (prize) => {
+      if (!prize) return;
+      const savedValue = String(prize[input.dataset.field || ''] ?? input.value);
+      input.value = savedValue;
+      input.dataset.currentValue = savedValue;
+
+      if (input.dataset.field === 'max_quantity') {
+        const row = input.closest('tr');
+        const won = Number(prize.won_count || 0);
+        const max = Number(prize.max_quantity || 0);
+        const remaining = row?.querySelector('[data-prize-remaining]');
+        if (remaining) remaining.textContent = String(Math.max(0, max - won));
+      }
+    };
     const save = async () => {
+      if (saving) return;
       const value = input.value.trim();
       if (value === original()) return;
+      saving = true;
       input.disabled = true;
       setState('Čuvam...', 'is-saving');
       const form = new FormData();
-      form.append('_csrf', document.querySelector('input[name="_csrf"]')?.value || '');
+      const row = input.closest('tr');
+      const csrf = row?.querySelector('input[name="_csrf"]') || document.querySelector('input[name="_csrf"]');
+      form.append('_csrf', csrf?.value || '');
       form.append('field', input.dataset.field || '');
       form.append('value', value);
       try {
         const response = await fetch(`/admin/prizes/${encodeURIComponent(input.dataset.prizeId || '')}/inline`, {
           method: 'POST', body: form, credentials: 'same-origin', headers: { 'Accept': 'application/json' }
         });
-        const data = await response.json();
+        const body = await response.text();
+        let data;
+        try {
+          data = JSON.parse(body);
+        } catch {
+          throw new Error('Sesija je istekla ili server nije vratio validan odgovor. Osvežite stranicu.');
+        }
         if (!response.ok || !data.ok) throw new Error(data.error || 'Izmena nije sačuvana.');
-        input.dataset.currentValue = value;
+        syncRow(data.prize);
         setState('Sačuvano', 'is-saved');
         setTimeout(() => setState(''), 1800);
       } catch (error) {
         input.value = original();
         setState(error.message || 'Greška', 'is-error');
       } finally {
+        saving = false;
         input.disabled = false;
       }
     };
-    input.addEventListener('change', save);
-    input.addEventListener('blur', () => { clearTimeout(timer); timer = setTimeout(save, 80); });
+    const scheduleSave = (delay = 120) => {
+      clearTimeout(timer);
+      timer = setTimeout(save, delay);
+    };
+    input.addEventListener('change', () => scheduleSave(0));
+    input.addEventListener('blur', () => scheduleSave(160));
     input.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') { event.preventDefault(); input.blur(); }
-      if (event.key === 'Escape') { input.value = original(); input.blur(); }
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        clearTimeout(timer);
+        save();
+      }
+      if (event.key === 'Escape') {
+        clearTimeout(timer);
+        input.value = original();
+        setState('');
+        input.blur();
+      }
     });
   });
 

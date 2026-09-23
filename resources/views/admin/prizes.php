@@ -33,8 +33,8 @@
           <td><select class="inline-editor" data-prize-id="<?= e((string) $prize['id']) ?>" data-field="rarity" data-current-value="<?= e($prize['rarity']) ?>"><option value="Ultra Rare" <?= $prize['rarity'] === 'Ultra Rare' ? 'selected' : '' ?>>Ultra Rare</option><option value="Rare" <?= $prize['rarity'] === 'Rare' ? 'selected' : '' ?>>Rare</option><option value="Special" <?= $prize['rarity'] === 'Special' ? 'selected' : '' ?>>Special</option><option value="Standard" <?= $prize['rarity'] === 'Standard' ? 'selected' : '' ?>>Standard</option><option value="Common" <?= $prize['rarity'] === 'Common' ? 'selected' : '' ?>>Common</option></select><span class="inline-save-state" data-inline-state></span></td>
           <td><input class="inline-editor inline-number" data-prize-id="<?= e((string) $prize['id']) ?>" data-field="weight" data-current-value="<?= e((string) $prize['weight']) ?>" type="number" min="0" value="<?= e((string) $prize['weight']) ?>"><span class="inline-save-state" data-inline-state></span></td>
           <td><input class="inline-editor inline-number" data-prize-id="<?= e((string) $prize['id']) ?>" data-field="max_quantity" data-current-value="<?= e((string) $prize['max_quantity']) ?>" type="number" min="<?= e((string) max(1, (int) $prize['won_count'])) ?>" value="<?= e((string) $prize['max_quantity']) ?>"><span class="inline-save-state" data-inline-state></span></td>
-          <td><?= e((string) $prize['won_count']) ?></td>
-          <td><?= e((string) max(0, (int) $prize['max_quantity'] - (int) $prize['won_count'])) ?></td>
+          <td data-prize-won><?= e((string) $prize['won_count']) ?></td>
+          <td data-prize-remaining><?= e((string) max(0, (int) $prize['max_quantity'] - (int) $prize['won_count'])) ?></td>
           <td>
             <form method="post" action="/admin/prizes/<?= e((string) $prize['id']) ?>/toggle" class="inline">
               <?= csrf_field() ?>

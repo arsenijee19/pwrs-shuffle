@@ -1,12 +1,19 @@
-<?php /** @var string $viewFile */ ?>
+<?php
+/** @var string $viewFile */
+$assetVersion = static function (string $asset): string {
+  $path = __DIR__ . '/../../public/' . ltrim($asset, '/');
+  $modified = @filemtime($path);
+  return $modified === false ? '1' : (string) $modified;
+};
+?>
 <!doctype html>
 <html lang="sr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= e(($title ?? 'PlayWorld Mystery Box') . ' | PlayWorld') ?></title>
-  <link rel="stylesheet" href="/assets/app.css?v=20260906-api">
-  <script defer src="/assets/app.js?v=20260729-verify"></script>
+  <link rel="stylesheet" href="/assets/app.css?v=<?= e($assetVersion('assets/app.css')) ?>">
+  <script defer src="/assets/app.js?v=<?= e($assetVersion('assets/app.js')) ?>"></script>
 </head>
 <body>
   <header class="topbar">

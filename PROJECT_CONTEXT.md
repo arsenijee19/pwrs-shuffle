@@ -11,7 +11,7 @@
 - Partially implemented functionality: Telegram workflow still requires owner configuration; sound remains a short browser-generated success tone with user toggle.
 - Unfinished work: production branding assets, real Telegram group ID, production secrets, cPanel runtime verification, and real device testing.
 - Known limitations: no PlayWorld redemption verification for discount codes, no SMS sender, no user accounts, no multi-campaign support, and no physical 60/90/120 Hz device test.
-- Known bugs: none found in local validation; SMTP/Telegram external delivery requires production smoke testing.
+- Known bugs: none found in local validation; SMTP/Telegram external delivery requires production smoke testing. PHPUnit is not installed in the current cPanel deployment checkout, so automated tests must run in the development checkout or after installing dev dependencies.
 - Untested areas: real cPanel runtime, real Brevo delivery, real Telegram delivery, real mobile devices, and proxy configuration.
 
 ## File Structure
@@ -102,6 +102,7 @@
 - Added customer-facing rules for discount stacking, no refunds/exchanges, and the PlayWorld-purchase-only duplicate-game replacement exception.
 - Added reward behavior/snapshot migrations, discount code pool, bonus delivery, manual claim service, protected n8n Telegram workflow, and tests for reward idempotency, snapshots, code allocation, max quantity, and anti-repeat privacy.
 - Fixed cPanel SQLite/PDO compatibility for `BEGIN IMMEDIATE`: transaction commits and rollbacks now use SQL-level helpers so production migrations and draw writes do not fail with `There is no active transaction`.
+- Hardened admin inline prize autosave: asset URLs now use file modification versions to avoid stale browser JavaScript, inline edits use the row CSRF token, duplicate blur/change saves are suppressed, server-normalized values are written back into the field, and remaining quantity updates immediately after changing Max.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
