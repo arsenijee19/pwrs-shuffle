@@ -250,10 +250,19 @@ $router->get('/admin/discount-codes', function (): void {
     $search = trim((string) ($_GET['q'] ?? ''));
     $percentage = (int) ($_GET['percentage'] ?? 0);
     $status = trim((string) ($_GET['status'] ?? ''));
+    $discountCodes = new DiscountCodeService();
+    $stats = $discountCodes->stats();
+    $totals = ['available' => 0, 'assigned' => 0, 'total' => 0];
+    foreach ($stats as $stat) {
+        $totals['available'] += (int) $stat['available'];
+        $totals['assigned'] += (int) $stat['assigned'];
+    }
+    $totals['total'] = $totals['available'] + $totals['assigned'];
     render('admin/discount-codes', [
         'title' => 'Kodovi za popust',
-        'codes' => (new DiscountCodeService())->recent(500, $search, $percentage > 0 ? $percentage : null, $status !== '' ? $status : null),
-        'stats' => (new DiscountCodeService())->stats(),
+        'codes' => $discountCodes->recent(500, $search, $percentage > 0 ? $percentage : null, $status !== '' ? $status : null),
+        'stats' => $stats,
+        'totals' => $totals,
         'filters' => compact('search', 'percentage', 'status'),
     ]);
 });

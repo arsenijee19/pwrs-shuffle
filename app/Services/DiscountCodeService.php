@@ -41,36 +41,44 @@ final class DiscountCodeService
              VALUES (:percentage, :code_hash, :code_ciphertext, "Available", :created_by, :created_at)'
         );
 
-        foreach (preg_split('/\R/u', $contents) ?: [] as $line) {
-            $line = trim($line);
-            if ($line === '') {
-                continue;
-            }
-
-            $columns = str_getcsv($line, ',', '"', '\\');
-            $code = trim((string) ($columns[0] ?? ''));
-            if ($code === '' || strlen($code) > 160 || preg_match('/[\x00-\x1F\x7F]/', $code)) {
-                $invalid++;
-                continue;
-            }
-
-            $normalized = strtoupper($code);
-            try {
-                $stmt->execute([
-                    'percentage' => $percentage,
-                    'code_hash' => hash('sha256', $normalized),
-                    'code_ciphertext' => SecretBox::encrypt($code),
-                    'created_by' => $adminId,
-                    'created_at' => date('c'),
-                ]);
-                $created++;
-            } catch (Throwable $error) {
-                if (str_contains(strtolower($error->getMessage()), 'unique')) {
-                    $duplicates++;
+        Database::beginImmediate($pdo);
+        try {
+            foreach (preg_split('/\R/u', $contents) ?: [] as $line) {
+                $line = trim($line);
+                if ($line === '') {
                     continue;
                 }
-                throw $error;
+
+                $columns = str_getcsv($line, ',', '"', '\\');
+                $code = trim((string) ($columns[0] ?? ''));
+                $code = preg_replace('/^\xEF\xBB\xBF/', '', $code) ?? $code;
+                if ($code === '' || strlen($code) > 160 || preg_match('/[\x00-\x1F\x7F]/', $code)) {
+                    $invalid++;
+                    continue;
+                }
+
+                $normalized = strtoupper($code);
+                try {
+                    $stmt->execute([
+                        'percentage' => $percentage,
+                        'code_hash' => hash('sha256', $normalized),
+                        'code_ciphertext' => SecretBox::encrypt($code),
+                        'created_by' => $adminId,
+                        'created_at' => date('c'),
+                    ]);
+                    $created++;
+                } catch (Throwable $error) {
+                    if (str_contains(strtolower($error->getMessage()), 'unique')) {
+                        $duplicates++;
+                        continue;
+                    }
+                    throw $error;
+                }
             }
+            Database::commit($pdo);
+        } catch (Throwable $error) {
+            Database::rollback($pdo);
+            throw $error;
         }
 
         return compact('created', 'duplicates', 'invalid');

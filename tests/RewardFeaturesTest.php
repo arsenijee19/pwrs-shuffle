@@ -61,6 +61,17 @@ final class RewardFeaturesTest extends TestCase
         $this->assertSame(1, (int) Database::pdo()->query('SELECT COUNT(*) FROM discount_codes WHERE status = "Assigned"')->fetchColumn());
     }
 
+    public function testBulkDiscountImportReportsAvailableCodes(): void
+    {
+        $contents = implode("\n", array_map(static fn (int $number): string => 'PW10-' . str_pad((string) $number, 3, '0', STR_PAD_LEFT), range(1, 500)));
+        $result = (new DiscountCodeService())->import($contents, 10);
+
+        $this->assertSame(500, $result['created']);
+        $this->assertSame(0, $result['duplicates']);
+        $this->assertSame(0, $result['invalid']);
+        $this->assertSame(500, (new DiscountCodeService())->availableCount(10));
+    }
+
     public function testDiscountPrizeWithoutCodesIsExcluded(): void
     {
         $this->insertPrize('No Code Prize', 100, 10, 0, 25, 0);

@@ -126,6 +126,17 @@ PlayWorld tim`;
     });
   });
 
+  document.querySelectorAll('[data-code-import]').forEach((textarea) => {
+    const counter = textarea.parentElement?.querySelector('[data-code-count]');
+    const updateCount = () => {
+      if (!counter) return;
+      const count = textarea.value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).length;
+      counter.textContent = `${count} ${count === 1 ? 'kod' : 'kodova'} spremno za unos`;
+    };
+    textarea.addEventListener('input', updateCount);
+    updateCount();
+  });
+
   document.querySelectorAll('[data-prize-id][data-field]').forEach((input) => {
     const original = () => input.dataset.currentValue || '';
     let timer;

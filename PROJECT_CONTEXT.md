@@ -104,6 +104,7 @@
 - Fixed cPanel SQLite/PDO compatibility for `BEGIN IMMEDIATE`: transaction commits and rollbacks now use SQL-level helpers so production migrations and draw writes do not fail with `There is no active transaction`.
 - Hardened admin inline prize autosave: asset URLs now use file modification versions to avoid stale browser JavaScript, inline edits use the row CSRF token, duplicate blur/change saves are suppressed, server-normalized values are written back into the field, and remaining quantity updates immediately after changing Max.
 - Added the localized `/admin/slanja` alias for email delivery history while retaining `/admin/email-history`, and reorganized the prizes admin actions into an equal-width responsive grid.
+- Improved discount-code inventory: bulk imports now use a SQLite transaction, strip spreadsheet BOM characters, show visible import results, expose total/available/assigned stock, display stock by percentage, count pasted lines before submit, and use a scrollable responsive table for large inventories.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
