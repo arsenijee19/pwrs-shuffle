@@ -102,22 +102,22 @@ $bonusDeliverySending = $bonusDeliveryStatus === 'Sending';
             <button class="ghost contact-toggle" type="button" data-contact-toggle aria-expanded="false" aria-controls="contact-options">KONTAKT</button>
             <div class="contact-options" id="contact-options" data-contact-panel hidden>
               <a class="contact-option contact-option-email" href="mailto:usluge@playworld.rs?subject=PlayWorld%20Mystery%20Box%20-%20Preuzimanje%20nagrade">
-                <span class="contact-icon" aria-hidden="true">✉</span><span class="contact-copy"><strong>Email</strong><span>usluge@playworld.rs</span></span>
+                <span class="contact-copy"><strong>Email</strong><span>usluge@playworld.rs</span></span>
               </a>
               <a class="contact-option contact-option-instagram" href="https://www.instagram.com/playworldrs/" target="_blank" rel="noopener">
-                <span class="contact-icon" aria-hidden="true">◎</span><span class="contact-copy"><strong>Instagram</strong><span>@playworldrs</span></span>
+                <span class="contact-copy"><strong>Instagram</strong><span>@playworldrs</span></span>
               </a>
               <a class="contact-option contact-option-viber" href="viber://chat?number=%2B381655102425">
-                <span class="contact-icon" aria-hidden="true">☎</span><span class="contact-copy"><strong>Viber</strong><span>+381 65 510 2425</span></span>
+                <span class="contact-copy"><strong>Viber</strong><span>+381 65 510 2425</span></span>
               </a>
               <a class="contact-option contact-option-whatsapp" href="https://wa.me/381655102425" target="_blank" rel="noopener">
-                <span class="contact-icon" aria-hidden="true">◔</span><span class="contact-copy"><strong>WhatsApp</strong><span>+381 65 510 2425</span></span>
+                <span class="contact-copy"><strong>WhatsApp</strong><span>+381 65 510 2425</span></span>
               </a>
               <a class="contact-option contact-option-viber" href="viber://chat?number=%2B381606121906">
-                <span class="contact-icon" aria-hidden="true">☎</span><span class="contact-copy"><strong>Viber</strong><span>+381 60 612 1906</span></span>
+                <span class="contact-copy"><strong>Viber</strong><span>+381 60 612 1906</span></span>
               </a>
               <a class="contact-option contact-option-whatsapp" href="https://wa.me/381606121906" target="_blank" rel="noopener">
-                <span class="contact-icon" aria-hidden="true">◔</span><span class="contact-copy"><strong>WhatsApp</strong><span>+381 60 612 1906</span></span>
+                <span class="contact-copy"><strong>WhatsApp</strong><span>+381 60 612 1906</span></span>
               </a>
             </div>
           </div>
