@@ -35,8 +35,8 @@
 - Reward claims API: protected lease/result endpoints under `/api/v1/reward-claims/*`, with short leases and idempotent state transitions.
 - Secret handling: `APP_KEY` protects discount codes and bonus links at rest; raw IP is never stored for anti-repeat.
 - Draw metadata: reward behavior is snapshotted in `draws`; legacy rows use a live-prize fallback when snapshot fields are null.
-- Draw logic: server-side weighted random selection in a transaction; animation is display-only.
-- Draw eligibility: every active prize with `weight > 0` remains in the weighted pool regardless of `won_count` or legacy `max_quantity`. `won_count` is analytics only; only fulfillment constraints such as unavailable discount-code stock temporarily exclude a prize.
+- Draw logic: server-side rarity-tier selection in a transaction; the configured tiers are Ultra Rare 3%, Rare 7%, Special 30%, Standard 30%, and Common 30%. The concrete prize is selected uniformly from the eligible prizes in the selected rarity; animation is display-only.
+- Draw eligibility: every active prize participates regardless of `weight`, `won_count`, or legacy `max_quantity`. Only fulfillment constraints such as unavailable discount-code stock temporarily exclude a prize. Weight remains a legacy/admin field and is not used by DrawService.
 - Fulfillment logic: `MysteryBoxFulfillmentService` is the shared source of truth for admin single-link delivery and n8n order fulfillment. `mystery_box_fulfillments` stores one unique order record and `mystery_box_fulfillment_items` stores each requested link independently. `Sending`/unknown SMTP outcomes become `NeedsReview` and are never automatically retried.
 - Security: CSRF tokens on POST actions, hashed token storage, PHP secure cookie settings, basic file-based rate limiting, PDO prepared statements, output escaping, and security headers.
 - Deployment: document root should point to `public/`.
@@ -64,7 +64,7 @@
 - Animation never determines the result; the server persists the result first.
 - Screenshots are not authoritative by themselves; verify suspicious results by Draw ID through `/verify` or the admin/database record.
 - n8n fulfillment resumes only known `Failed` items. A completed `order_id` is an idempotent replay; a changed email or quantity returns a conflict.
-- Anti-repeat excludes only the exact prize from the immediately previous draw for the same HMAC fingerprint, and only when another valid prize remains; older prizes immediately return at their full configured weight. There is no growing recent-prize list and no batch uniqueness guarantee.
+- Anti-repeat excludes only the exact prize from the immediately previous draw for the same HMAC fingerprint, after the rarity tier is selected and only when another valid prize remains in that tier. Older prizes immediately return to the uniform candidate pool. There is no growing recent-prize list and no batch uniqueness guarantee.
 
 ## Recent Changes
 - Built the PHP/SQLite MVP from an empty repository.
@@ -122,6 +122,7 @@
 - Added an admin-only plain-text export for all discount codes, grouped by percentage, with no-store download headers and decryption only during response generation.
 - Corrected dashboard admin layout after visual review: the heading now occupies its own row and the eight navigation actions use a symmetric 4x2 desktop grid with responsive 2-column/1-column fallbacks.
 - Reorganized public result actions into a symmetric desktop grid with a separate centered sound control, and made bonus delivery feedback reflect the real email status. Definite failures can be retried with the same links without creating new tokens; successful and unknown-outcome deliveries remain protected from duplicate sends.
+- Replaced weight-based prize selection with rarity-tier probabilities and uniform within-tier selection. Added empty-rarity proportional renormalization, active/fulfillment eligibility, post-rarity immediate anti-repeat, deterministic rarity boundary tests, and a 1,000,000-draw local simulation. Existing prize weights, database rows, public copy, integrations, and historical draws were not changed.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.

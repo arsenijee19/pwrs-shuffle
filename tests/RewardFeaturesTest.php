@@ -200,7 +200,7 @@ final class RewardFeaturesTest extends TestCase
         $this->assertNotSame($firstPrize, $secondPrize);
 
         // Once a different prize has been drawn, the older prize is eligible again.
-        Database::pdo()->prepare('UPDATE prizes SET weight = 0 WHERE id = :id')->execute(['id' => $secondPrize]);
+        Database::pdo()->prepare('UPDATE prizes SET active = 0 WHERE id = :id')->execute(['id' => $secondPrize]);
         $thirdToken = (new TokenService())->generate(1)[0]['token'];
         $thirdDraw = (new DrawService())->open($thirdToken);
         $this->assertSame('First Prize', $thirdDraw['prize_name']);

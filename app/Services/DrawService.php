@@ -12,6 +12,15 @@ use Throwable;
 
 final class DrawService
 {
+    /** @var array<string,int> */
+    private const RARITY_PROBABILITIES = [
+        'Ultra Rare' => 3,
+        'Rare' => 7,
+        'Special' => 30,
+        'Standard' => 30,
+        'Common' => 30,
+    ];
+
     public function resultForToken(int $tokenId): ?array
     {
         $stmt = Database::pdo()->prepare(
@@ -94,17 +103,17 @@ final class DrawService
                 throw new RuntimeException('Token je istekao.');
             }
 
-            // Prize frequency is controlled by active status and weight only.
-            // won_count is analytics; max_quantity is a legacy informational field.
-            $allPrizes = $pdo->query('SELECT * FROM prizes WHERE active = 1 AND weight > 0')->fetchAll();
-            $codeService = new DiscountCodeService();
-            $prizes = array_values(array_filter($allPrizes, static function (array $prize) use ($codeService, $pdo): bool {
-                $percentage = (int) ($prize['discount_percent'] ?? 0);
-                return $percentage < 1 || $codeService->hasAvailable($percentage, $pdo);
-            }));
-            if (!$prizes) {
+            // Rarity controls the probability tier. Weight is retained only as
+            // legacy/admin data and must not influence this selection.
+            $eligiblePrizes = $this->buildEligiblePrizes($pdo);
+            $groups = $this->groupEligiblePrizesByRarity($eligiblePrizes);
+            if ($groups === []) {
                 throw new RuntimeException('Trenutno nema dostupnih nagrada.');
             }
+
+            $selectedRarity = $this->pickRarity(array_keys($groups));
+            $prizes = $groups[$selectedRarity];
+            $codeService = new DiscountCodeService();
 
             $identity = (new ClientIpResolver())->identity();
             $fingerprint = $identity['fingerprint'];
@@ -129,7 +138,7 @@ final class DrawService
                 }
             }
 
-            $prize = $this->pickPrize($prizes);
+            $prize = $this->pickRandomPrize($prizes);
             $drawId = 'PW-' . strtoupper(bin2hex(random_bytes(5)));
             $now = date('c');
             $updatePrize = $pdo->prepare('UPDATE prizes SET won_count = won_count + 1, updated_at = :now WHERE id = :id');
@@ -184,6 +193,45 @@ final class DrawService
     }
 
     /**
+     * Select a rarity using the configured tier probabilities.
+     *
+     * The optional roll is only for deterministic tests and simulations. The
+     * production path always uses random_int(1, total probability).
+     *
+     * @param array<int,string> $eligibleRarities
+     */
+    public function pickRarity(array $eligibleRarities, ?int $roll = null): string
+    {
+        $available = array_fill_keys($eligibleRarities, true);
+        $rarities = array_values(array_filter(
+            PrizeService::RARITIES,
+            static fn (string $rarity): bool => isset($available[$rarity])
+        ));
+        if ($rarities === []) {
+            throw new RuntimeException('Trenutno nema dostupnih rarity grupa.');
+        }
+
+        $total = array_sum(array_map(
+            static fn (string $rarity): int => self::RARITY_PROBABILITIES[$rarity],
+            $rarities
+        ));
+        $roll ??= random_int(1, $total);
+        if ($roll < 1 || $roll > $total) {
+            throw new \InvalidArgumentException('Rarity roll nije u dozvoljenom opsegu.');
+        }
+
+        $cursor = 0;
+        foreach ($rarities as $rarity) {
+            $cursor += self::RARITY_PROBABILITIES[$rarity];
+            if ($roll <= $cursor) {
+                return $rarity;
+            }
+        }
+
+        return $rarities[array_key_last($rarities)];
+    }
+
+    /**
      * Keep results created before bonus metadata was introduced usable without
      * changing the stored draw record or its immutable history.
      *
@@ -201,17 +249,42 @@ final class DrawService
         return $draw;
     }
 
-    private function pickPrize(array $prizes): array
+    /** @return array<int,array<string,mixed>> */
+    private function buildEligiblePrizes(PDO $pdo): array
     {
-        $total = array_sum(array_map(fn (array $prize): int => (int) $prize['weight'], $prizes));
-        $roll = random_int(1, max(1, $total));
-        $cursor = 0;
+        $allPrizes = $pdo->query('SELECT * FROM prizes WHERE active = 1')->fetchAll();
+        $codeService = new DiscountCodeService();
+
+        return array_values(array_filter($allPrizes, static function (array $prize) use ($codeService, $pdo): bool {
+            $percentage = (int) ($prize['discount_percent'] ?? 0);
+            return $percentage < 1 || $codeService->hasAvailable($percentage, $pdo);
+        }));
+    }
+
+    /** @param array<int,array<string,mixed>> $prizes
+     *  @return array<string,array<int,array<string,mixed>>>
+     */
+    private function groupEligiblePrizesByRarity(array $prizes): array
+    {
+        $groups = [];
         foreach ($prizes as $prize) {
-            $cursor += (int) $prize['weight'];
-            if ($roll <= $cursor) {
-                return $prize;
+            $rarity = trim((string) ($prize['rarity'] ?? ''));
+            if (!in_array($rarity, PrizeService::RARITIES, true)) {
+                continue;
             }
+            $groups[$rarity][] = $prize;
         }
-        return $prizes[array_key_last($prizes)];
+
+        return $groups;
+    }
+
+    /** @param array<int,array<string,mixed>> $prizes */
+    private function pickRandomPrize(array $prizes): array
+    {
+        if ($prizes === []) {
+            throw new RuntimeException('Trenutno nema kandidata u izabranoj rarity grupi.');
+        }
+
+        return $prizes[random_int(0, count($prizes) - 1)];
     }
 }

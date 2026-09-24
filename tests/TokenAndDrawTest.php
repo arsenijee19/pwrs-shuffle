@@ -68,6 +68,67 @@ final class TokenAndDrawTest extends TestCase
         $this->assertSame(1, (int) $won);
     }
 
+    public function testRarityRollUsesExactConfiguredRanges(): void
+    {
+        $service = new DrawService();
+        $counts = array_fill_keys(PrizeService::RARITIES, 0);
+
+        // Repeat each 1..100 roll equally so the configured percentages are
+        // tested deterministically rather than relying on a flaky sample.
+        for ($index = 0; $index < 1000; $index++) {
+            $rarity = $service->pickRarity(PrizeService::RARITIES, ($index % 100) + 1);
+            $counts[$rarity]++;
+        }
+
+        $this->assertSame(30, $counts['Ultra Rare']);
+        $this->assertSame(70, $counts['Rare']);
+        $this->assertSame(300, $counts['Special']);
+        $this->assertSame(300, $counts['Standard']);
+        $this->assertSame(300, $counts['Common']);
+
+        // With Ultra Rare empty, the remaining tiers use 7/97, 30/97, 30/97,
+        // and 30/97 rather than falling back to Common.
+        $this->assertSame('Rare', $service->pickRarity(['Rare', 'Special', 'Standard', 'Common'], 7));
+        $this->assertSame('Special', $service->pickRarity(['Rare', 'Special', 'Standard', 'Common'], 8));
+        $this->assertSame('Common', $service->pickRarity(['Rare', 'Special', 'Standard', 'Common'], 97));
+    }
+
+    public function testActiveZeroWeightPrizeIsStillEligible(): void
+    {
+        $now = date('c');
+        Database::pdo()->prepare(
+            'INSERT INTO prizes (name, description, instructions, cover_path, rarity, weight, max_quantity, won_count, active, created_at, updated_at)
+             VALUES ("Zero Weight Prize", "Opis", "Uputstvo", "/assets/placeholder-cover.svg", "Common", 0, 1, 100000, 1, :created, :updated)'
+        )->execute(['created' => $now, 'updated' => $now]);
+
+        $token = (new TokenService())->generate(1)[0]['token'];
+        $draw = (new DrawService())->open($token);
+
+        $this->assertSame('Zero Weight Prize', $draw['prize_name']);
+    }
+
+    public function testWeightDoesNotChangeEqualChanceWithinRarity(): void
+    {
+        $_ENV['ANTI_REPEAT_ENABLED'] = 'false';
+        $now = date('c');
+        $insert = Database::pdo()->prepare(
+            'INSERT INTO prizes (name, description, instructions, cover_path, rarity, weight, max_quantity, won_count, active, created_at, updated_at)
+             VALUES (:name, "Opis", "Uputstvo", "/assets/placeholder-cover.svg", "Common", :weight, 1, 0, 1, :created, :updated)'
+        );
+        $insert->execute(['name' => 'Weight One', 'weight' => 1, 'created' => $now, 'updated' => $now]);
+        $insert->execute(['name' => 'Weight One Hundred', 'weight' => 100, 'created' => $now, 'updated' => $now]);
+
+        $counts = ['Weight One' => 0, 'Weight One Hundred' => 0];
+        for ($index = 0; $index < 600; $index++) {
+            $token = (new TokenService())->generate(1)[0]['token'];
+            $draw = (new DrawService())->open($token);
+            $counts[$draw['prize_name']]++;
+        }
+
+        $this->assertGreaterThan(200, $counts['Weight One']);
+        $this->assertGreaterThan(200, $counts['Weight One Hundred']);
+    }
+
     public function testDrawCanBeVerifiedByDrawId(): void
     {
         $now = date('c');
