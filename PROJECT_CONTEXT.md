@@ -109,7 +109,7 @@
 - Added an authenticated prize On/Off toggle and a repeatable admin seed action for 15 requested bonus rewards, preserving existing prizes and draw history.
 - Added customer-facing rules for discount stacking, no refunds/exchanges, and the PlayWorld-purchase-only duplicate-game replacement exception.
 - Added reward behavior/snapshot migrations, discount code pool, bonus delivery, manual claim service, protected n8n Telegram workflow, and tests for reward idempotency, snapshots, code allocation, legacy-max eligibility, and anti-repeat privacy.
-- Added inactive `n8n/merchantpro-playworld-mystery-box.json` and its setup/test guide for MerchantPro order fulfillment through the existing PlayWorld API; validated workflow structure and mocked fulfillment branches locally.
+- Updated inactive `n8n/merchantpro-playworld-mystery-box.json` for MerchantPro order fulfillment through the existing PlayWorld API; MerchantPro loading and delivered status updates now use n8n HTTP Request nodes with a named HTTP Basic Auth credential, while order normalization and idempotent fulfillment branches remain in the workflow.
 - Added a clearer reward-claim contact section with email, Instagram, Viber, and WhatsApp actions, plus an OpenSSL AES-256-GCM fallback for encrypted admin API settings when Sodium is unavailable.
 - Changed anti-repeat to immediate duplicate protection only: the previous exact prize is excluded for the next draw, then becomes fully eligible again after any different result. Removed the obsolete 60-minute configuration from the example environment and public copy.
 - Preconfigured the public MerchantPro workflow with the PlayWorld store fallback URL and Telegram group ID while keeping all API secrets outside GitHub; the remote n8n host still supplies its own secret configuration.
@@ -125,7 +125,7 @@
 - Configure Brevo SMTP values through `/admin/email` and send a real test email from the admin panel.
 - Pull the latest commit on cPanel before testing prize saves, because the older deployment logged a migration transaction fatal before routing admin POST requests.
 - Pull the latest commit on cPanel, open `/admin/api`, and enable/configure n8n only when the workflow is ready.
-- Configure the n8n HTTP Request node according to the API section in `README.md`.
+- Create the n8n HTTP Basic Auth credential named `MerchantPro API`, select it in both MerchantPro HTTP Request nodes, and run the manual test before activation.
 - Configure `APP_KEY`, `ANTI_REPEAT_SECRET`, `ANTI_REPEAT_ENABLED`, and Cloudflare trust settings.
 - Import and configure `n8n/playworld-reward-telegram.json`.
 - Import and configure `n8n/merchantpro-playworld-mystery-box.json` using `n8n/README-MERCHANTPRO-MYSTERY-BOX.md`; it is not production-tested or activated yet.
@@ -139,7 +139,7 @@
 - Discount codes cannot be marked redeemed automatically until PlayWorld exposes a trusted redemption signal.
 - Existing production databases need the new `APP_KEY` before any assigned discount/bonus payload can be decrypted.
 - The legacy Shuffle + 5% display compatibility can only create new bonus links when the SMTP settings and discount-code stock are configured correctly; old draw history itself remains unchanged.
-- The MerchantPro workflow requires n8n Code node environment access and a real staging/production smoke test before activation; PHP unit tests cannot run in this checkout because the `phpunit` executable is not installed.
+- The MerchantPro workflow requires the named HTTP Basic Auth credential plus PlayWorld/Telegram runtime secrets and a real staging/production smoke test before activation; PHP unit tests cannot run in this checkout because the `phpunit` executable is not installed.
 - SecretBox keeps existing Sodium v1 ciphertext compatible and writes new v2 ciphertext with OpenSSL only when Sodium is unavailable; a server still needs at least one of those extensions.
 
 ## LLM Handoff Notes

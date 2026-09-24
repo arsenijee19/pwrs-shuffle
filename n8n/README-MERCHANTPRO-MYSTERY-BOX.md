@@ -21,26 +21,40 @@ n8n ne generiše tokene, ne šalje email kupcu i ne odlučuje o nagradi. PlayWor
 
 Potrebno je da imate:
 
-- n8n instancu sa dozvoljenim environment varijablama u Code node-ovima
+- n8n instancu koja podržava HTTP Request node i Basic Auth credentials
 - MerchantPro API Key i API Secret sa pravima za čitanje orders i promenu delivered statusa
 - PlayWorld N8N API key koji je podešen u PlayWorld admin panelu
 - Telegram bot token i grupu u kojoj bot može da šalje poruke
 
 Workflow je namerno neaktivan (active=false). Ne aktivirajte ga pre konfiguracije i testiranja.
 
-## Obavezne environment varijable
+## MerchantPro credential u n8n-u
+
+Ovaj workflow koristi pravi n8n HTTP Request node. MerchantPro ključ i secret nisu upisani u JSON i ne koriste se kroz `$env`.
+
+U n8n otvorite **Credentials -> Add credential -> HTTP Basic Auth** i napravite credential sa sledećim vrednostima:
+
+- **Name:** `MerchantPro API`
+- **Username:** MerchantPro API Key
+- **Password:** MerchantPro API Secret
+
+Posle importa otvorite oba čvora:
+
+- `MerchantPro - Load Shipped Orders`
+- `MerchantPro - Mark Delivered`
+
+U oba izaberite isti credential `MerchantPro API`, pa sačuvajte workflow. Ako n8n prikaže `REPLACE_WITH_MERCHANTPRO_CREDENTIAL_ID`, to je samo bezbedna referenca iz exporta; credential se bira u n8n-u i taj tekst se ne popunjava ručno.
+
+## Environment varijable za ostale servise
 
 U n8n environment konfiguraciji unesite:
 
-- MERCHANTPRO_BASE_URL - puni HTTPS domen MerchantPro prodavnice, bez završne kose crte; workflow već koristi `https://www.playworld.rs` ako promenljiva nije postavljena
-- MERCHANTPRO_API_KEY - MerchantPro API Key
-- MERCHANTPRO_API_SECRET - MerchantPro API Secret
 - PWRS_N8N_API_KEY - mora odgovarati aktivnom PlayWorld API ključu
 - PWRS_TELEGRAM_BOT_TOKEN - Telegram BotFather token
 
-Nikakva vrednost za ove tajne nije upisana u javni JSON fajl. Telegram grupa je već podešena na `-5462042109`, a MerchantPro domen ima bezbedan fallback na `https://www.playworld.rs`.
+Nikakva tajna nije upisana u javni JSON fajl. Telegram grupa je već podešena na `-5462042109`. MerchantPro domen je upisan kao kanonski HTTPS URL `https://www.playworld.rs`.
 
-Ako n8n koristi Docker, promenljive se obično dodaju u docker-compose environment ili u hosting panelu. Ako koristite n8n Cloud ili instalaciju koja blokira env pristup iz Code node-a, uključite dozvolu za environment variables ili prebacite pozive na named credentials. Ovaj pripremljeni JSON koristi environment varijable da se credentials unesu jednom.
+Ako n8n koristi Docker, `PWRS_N8N_API_KEY` i `PWRS_TELEGRAM_BOT_TOKEN` dodajte u environment n8n procesa ili koristite odgovarajuće n8n credentials. MerchantPro se ne dodaje u environment: koristi se credential iz prethodnog odeljka.
 
 Posle promene environment varijabli restartujte n8n.
 
@@ -74,14 +88,15 @@ PlayWorld kreira tokene i koristi postojeći email template. n8n ne šalje email
 
 ## Import u n8n
 
-1. Preuzmite merchantpro-playworld-mystery-box.json.
+1. Preuzmite `merchantpro-playworld-mystery-box.json`.
 2. U n8n otvorite Workflows.
 3. Izaberite Import from File.
 4. Uvezite JSON.
-5. Proverite da su svi environment secrets dostupni n8n procesu.
-6. Proverite da n8n vidi svih pet environment promenljivih.
-7. Pokrenite Manual Trigger - Test Only sa test podacima u stvarnom MerchantPro nalogu ili prvo proverite workflow u staging okruženju.
-8. Tek nakon provere uključite Schedule Trigger.
+5. U čvoru `MerchantPro - Load Shipped Orders` izaberite credential `MerchantPro API`.
+6. U čvoru `MerchantPro - Mark Delivered` izaberite isti credential.
+7. Proverite da su `PWRS_N8N_API_KEY` i `PWRS_TELEGRAM_BOT_TOKEN` dostupni n8n procesu.
+8. Pokrenite `Manual Trigger - Test Only` sa test porudžbinom u MerchantPro nalogu.
+9. Tek nakon provere uključite Schedule Trigger.
 
 Workflow nema credentials objekte koji bi sadržali tajne i ne menja nijedan postojeći workflow.
 
@@ -89,18 +104,22 @@ Workflow nema credentials objekte koji bi sadržali tajne i ne menja nijedan pos
 
 Poziv za orders koristi:
 
-- GET /api/v2/orders
+- GET `https://www.playworld.rs/api/v2/orders`
 - shipping_status=shipped
 - include=line_items
+- sort=date_created
 - limit=100
+- fields sa potrebnim podacima o porudžbini i kupcu
 - start za paginaciju
 
-Workflow prati meta.links.next kada postoji i nastavlja preko start/limit fallback-a. Učitava sve strane dok više nema rezultata.
+HTTP Request node koristi Basic Auth credential, `Accept: application/json`, ograničenje od 100 stavki i automatsku paginaciju preko `start`. Normalizujući Code node proverava status i oblik odgovora, a zatim prosleđuje svaku porudžbinu ostatku workflow-a.
+
+Za promenu statusa koristi se isti credential i PATCH `https://www.playworld.rs/api/v2/orders/{ORDER_ID}/delivered` tek nakon potvrđene PlayWorld isporuke.
 
 Za MerchantPro:
 
-- 429 se ponavlja sa backoff-om
-- privremeni 5xx se ponavlja sa backoff-om
+- paginacija čeka 500 ms između stranica i najviše 100 zahteva
+- HTTP čvor je podešen za ograničene ponovne pokušaje statusne promene
 - 401/403 se ne bombarduje ponovljenim pokušajima
 - neočekivan odgovor ide u Telegram warning putanju
 - customer podaci se ne ispisuju u kompletnoj formi u grešci
@@ -150,7 +169,8 @@ PlayWorld 429 i privremeni 5xx imaju ograničen retry. Telegram se ne ponavlja a
 
 - Schedule Trigger - Every Minute: raspored na 1 minut.
 - Manual Trigger - Test Only: ručno pokretanje.
-- MerchantPro - Load Shipped Orders: Basic Auth, paginacija i retry.
+- MerchantPro - Load Shipped Orders: HTTP Request GET, Basic Auth credential i paginacija.
+- MerchantPro - Normalize Orders: proverava kompletan HTTP odgovor i pretvara stranice u pojedinačne porudžbine.
 - MerchantPro Orders Loaded?: odvaja validne order rezultate od empty/error rezultata.
 - MerchantPro Load Failed?: odvaja warning putanju.
 - MerchantPro - Load Warning: generiše bezbednu operativnu poruku.
@@ -163,7 +183,7 @@ PlayWorld 429 i privremeni 5xx imaju ograničen retry. Telegram se ne ponavlja a
 - Fulfillment Successful?: odvaja uspeh od manual review/error putanje.
 - Build Fulfillment Warning: prijavljuje partial, 409, 422, 401, 429 i 5xx slučajeve.
 - Mystery Box Only Order?: odlučuje da li je bezbedno menjati MerchantPro status.
-- MerchantPro - Mark Delivered: PATCH /delivered sa retry pravilima.
+- MerchantPro - Mark Delivered: HTTP Request PATCH /delivered sa istim Basic Auth credentialom.
 - Inspect MerchantPro Delivered Response: prihvata samo 2xx i body.ok === true.
 - Prepare Successful Notifications: pravi 1/N, 2/N poruke samo za novu isporuku.
 - Create Telegram Notification Items: ravna poruke u pojedinačne stavke.
@@ -209,7 +229,7 @@ Za test porudžbinu proverite:
 
 ### MerchantPro autentikacija
 
-Proverite API Key, API Secret, Basic Auth i da BASE URL nema završnu kosu crtu. 401/403 neće biti agresivno ponavljani.
+Proverite da je credential tipa **HTTP Basic Auth**, da je nazvan `MerchantPro API`, da je API Key u Username polju, a API Secret u Password polju. URL je već podešen na `https://www.playworld.rs`.
 
 ### Nema porudžbina
 
@@ -225,7 +245,7 @@ Ne ponavljajte ručno naslepo. Proverite PlayWorld admin fulfillment history po 
 
 ### Telegram ne šalje
 
-Proverite bot token, članstvo bota u grupi, pravo slanja i da je REPLACE_TELEGRAM_GROUP_ID zamenjen stvarnim ID-jem. Telegram failure ne znači da treba ponovo isporučiti Mystery Box.
+Proverite bot token, članstvo bota u grupi i pravo slanja. Telegram failure ne znači da treba ponovo isporučiti Mystery Box.
 
 ### MerchantPro delivered nije uspeo
 
@@ -237,11 +257,11 @@ Implementacija prati MerchantPro REST v2 dokumentaciju za Basic Auth, Accept app
 
 Pretpostavke:
 
-- MerchantPro endpointi su dostupni na store domenu iz MERCHANTPRO_BASE_URL.
+- MerchantPro endpointi su dostupni na `https://www.playworld.rs` i koriste canonical `www` host.
 - MerchantPro API vraća data niz i meta.links.next ili može da nastavi preko start/limit.
 - PlayWorld endpoint vraća data.status, requested_quantity, sent_quantity, items i idempotent_replay.
 - PlayWorld kompletan uspeh ima HTTP 200, success true, status Completed i svaku stavku sa statusom Sent.
 - Telegram bot može slati u grupu čiji ID unesete u node.
-- n8n Code node može pristupiti environment varijablama i this.helpers.httpRequest.
+- n8n HTTP Request node može da koristi named HTTP Basic Auth credential, a Code node obrađuje njegov JSON odgovor.
 
 Workflow nije produkcijski aktiviran i ne menja postojeću PlayWorld aplikaciju ni postojeće n8n workflow-e.

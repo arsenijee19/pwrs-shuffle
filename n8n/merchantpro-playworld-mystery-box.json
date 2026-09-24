@@ -34,15 +34,103 @@
     },
     {
       "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "\nconst base = String($env.MERCHANTPRO_BASE_URL || \"https://www.playworld.rs\").trim().replace(/\\/$/, \"\");\nconst key = String($env.MERCHANTPRO_API_KEY || \"\").trim();\nconst secret = String($env.MERCHANTPRO_API_SECRET || \"\").trim();\nconst wait = (ms) => new Promise((r) => setTimeout(r, ms));\nconst statusOf = (e) => Number(e?.statusCode || e?.response?.statusCode || e?.cause?.statusCode || 0);\nconst bodyOf = (v) => {\n  const b = v?.body ?? v;\n  if (typeof b !== \"string\") return b;\n  try { return JSON.parse(b); } catch { return null; }\n};\nconst retryable = (s) => s === 0 || s === 429 || s >= 500;\nconst fail = (code, message) => [{ json: { kind: \"error\", load_error_code: code, load_error_message: message } }];\nif (!base || !key || !secret) return fail(\"configuration\", \"MerchantPro konfiguracija nije dostupna.\");\nlet origin;\ntry { origin = new URL(base); if (origin.protocol !== \"https:\") throw new Error(); } catch { return fail(\"configuration\", \"MERCHANTPRO_BASE_URL mora biti HTTPS URL.\"); }\nconst request = async (url, qs) => {\n  for (let attempt = 0; attempt < 4; attempt += 1) {\n    try {\n      const response = await this.helpers.httpRequest({\n        method: \"GET\", url, qs, auth: { username: key, password: secret },\n        headers: { Accept: \"application/json\" }, returnFullResponse: true,\n        encoding: \"json\", timeout: 20000\n      });\n      const status = Number(response?.statusCode || 200);\n      if (retryable(status) && attempt < 3) { await wait(1000 * (2 ** attempt)); continue; }\n      return { status, body: bodyOf(response) };\n    } catch (e) {\n      const status = statusOf(e);\n      if (!retryable(status) || attempt === 3) throw e;\n      await wait(1000 * (2 ** attempt));\n    }\n  }\n  throw new Error(\"request failed\");\n};\nconst orders = [];\nconst seen = new Set();\nlet start = 0;\ntry {\n  while (true) {\n    const url = new URL(\"/api/v2/orders\", origin);\n    const pageKey = url.toString() + \"?start=\" + start;\n    if (seen.has(pageKey)) throw new Error(\"repeated page\");\n    seen.add(pageKey);\n    const page = await request(url.toString(), { shipping_status: \"shipped\", include: \"line_items\", limit: 100, start });\n    if (page.status === 401 || page.status === 403) return fail(\"merchantpro_authentication\", \"MerchantPro autentikacija nije prihvaćena.\");\n    if (page.status === 429) return fail(\"merchantpro_rate_limit\", \"MerchantPro je privremeno ograničio zahteve.\");\n    if (page.status >= 500 || page.status === 0) return fail(\"merchantpro_server\", \"MerchantPro trenutno nije dostupan.\");\n    if (page.status < 200 || page.status >= 300 || !page.body || !Array.isArray(page.body.data)) return fail(\"merchantpro_invalid_response\", \"MerchantPro je vratio neočekivan odgovor.\");\n    orders.push(...page.body.data);\n    const next = page.body.meta?.links?.next;\n    const href = typeof next === \"string\" ? next : (next?.href || next?.url || \"\");\n    if (href) {\n      const nextUrl = new URL(href, origin);\n      if (nextUrl.origin !== origin.origin) throw new Error(\"pagination origin changed\");\n      const nextStart = nextUrl.searchParams.get(\"start\");\n      start = nextStart && /^\\d+$/.test(nextStart) ? Number(nextStart) : start + 100;\n      continue;\n    }\n    if (page.body.data.length < 100) break;\n    start += 100;\n  }\n} catch (e) {\n  const status = statusOf(e);\n  return fail(status === 401 || status === 403 ? \"merchantpro_authentication\" : status === 429 ? \"merchantpro_rate_limit\" : status >= 500 ? \"merchantpro_server\" : \"merchantpro_network\", \"MerchantPro porudžbine nisu učitane.\");\n}\nif (!orders.length) return [{ json: { kind: \"empty\" } }];\nreturn orders.map((order) => ({ json: { kind: \"order\", order } }));\n"
+        "method": "GET",
+        "url": "https://www.playworld.rs/api/v2/orders",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "shipping_status",
+              "value": "shipped"
+            },
+            {
+              "name": "include",
+              "value": "line_items"
+            },
+            {
+              "name": "sort",
+              "value": "date_created"
+            },
+            {
+              "name": "limit",
+              "value": "100"
+            },
+            {
+              "name": "fields",
+              "value": "id,payment_status,payment_status_text,shipping_status,shipping_status_text,customer_email,billing_address,shipping_address,shipping_name,billing_phone,shipping_phone,date_created,total_amount,subtotal_amount,subtotal_including_tax,shipping_cod_amount,currency,info_url,billing_name,shipping_city,billing_city,shipping_country_name,billing_country_name"
+            },
+            {
+              "name": "start",
+              "value": "0"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json",
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "start",
+                    "value": "={{ $pageCount * 100 }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !Array.isArray($response.body?.data) || $response.body.data.length < 100 }}",
+              "limitPagesFetched": true,
+              "maxRequests": 100,
+              "requestInterval": 500
+            }
+          }
+        }
       },
       "id": "load-orders",
       "name": "MerchantPro - Load Shipped Orders",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "REPLACE_WITH_MERCHANTPRO_CREDENTIAL_ID",
+          "name": "MerchantPro API"
+        }
+      },
+      "position": [
+        -1160,
+        -170
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const pages = $input.all();\nconst orders = [];\nconst fail = (code, message) => [{ json: { kind: \"error\", load_error_code: code, load_error_message: message } }];\n\nfor (const item of pages) {\n  const response = item.json || {};\n  const status = Number(response.statusCode ?? response.status ?? 200);\n  const body = response.body && typeof response.body === \"object\" ? response.body : response;\n\n  if (status === 401 || status === 403) return fail(\"merchantpro_authentication\", \"MerchantPro autentikacija nije prihvaćena.\");\n  if (status === 429) return fail(\"merchantpro_rate_limit\", \"MerchantPro je privremeno ograničio zahteve.\");\n  if (status >= 500) return fail(\"merchantpro_server\", \"MerchantPro trenutno nije dostupan.\");\n  if (status < 200 || status >= 300 || !body || !Array.isArray(body.data)) return fail(\"merchantpro_invalid_response\", \"MerchantPro je vratio neočekivan odgovor.\");\n\n  orders.push(...body.data);\n}\n\nif (!orders.length) return [{ json: { kind: \"empty\" } }];\nreturn orders.map((order) => ({ json: { kind: \"order\", order } }));"
+      },
+      "id": "normalize-orders",
+      "name": "MerchantPro - Normalize Orders",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1160,
+        -1040,
         -170
       ]
     },
@@ -335,13 +423,50 @@
     },
     {
       "parameters": {
-        "mode": "runOnceForEachItem",
-        "jsCode": "\nconst input = $json;\nconst base = String($env.MERCHANTPRO_BASE_URL || \"https://www.playworld.rs\").trim().replace(/\\/$/, \"\");\nconst key = String($env.MERCHANTPRO_API_KEY || \"\").trim();\nconst secret = String($env.MERCHANTPRO_API_SECRET || \"\").trim();\nconst wait = (ms) => new Promise((r) => setTimeout(r, ms));\nconst statusOf = (e) => Number(e?.statusCode || e?.response?.statusCode || e?.cause?.statusCode || 0);\nconst bodyOf = (v) => {\n  const b = v?.body ?? v;\n  if (typeof b !== \"string\") return b;\n  try { return JSON.parse(b); } catch { return null; }\n};\nif (!base || !key || !secret) return { json: { ...input, delivered_attempted: true, delivered_http_status: 0, delivered_body: null, delivered_error_code: \"configuration\" } };\nconst url = base.replace(/\\/$/, \"\") + \"/api/v2/orders/\" + encodeURIComponent(String(input.order_id)) + \"/delivered\";\nfor (let attempt = 0; attempt < 4; attempt += 1) {\n  try {\n    const response = await this.helpers.httpRequest({\n      method: \"PATCH\", url, auth: { username: key, password: secret },\n      headers: { Accept: \"application/json\", \"Content-Type\": \"application/json\" },\n      body: {}, json: true, returnFullResponse: true, timeout: 20000\n    });\n    const status = Number(response?.statusCode || 200);\n    if ((status === 429 || status >= 500) && attempt < 3) { await wait(1000 * (2 ** attempt)); continue; }\n    return { json: { ...input, delivered_attempted: true, delivered_http_status: status, delivered_body: bodyOf(response) } };\n  } catch (e) {\n    const status = statusOf(e);\n    if (!((status === 0 || status === 429 || status >= 500) && attempt < 3)) {\n      return { json: { ...input, delivered_attempted: true, delivered_http_status: status, delivered_body: bodyOf(e?.response || e?.body), delivered_error_code: status === 429 ? \"rate_limit\" : status >= 500 ? \"temporary_server\" : \"status_update_failed\" } };\n    }\n    await wait(1000 * (2 ** attempt));\n  }\n}\nreturn { json: { ...input, delivered_attempted: true, delivered_http_status: 0, delivered_body: null, delivered_error_code: \"status_update_failed\" } };\n"
+        "method": "PATCH",
+        "url": "={{ 'https://www.playworld.rs/api/v2/orders/' + encodeURIComponent(String($json.order_id)) + '/delivered' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json",
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 20000
+        }
       },
       "id": "mark-delivered",
       "name": "MerchantPro - Mark Delivered",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "REPLACE_WITH_MERCHANTPRO_CREDENTIAL_ID",
+          "name": "MerchantPro API"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 4,
+      "waitBetweenTries": 1000,
       "position": [
         980,
         -360
@@ -350,7 +475,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "\nconst body = $json.delivered_body && typeof $json.delivered_body === \"object\" ? $json.delivered_body : {};\nconst delivered_success = Number($json.delivered_http_status) >= 200 && Number($json.delivered_http_status) < 300 && body.ok === true;\nreturn { json: { ...$json, delivered_success } };\n"
+        "jsCode": "const input = $('Mystery Box Only Order?').item.json;\nconst response = $json || {};\nconst status = Number(response.statusCode || response.status || 0);\nconst body = response.body && typeof response.body === \"object\" ? response.body : response;\nconst delivered_success = status >= 200 && status < 300 && body.ok === true;\nreturn { json: {\n  ...input,\n  delivered_attempted: true,\n  delivered_http_status: status,\n  delivered_body: body,\n  delivered_success,\n  delivered_error_code: delivered_success ? \"\" : status === 429 ? \"rate_limit\" : status >= 500 ? \"temporary_server\" : \"status_update_failed\"\n} };"
       },
       "id": "inspect-delivered",
       "name": "Inspect MerchantPro Delivered Response",
@@ -503,6 +628,17 @@
       ]
     },
     "MerchantPro - Load Shipped Orders": {
+      "main": [
+        [
+          {
+            "node": "MerchantPro - Normalize Orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MerchantPro - Normalize Orders": {
       "main": [
         [
           {
