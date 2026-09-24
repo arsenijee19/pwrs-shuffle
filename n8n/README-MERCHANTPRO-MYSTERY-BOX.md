@@ -32,13 +32,13 @@ Workflow je namerno neaktivan (active=false). Ne aktivirajte ga pre konfiguracij
 
 U n8n environment konfiguraciji unesite:
 
-- MERCHANTPRO_BASE_URL - puni HTTPS domen MerchantPro prodavnice, bez završne kose crte
+- MERCHANTPRO_BASE_URL - puni HTTPS domen MerchantPro prodavnice, bez završne kose crte; workflow već koristi `https://www.playworld.rs` ako promenljiva nije postavljena
 - MERCHANTPRO_API_KEY - MerchantPro API Key
 - MERCHANTPRO_API_SECRET - MerchantPro API Secret
 - PWRS_N8N_API_KEY - mora odgovarati aktivnom PlayWorld API ključu
 - PWRS_TELEGRAM_BOT_TOKEN - Telegram BotFather token
 
-Nikakva vrednost za ove tajne nije upisana u JSON fajl.
+Nikakva vrednost za ove tajne nije upisana u javni JSON fajl. Telegram grupa je već podešena na `-5462042109`, a MerchantPro domen ima bezbedan fallback na `https://www.playworld.rs`.
 
 Ako n8n koristi Docker, promenljive se obično dodaju u docker-compose environment ili u hosting panelu. Ako koristite n8n Cloud ili instalaciju koja blokira env pristup iz Code node-a, uključite dozvolu za environment variables ili prebacite pozive na named credentials. Ovaj pripremljeni JSON koristi environment varijable da se credentials unesu jednom.
 
@@ -46,15 +46,7 @@ Posle promene environment varijabli restartujte n8n.
 
 ## Telegram grupa
 
-U n8n otvorite node:
-
-Telegram - Send Operational Notification
-
-U njegovom Code polju pronađite:
-
-    const groupId = "REPLACE_TELEGRAM_GROUP_ID";
-
-Zamenite samo tekst REPLACE_TELEGRAM_GROUP_ID ID-jem Telegram grupe i sačuvajte workflow. Bot mora biti član grupe i mora imati pravo slanja poruka.
+Telegram grupa je već upisana u workflow kao `-5462042109`. Bot mora biti član grupe i mora imati pravo slanja poruka.
 
 Ne upisujte bot token u ovaj node niti u GitHub.
 
@@ -87,7 +79,7 @@ PlayWorld kreira tokene i koristi postojeći email template. n8n ne šalje email
 3. Izaberite Import from File.
 4. Uvezite JSON.
 5. Proverite da su svi environment secrets dostupni n8n procesu.
-6. U node-u Telegram - Send Operational Notification unesite Telegram group ID.
+6. Proverite da n8n vidi svih pet environment promenljivih.
 7. Pokrenite Manual Trigger - Test Only sa test podacima u stvarnom MerchantPro nalogu ili prvo proverite workflow u staging okruženju.
 8. Tek nakon provere uključite Schedule Trigger.
 
