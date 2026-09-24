@@ -7,7 +7,7 @@
 
 ## Current Project Status
 - MVP plus reward automation upgrade implemented for local validation.
-- Completed functionality: existing MVP flows, structured reward behavior, immutable draw snapshots, inline prize editing with audit log, discount-code inventory and allocation, idempotent bonus-box email delivery, admin resend of existing bonus links, manual reward claims, anti-repeat HMAC identity, protected reward-claim n8n API, importable Telegram workflow, responsive customer/admin additions, and backwards-compatible migrations.
+- Completed functionality: existing MVP flows, structured reward behavior, immutable draw snapshots, inline prize editing with audit log, discount-code inventory and allocation, idempotent bonus-box email delivery, admin resend of existing bonus links, n8n fulfillment cancellation and token revocation, manual reward claims, anti-repeat HMAC identity, protected reward-claim n8n API, importable Telegram workflow, responsive customer/admin additions, and backwards-compatible migrations.
 - Partially implemented functionality: Telegram workflow still requires owner configuration; sound remains a short browser-generated success tone with user toggle.
 - Newly added integration artifact: inactive n8n workflow for MerchantPro shipped orders -> PlayWorld Mystery Box fulfillment, with pagination, per-order quantity calculation, idempotent replay handling, delivered status reconciliation, and Telegram operations alerts.
 - Unfinished work: production branding assets, real Telegram group ID, production secrets, cPanel runtime verification, and real device testing.
@@ -38,6 +38,7 @@
 - Draw logic: server-side rarity-tier selection in a transaction; the configured tiers are Ultra Rare 3%, Rare 7%, Special 30%, Standard 30%, and Common 30%. The concrete prize is selected uniformly from the eligible prizes in the selected rarity; animation is display-only.
 - Draw eligibility: every active prize participates regardless of `weight`, `won_count`, or legacy `max_quantity`. Only fulfillment constraints such as unavailable discount-code stock temporarily exclude a prize. Weight remains a legacy/admin field and is not used by DrawService.
 - Fulfillment logic: `MysteryBoxFulfillmentService` is the shared source of truth for admin single-link delivery and n8n order fulfillment. `mystery_box_fulfillments` stores one unique order record and `mystery_box_fulfillment_items` stores each requested link independently. `Sending`/unknown SMTP outcomes become `NeedsReview` and are never automatically retried.
+- n8n fulfillment cancellation: `/admin/fulfillments` can mark a package cancelled and revoke every linked token that is still `Active`. Used tokens remain `Used`; a cancelled order ID is rejected by the n8n API so polling cannot create replacement links.
 - Security: CSRF tokens on POST actions, hashed token storage, PHP secure cookie settings, basic file-based rate limiting, PDO prepared statements, output escaping, and security headers.
 - Deployment: document root should point to `public/`.
 - Apache/cPanel routing: root `.htaccess` forwards requests into `public/`; `public/.htaccess` routes friendly URLs to `index.php`.
@@ -124,6 +125,7 @@
 - Corrected dashboard admin layout after visual review: the heading now occupies its own row and the eight navigation actions use a symmetric 4x2 desktop grid with responsive 2-column/1-column fallbacks.
 - Reorganized public result actions into a symmetric desktop grid with a separate centered sound control, and made bonus delivery feedback reflect the real email status. Definite failures can be retried with the same links without creating new tokens; successful and unknown-outcome deliveries remain protected from duplicate sends.
 - Added an admin-only “Pošalji ponovo” action for bonus deliveries. It sends each existing bonus link separately through the proven manual email path, shows a sent/failed count, requires confirmation, and keeps an audit row per attempt.
+- Added admin cancellation for n8n fulfillment packages, including a migration-backed cancellation marker, active-token revocation, cancelled item display, CSRF/rate-limited action, and API protection against future replay fulfillment.
 - Simplified public Fair Play, FAQ, pre-open, and result copy: removed internal draw/anti-repeat implementation details, clarified that higher-value prizes appear less often through a fair common process, and stated that PlayWorld discounts apply to all games and subscriptions on `playworld.rs` without expiration.
 - Replaced weight-based prize selection with rarity-tier probabilities and uniform within-tier selection. Added empty-rarity proportional renormalization, active/fulfillment eligibility, post-rarity immediate anti-repeat, deterministic rarity boundary tests, and a 1,000,000-draw local simulation. Existing prize weights, database rows, public copy, integrations, and historical draws were not changed.
 

@@ -79,6 +79,20 @@ final class N8nMysteryBoxApi
         }
 
         $status = $result['status'];
+        if ($status === 'Cancelled') {
+            return [
+                'status' => 409,
+                'body' => [
+                    'success' => false,
+                    'error' => [
+                        'code' => 'fulfillment_cancelled',
+                        'message' => 'Ova n8n isporuka je poništena i isti order više neće dobiti nove linkove.',
+                    ],
+                    'data' => $this->publicResult($result),
+                ],
+            ];
+        }
+
         if ($status === 'NeedsReview') {
             return [
                 'status' => 409,

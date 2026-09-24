@@ -119,9 +119,9 @@ n8n HTTP Request node podešavanje:
 
 Uspešan odgovor je `200` i sadrži `status: "Completed"`, `requested_quantity`, `sent_quantity`, status svakog item-a i `idempotent_replay`. Za ponovljen identičan zahtev API vraća isti fulfillment bez novih tokena ili emailova, sa `idempotent_replay: true`.
 
-Admin može da pregleda order/item evidenciju na `/admin/fulfillments`, uključujući isporuke koje zahtevaju ručnu proveru.
+Admin može da pregleda order/item evidenciju na `/admin/fulfillments`, uključujući isporuke koje zahtevaju ručnu proveru. Dugme **Poništi** opoziva sve još aktivne linkove iz paketa; već iskorišćeni linkovi ostaju evidentirani, a isti `order_id` više ne može da napravi nove linkove.
 
-`401` znači da Bearer ključ nije validan. `409` znači konflikt podataka za postojeći `order_id` ili da je isporuka zaustavljena radi ručne provere. `422` znači da podaci nisu validni. `429` znači da je prekoračen rate limit. `502` znači da je isporuka parcijalna i isti zahtev može bezbedno da se ponovi; već poslati item-i se neće ponovo slati. Kod `5xx` greške n8n može ponoviti zahtev sa exponential backoff-om, ali `409 needs_manual_review` ne treba automatski retry-ovati.
+`401` znači da Bearer ključ nije validan. `409` znači konflikt podataka za postojeći `order_id`, da je isporuka zaustavljena radi ručne provere ili da je paket poništen (`fulfillment_cancelled`). `422` znači da podaci nisu validni. `429` znači da je prekoračen rate limit. `502` znači da je isporuka parcijalna i isti zahtev može bezbedno da se ponovi; već poslati item-i se neće ponovo slati. Kod `5xx` greške n8n može ponoviti zahtev sa exponential backoff-om, ali `409 needs_manual_review` i `409 fulfillment_cancelled` ne treba automatski retry-ovati.
 
 ## Reward funkcije
 

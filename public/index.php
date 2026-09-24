@@ -246,6 +246,27 @@ $router->get('/admin/fulfillments', function (): void {
         'fulfillments' => (new MysteryBoxFulfillmentService())->recent(),
     ]);
 });
+$router->post('/admin/fulfillments/{id}/cancel', function (string $id): void {
+    AuthService::requireAdmin();
+    verify_csrf();
+    RateLimiter::hit('admin-fulfillment-cancel');
+
+    try {
+        $result = (new MysteryBoxFulfillmentService())->cancel((int) $id);
+        if ($result['already_cancelled']) {
+            $_SESSION['flash'] = ['type' => 'success', 'message' => 'Ova n8n isporuka je već poništena.'];
+        } else {
+            $_SESSION['flash'] = [
+                'type' => 'success',
+                'message' => 'Isporuka je poništena. Opozvano aktivnih linkova: ' . $result['revoked_quantity'] . '. Već iskorišćeno: ' . $result['used_quantity'] . '.',
+            ];
+        }
+    } catch (Throwable $error) {
+        $_SESSION['flash'] = ['type' => 'error', 'message' => 'Poništavanje nije uspelo: ' . $error->getMessage()];
+    }
+
+    redirect('/admin/fulfillments');
+});
 $router->get('/admin/discount-codes', function (): void {
     AuthService::requireAdmin();
     $search = trim((string) ($_GET['q'] ?? ''));

@@ -70,10 +70,83 @@ final class MysteryBoxFulfillmentService
 
         foreach ($rows as &$row) {
             $row['items'] = $this->items((int) $row['id']);
+            if (!empty($row['cancelled_at'])) {
+                $row['status'] = 'Cancelled';
+            }
         }
         unset($row);
 
         return $rows;
+    }
+
+    /**
+     * Revoke every still-active token in an n8n fulfillment package.
+     * Already-used tokens remain used and are never rewritten.
+     *
+     * @return array{id:int,order_id:string,status:string,requested_quantity:int,revoked_quantity:int,used_quantity:int,already_cancelled:bool}
+     */
+    public function cancel(int $fulfillmentId): array
+    {
+        if ($fulfillmentId < 1) {
+            throw new \InvalidArgumentException('Fulfillment ID nije validan.');
+        }
+
+        $pdo = Database::pdo();
+        $this->beginImmediate($pdo);
+        try {
+            $fulfillment = $this->findFulfillmentById($fulfillmentId);
+            if (!$fulfillment) {
+                throw new \InvalidArgumentException('n8n isporuka nije pronađena.');
+            }
+
+            $alreadyCancelled = !empty($fulfillment['cancelled_at']);
+            $revoked = 0;
+            $used = 0;
+            $revoke = $pdo->prepare(
+                'UPDATE tokens SET status = "Revoked", updated_at = :updated_at
+                 WHERE id = :id AND status = "Active"'
+            );
+
+            foreach ($this->items($fulfillmentId) as $item) {
+                if ((string) ($item['token_status'] ?? '') === 'Used') {
+                    $used++;
+                }
+
+                if ($alreadyCancelled || empty($item['token_id'])) {
+                    continue;
+                }
+
+                $revoke->execute(['updated_at' => date('c'), 'id' => $item['token_id']]);
+                $revoked += $revoke->rowCount();
+            }
+
+            if (!$alreadyCancelled) {
+                $pdo->prepare(
+                    'UPDATE mystery_box_fulfillments
+                     SET cancelled_at = :cancelled_at, updated_at = :updated_at
+                     WHERE id = :id AND cancelled_at IS NULL'
+                )->execute([
+                    'cancelled_at' => date('c'),
+                    'updated_at' => date('c'),
+                    'id' => $fulfillmentId,
+                ]);
+            }
+
+            $this->commit($pdo);
+        } catch (Throwable $error) {
+            $this->rollback($pdo);
+            throw $error;
+        }
+
+        return [
+            'id' => $fulfillmentId,
+            'order_id' => (string) $fulfillment['order_id'],
+            'status' => 'Cancelled',
+            'requested_quantity' => (int) $fulfillment['requested_quantity'],
+            'revoked_quantity' => $revoked,
+            'used_quantity' => $used,
+            'already_cancelled' => $alreadyCancelled,
+        ];
     }
 
     /**
@@ -150,6 +223,11 @@ final class MysteryBoxFulfillmentService
                         'fulfillment_conflict',
                         409
                     );
+                }
+
+                if (!empty($existing['cancelled_at'])) {
+                    $this->commit($pdo);
+                    return [$existing, true, true];
                 }
 
                 $items = $this->items((int) $existing['id']);
@@ -321,7 +399,10 @@ final class MysteryBoxFulfillmentService
             $updated = $pdo->prepare(
                 'UPDATE mystery_box_fulfillment_items
                  SET token_id = :token_id, updated_at = :updated_at
-                 WHERE id = :id AND status = "Sending"'
+                 WHERE id = :id AND status = "Sending"
+                   AND fulfillment_id IN (
+                       SELECT id FROM mystery_box_fulfillments WHERE id = fulfillment_id AND cancelled_at IS NULL
+                   )'
             );
             $updated->execute([
                 'token_id' => $created['id'],
@@ -329,6 +410,8 @@ final class MysteryBoxFulfillmentService
                 'id' => $itemId,
             ]);
             if ($updated->rowCount() !== 1) {
+                $this->commit($pdo);
+                $this->tokenService()->revoke((int) $created['id']);
                 throw new FulfillmentException('Fulfillment item više nije u očekivanom stanju.', 'item_state_changed', 500);
             }
             $this->commit($pdo);
@@ -496,7 +579,11 @@ final class MysteryBoxFulfillmentService
     private function items(int $fulfillmentId): array
     {
         $stmt = Database::pdo()->prepare(
-            'SELECT * FROM mystery_box_fulfillment_items WHERE fulfillment_id = :fulfillment_id ORDER BY sequence_number ASC'
+            'SELECT mystery_box_fulfillment_items.*, tokens.status AS token_status
+             FROM mystery_box_fulfillment_items
+             LEFT JOIN tokens ON tokens.id = mystery_box_fulfillment_items.token_id
+             WHERE mystery_box_fulfillment_items.fulfillment_id = :fulfillment_id
+             ORDER BY sequence_number ASC'
         );
         $stmt->execute(['fulfillment_id' => $fulfillmentId]);
         return $stmt->fetchAll();
@@ -533,7 +620,7 @@ final class MysteryBoxFulfillmentService
 
         return [
             'order_id' => (string) $fulfillment['order_id'],
-            'status' => (string) $fulfillment['status'],
+            'status' => !empty($fulfillment['cancelled_at']) ? 'Cancelled' : (string) $fulfillment['status'],
             'requested_quantity' => (int) $fulfillment['requested_quantity'],
             'sent_quantity' => (int) $fulfillment['sent_quantity'],
             'idempotent_replay' => $replay,

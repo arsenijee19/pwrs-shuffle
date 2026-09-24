@@ -109,6 +109,31 @@ final class N8nMysteryBoxApiTest extends TestCase
         $this->assertSame(3, (int) Database::pdo()->query('SELECT COUNT(*) FROM mystery_box_fulfillment_items')->fetchColumn());
     }
 
+    public function testAdminCancellationRevokesActiveLinksAndStopsFutureReplay(): void
+    {
+        $this->configureApi();
+        $sent = [];
+        $api = $this->api(static function (string $email, string $name, string $link) use (&$sent): void {
+            $sent[] = $link;
+        });
+        $body = $this->json($this->payload(['quantity' => 3]));
+
+        $first = $api->handle('POST', $this->headers(), $body);
+        $fulfillmentId = (int) Database::pdo()->query('SELECT id FROM mystery_box_fulfillments LIMIT 1')->fetchColumn();
+        $cancelled = (new MysteryBoxFulfillmentService())->cancel($fulfillmentId);
+        $second = $api->handle('POST', $this->headers(), $body);
+
+        $this->assertSame('Cancelled', $cancelled['status']);
+        $this->assertSame(3, $cancelled['revoked_quantity']);
+        $this->assertSame(3, (int) Database::pdo()->query('SELECT COUNT(*) FROM tokens WHERE status = "Revoked"')->fetchColumn());
+        $this->assertSame(409, $second['status']);
+        $this->assertSame('fulfillment_cancelled', $second['body']['error']['code']);
+        $this->assertSame('Cancelled', $second['body']['data']['status']);
+        $this->assertCount(3, $sent);
+        $this->assertSame('Revoked', (new \PlayWorld\MysteryBox\Services\TokenService())->findPlain($sent[0])['status']);
+        $this->assertSame('Completed', $first['body']['data']['status']);
+    }
+
     public function testIdenticalCompletedOrderIsAnIdempotentReplay(): void
     {
         $this->configureApi();
