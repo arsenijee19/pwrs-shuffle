@@ -113,6 +113,7 @@
 - Added a clearer reward-claim contact section with email, Instagram, Viber, and WhatsApp actions, plus an OpenSSL AES-256-GCM fallback for encrypted admin API settings when Sodium is unavailable.
 - Changed anti-repeat to immediate duplicate protection only: the previous exact prize is excluded for the next draw, then becomes fully eligible again after any different result. Removed the obsolete 60-minute configuration from the example environment and public copy.
 - Preconfigured the public MerchantPro workflow with the PlayWorld store fallback URL and Telegram group ID while keeping all API secrets outside GitHub; the remote n8n host still supplies its own secret configuration.
+- Corrected the reward-claim Telegram workflow to use the actual Bot API chat ID for the `PWRS Mystery Box` group (`-5462042109`); the previous positive peer ID caused Telegram `chat not found` errors.
 - Fixed cPanel SQLite/PDO compatibility for `BEGIN IMMEDIATE`: transaction commits and rollbacks now use SQL-level helpers so production migrations and draw writes do not fail with `There is no active transaction`.
 - Hardened admin inline prize autosave: asset URLs now use file modification versions to avoid stale browser JavaScript, inline edits use the row CSRF token, duplicate blur/change saves are suppressed, and server-normalized values are written back into the field.
 - Added the localized `/admin/slanja` alias for email delivery history while retaining `/admin/email-history`, and reorganized the prizes admin actions into an equal-width responsive grid.

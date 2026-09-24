@@ -28,7 +28,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const claims = $json.claims || [];\nreturn claims.map((claim) => {\n  const esc = (value) => String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\n  const text = `🎁 <b>NOVA MYSTERY BOX NAGRADA</b>\\n\\n<b>${esc(claim.prize_name)}</b>\\n\\nDraw ID: <code>${esc(claim.draw_id)}</code>\\n📧 ${esc(claim.email)}\\n📱 ${esc(claim.phone)}\\n\\nClaim #${esc(claim.claim_id)}\\n${esc(claim.created_at)}`;\n  return { json: { ...claim, telegram_payload: { chat_id: '5462042109', parse_mode: 'HTML', disable_web_page_preview: true, text, reply_markup: { inline_keyboard: [[{ text: 'Otvori zahtev', url: claim.admin_url }]] } } } };\n});"
+        "jsCode": "const claims = $json.claims || [];\nreturn claims.map((claim) => {\n  const esc = (value) => String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\n  const text = `🎁 <b>NOVA MYSTERY BOX NAGRADA</b>\\n\\n<b>${esc(claim.prize_name)}</b>\\n\\nDraw ID: <code>${esc(claim.draw_id)}</code>\\n📧 ${esc(claim.email)}\\n📱 ${esc(claim.phone)}\\n\\nClaim #${esc(claim.claim_id)}\\n${esc(claim.created_at)}`;\n  return { json: { ...claim, telegram_payload: { chat_id: '-5462042109', parse_mode: 'HTML', disable_web_page_preview: true, text, reply_markup: { inline_keyboard: [[{ text: 'Otvori zahtev', url: claim.admin_url }]] } } } };\n});"
       },
       "id": "prepare-telegram-claims",
       "name": "Prepare Claims",
