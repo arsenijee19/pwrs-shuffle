@@ -12,7 +12,10 @@ $lowStockThreshold = (int) env_value('DISCOUNT_LOW_STOCK_THRESHOLD', 10);
       <h1>Kodovi za popust</h1>
       <p class="lead">Ovde vidite koliko kodova je spremno za dodelu i uvozite novu zalihu bez otkrivanja kodova u javnosti.</p>
     </div>
-    <a class="ghost" href="/admin/prizes">Nazad na nagrade</a>
+    <div class="actions discount-page-actions">
+      <a class="primary" href="/admin/discount-codes/export" download>Preuzmi sve kodove (.txt)</a>
+      <a class="ghost" href="/admin/prizes">Nazad na nagrade</a>
+    </div>
   </div>
 
   <?php if ($flashMessage !== ''): ?>
@@ -53,7 +56,7 @@ $lowStockThreshold = (int) env_value('DISCOUNT_LOW_STOCK_THRESHOLD', 10);
 </section>
 
 <section class="panel">
-  <div class="section-head compact-head"><div><h2>Pregled kodova</h2><p>Prikazano je najviše 500 poslednjih zapisa. Kodovi su namerno maskirani.</p></div></div>
+  <div class="section-head compact-head"><div><h2>Pregled kodova</h2><p>Prikazano je najviše 500 poslednjih zapisa. Kodovi su namerno maskirani. Izvoz iznad sadrži sve kodove, grupisane po procentu.</p></div></div>
   <form method="get" action="/admin/discount-codes" class="filter-row">
     <input name="q" value="<?= e((string) ($filters['search'] ?? '')) ?>" placeholder="Pretraži Draw ID ili nagradu">
     <input type="number" name="percentage" min="1" max="100" value="<?= e((string) ($filters['percentage'] ?? '')) ?>" placeholder="Procenat">

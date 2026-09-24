@@ -267,6 +267,22 @@ $router->get('/admin/discount-codes', function (): void {
         'filters' => compact('search', 'percentage', 'status'),
     ]);
 });
+$router->get('/admin/discount-codes/export', function (): void {
+    AuthService::requireAdmin();
+
+    try {
+        $contents = (new DiscountCodeService())->exportGroupedText();
+    } catch (Throwable $error) {
+        $_SESSION['flash'] = ['type' => 'error', 'message' => 'Izvoz promo kodova nije uspeo. Proverite APP_KEY i zaštićene podatke.'];
+        redirect('/admin/discount-codes');
+    }
+
+    header('Content-Type: text/plain; charset=utf-8');
+    header('Content-Disposition: attachment; filename="playworld-promo-kodovi-' . date('Y-m-d') . '.txt"');
+    header('Cache-Control: no-store, private');
+    header('X-Content-Type-Options: nosniff');
+    echo $contents;
+});
 $router->post('/admin/discount-codes/import', function (): void {
     AuthService::requireAdmin();
     verify_csrf();

@@ -118,6 +118,7 @@
 - Hardened admin inline prize autosave: asset URLs now use file modification versions to avoid stale browser JavaScript, inline edits use the row CSRF token, duplicate blur/change saves are suppressed, and server-normalized values are written back into the field.
 - Added the localized `/admin/slanja` alias for email delivery history while retaining `/admin/email-history`, and reorganized the prizes admin actions into an equal-width responsive grid.
 - Improved discount-code inventory: bulk imports now use a SQLite transaction, strip spreadsheet BOM characters, show visible import results, expose total/available/assigned stock, display stock by percentage, count pasted lines before submit, and use a scrollable responsive table for large inventories.
+- Added an admin-only plain-text export for all discount codes, grouped by percentage, with no-store download headers and decryption only during response generation.
 - Corrected dashboard admin layout after visual review: the heading now occupies its own row and the eight navigation actions use a symmetric 4x2 desktop grid with responsive 2-column/1-column fallbacks.
 
 ## Current Priorities

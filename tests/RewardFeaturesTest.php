@@ -75,6 +75,19 @@ final class RewardFeaturesTest extends TestCase
         $this->assertSame(500, (new DiscountCodeService())->availableCount(10));
     }
 
+    public function testDiscountCodeExportGroupsAllCodesByPercentage(): void
+    {
+        $service = new DiscountCodeService();
+        $service->import("PW10-FIRST\nPW10-SECOND\n", 10);
+        $service->import("PW5-ONLY\n", 5);
+
+        $export = $service->exportGroupedText();
+
+        $this->assertStringContainsString("===== 5% =====\r\nPW5-ONLY", $export);
+        $this->assertStringContainsString("===== 10% =====\r\nPW10-FIRST\r\nPW10-SECOND", $export);
+        $this->assertLessThan(strpos($export, '===== 10% ====='), strpos($export, '===== 5% ====='));
+    }
+
     public function testDiscountPrizeWithoutCodesIsExcluded(): void
     {
         $this->insertPrize('No Code Prize', 100, 10, 0, 25, 0);

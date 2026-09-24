@@ -185,6 +185,45 @@ final class DiscountCodeService
         ], $rows);
     }
 
+    /**
+     * Export every stored code in percentage sections for admin backup/import.
+     * The plaintext value exists only while the download is being generated.
+     */
+    public function exportGroupedText(): string
+    {
+        $stmt = Database::pdo()->query(
+            'SELECT percentage, code_ciphertext
+             FROM discount_codes
+             ORDER BY percentage ASC, id ASC'
+        );
+        $groups = [];
+
+        while ($row = $stmt->fetch()) {
+            $percentage = (int) $row['percentage'];
+            $groups[$percentage][] = SecretBox::decrypt((string) $row['code_ciphertext']);
+        }
+
+        if ($groups === []) {
+            return "PlayWorld promo kodovi\r\n\r\nNema sačuvanih promo kodova.\r\n";
+        }
+
+        $lines = [
+            'PlayWorld promo kodovi',
+            'Izvoz: ' . date('d.m.Y. H:i'),
+            '',
+        ];
+
+        foreach ($groups as $percentage => $codes) {
+            $lines[] = '===== ' . $percentage . '% =====';
+            foreach ($codes as $code) {
+                $lines[] = $code;
+            }
+            $lines[] = '';
+        }
+
+        return implode("\r\n", $lines);
+    }
+
     public function mask(string $code): string
     {
         if (strlen($code) <= 4) {
