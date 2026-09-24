@@ -54,6 +54,7 @@
 - Tokens are cryptographically generated and stored hashed.
 - Email delivery creates a new token and sends that one-time link immediately; existing token links cannot be reconstructed from hashes. SMTP settings can be saved in `/admin/email`, and attempts are visible in `/admin/email-history`.
 - Bonus rewards create exactly the configured number of tokens and send them in one email; `reward_deliveries.draw_id` is the idempotency key.
+- Bonus delivery retries reuse the existing encrypted links after a definite email failure; a successful or unknown-outcome delivery is not sent again automatically.
 - Discount codes are assigned transactionally only to a draw with an available code for the exact percentage.
 - Manual claims are unique per Draw ID and are notified by n8n/Telegram without treating Telegram as the source of truth.
 - Manual claim status changes are recorded in `reward_claim_events` with the admin ID when available.
@@ -120,6 +121,7 @@
 - Improved discount-code inventory: bulk imports now use a SQLite transaction, strip spreadsheet BOM characters, show visible import results, expose total/available/assigned stock, display stock by percentage, count pasted lines before submit, and use a scrollable responsive table for large inventories.
 - Added an admin-only plain-text export for all discount codes, grouped by percentage, with no-store download headers and decryption only during response generation.
 - Corrected dashboard admin layout after visual review: the heading now occupies its own row and the eight navigation actions use a symmetric 4x2 desktop grid with responsive 2-column/1-column fallbacks.
+- Reorganized public result actions into a symmetric desktop grid with a separate centered sound control, and made bonus delivery feedback reflect the real email status. Definite failures can be retried with the same links without creating new tokens; successful and unknown-outcome deliveries remain protected from duplicate sends.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
@@ -140,6 +142,7 @@
 - Discount codes cannot be marked redeemed automatically until PlayWorld exposes a trusted redemption signal.
 - Existing production databases need the new `APP_KEY` before any assigned discount/bonus payload can be decrypted.
 - The legacy Shuffle + 5% display compatibility can only create new bonus links when the SMTP settings and discount-code stock are configured correctly; old draw history itself remains unchanged.
+- Bonus email delivery still needs a production SMTP test from `/admin/email`; the app intentionally sends all bonus links in one branded message and does not blindly send repeated copies.
 - The MerchantPro workflow requires the named HTTP Basic Auth credential plus PlayWorld/Telegram runtime secrets and a real staging/production smoke test before activation; PHP unit tests cannot run in this checkout because the `phpunit` executable is not installed.
 - SecretBox keeps existing Sodium v1 ciphertext compatible and writes new v2 ciphertext with OpenSSL only when Sodium is unavailable; a server still needs at least one of those extensions.
 

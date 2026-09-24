@@ -530,8 +530,13 @@ $router->post('/box/{token}/bonus', function (string $plain): void {
         return;
     }
     try {
-        (new RewardDeliveryService())->claim($draw, (string) ($_POST['email'] ?? ''), (string) ($_POST['name'] ?? ''));
-        $_SESSION['flash'] = 'Linkovi će biti poslati na unetu email adresu.';
+        $delivery = (new RewardDeliveryService())->claim($draw, (string) ($_POST['email'] ?? ''), (string) ($_POST['name'] ?? ''));
+        $_SESSION['flash'] = match ((string) ($delivery['status'] ?? '')) {
+            'Sent' => 'Linkovi su poslati na ' . (string) ($delivery['masked_email'] ?? 'unetu email adresu') . '.',
+            'NeedsReview' => 'Email server nije potvrdio ishod slanja. Proverite Primljeno i Spam, pa kontaktirajte PlayWorld tim ako poruka nije stigla.',
+            'Sending' => 'Slanje je u toku. Osvežite stranicu za nekoliko trenutaka.',
+            default => 'Slanje nije uspelo. Proverite email adresu i pokušajte ponovo; isti linkovi će biti poslati bez kreiranja novih boxova.',
+        };
     } catch (Throwable $error) {
         $_SESSION['flash'] = $error->getMessage();
     }

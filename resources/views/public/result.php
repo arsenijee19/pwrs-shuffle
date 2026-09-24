@@ -2,6 +2,10 @@
 $hasBonusBoxes = (int) ($draw['bonus_box_count'] ?? 0) > 0;
 $hasDiscount = (int) ($draw['discount_percent'] ?? 0) > 0;
 $needsManualClaim = (int) ($draw['manual_claim'] ?? 0) === 1 || (!$hasBonusBoxes && !$hasDiscount) || ($hasDiscount && empty($discountCode));
+$bonusDeliveryStatus = (string) ($bonusDelivery['status'] ?? '');
+$bonusDeliverySent = $bonusDeliveryStatus === 'Sent';
+$bonusDeliveryNeedsReview = $bonusDeliveryStatus === 'NeedsReview';
+$bonusDeliverySending = $bonusDeliveryStatus === 'Sending';
 ?>
 <section class="result-shell <?= !empty($openedNow) ? 'celebrate' : '' ?>">
   <div class="box-animation" aria-hidden="true">
@@ -26,12 +30,16 @@ $needsManualClaim = (int) ($draw['manual_claim'] ?? 0) === 1 || (!$hasBonusBoxes
       <div><dt>Datum i vreme</dt><dd><?= e(format_date($draw['created_at'])) ?></dd></div>
       <div><dt>Draw ID</dt><dd><?= e($draw['draw_id']) ?></dd></div>
     </dl>
-    <div class="result-actions">
-      <a class="primary" href="/box/<?= e($token) ?>/certificate">Download PDF Certificate</a>
-      <a class="ghost" href="/verify?draw=<?= e($draw['draw_id']) ?>">Proveri Draw ID</a>
-      <a class="secondary-buy" href="https://www.playworld.rs/kupi/playworld-mystery-box-1004" target="_blank" rel="noopener">Kupi još jedan box</a>
-      <?php if ($needsManualClaim): ?><a class="ghost result-claim-cta" href="#claim-reward">Preuzmi nagradu</a><?php endif; ?>
-      <button class="ghost" type="button" data-sound-toggle>Sound on/off</button>
+    <div class="result-actions <?= $needsManualClaim ? 'has-claim' : 'no-claim' ?>">
+      <div class="result-action-grid">
+        <a class="primary" href="/box/<?= e($token) ?>/certificate">Download PDF Certificate</a>
+        <a class="ghost" href="/verify?draw=<?= e($draw['draw_id']) ?>">Proveri Draw ID</a>
+        <a class="secondary-buy" href="https://www.playworld.rs/kupi/playworld-mystery-box-1004" target="_blank" rel="noopener">Kupi još jedan box</a>
+        <?php if ($needsManualClaim): ?><a class="ghost result-claim-cta" href="#claim-reward">Preuzmi nagradu</a><?php endif; ?>
+      </div>
+      <div class="result-action-controls">
+        <button class="ghost" type="button" data-sound-toggle>Sound on/off</button>
+      </div>
     </div>
     <?php if ($hasDiscount): ?>
       <section class="reward-block discount-block">
@@ -49,8 +57,20 @@ $needsManualClaim = (int) ($draw['manual_claim'] ?? 0) === 1 || (!$hasBonusBoxes
       <section class="reward-block">
         <p class="eyebrow">Dodatni Mystery Box linkovi</p>
         <h2>Osvojili ste još <?= e((string) $draw['bonus_box_count']) ?> box<?= (int) $draw['bonus_box_count'] === 1 ? '' : 'a' ?></h2>
-        <?php if (!empty($bonusDelivery)): ?>
-          <p>Linkovi su poslati na <?= e((string) $bonusDelivery['masked_email']) ?>. Ovaj zahtev je već obrađen.</p>
+        <?php if ($bonusDeliverySent): ?>
+          <p class="notice success-notice">Linkovi su poslati na <?= e((string) $bonusDelivery['masked_email']) ?> kroz PlayWorld email sistem.</p>
+        <?php elseif ($bonusDeliveryNeedsReview): ?>
+          <p class="notice">Email server nije potvrdio ishod slanja na <?= e((string) $bonusDelivery['masked_email']) ?>. Nemojte slati zahtev više puta; proverite Primljeno i Spam, a zatim kontaktirajte PlayWorld tim ako poruka nije stigla.</p>
+        <?php elseif ($bonusDeliverySending): ?>
+          <p class="notice">Slanje na <?= e((string) $bonusDelivery['masked_email']) ?> je u toku. Osvežite stranicu za nekoliko trenutaka.</p>
+        <?php elseif (!empty($bonusDelivery)): ?>
+          <p class="notice">Prethodni pokušaj slanja na <?= e((string) $bonusDelivery['masked_email']) ?> nije uspeo. Proverite adresu i pokušajte ponovo; isti linkovi će biti poslati bez kreiranja novih boxova.</p>
+          <form method="post" action="/box/<?= e($token) ?>/bonus" class="claim-form">
+            <?= csrf_field() ?>
+            <label>Email adresa<input type="email" name="email" required autocomplete="email" value="<?= e((string) $bonusDelivery['recipient_email']) ?>"></label>
+            <label>Ime <span>opciono</span><input type="text" name="name" maxlength="160"></label>
+            <button class="primary" type="submit">Pošalji linkove ponovo</button>
+          </form>
         <?php else: ?>
           <p>Unesite email na koji želite da primite sve dodatne linkove u jednoj poruci.</p>
           <form method="post" action="/box/<?= e($token) ?>/bonus" class="claim-form">

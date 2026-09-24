@@ -119,6 +119,31 @@ final class RewardFeaturesTest extends TestCase
         $this->assertSame(3, (int) Database::pdo()->query('SELECT COUNT(*) FROM tokens')->fetchColumn());
     }
 
+    public function testFailedBonusEmailCanRetryWithoutCreatingNewLinks(): void
+    {
+        $this->insertPrize('Retry Bonus Prize', 10, 10, 0, null, 2);
+        $token = (new TokenService())->generate(1)[0]['token'];
+        $draw = (new DrawService())->open($token);
+        $attempts = 0;
+        $sentLinks = [];
+        $service = new RewardDeliveryService(static function (string $email, string $name, array $links) use (&$attempts, &$sentLinks): void {
+            $attempts++;
+            $sentLinks[] = $links;
+            if ($attempts === 1) {
+                throw new \RuntimeException('SMTP test failure');
+            }
+        });
+
+        $first = $service->claim($draw, 'retry@example.com');
+        $second = $service->claim($draw, 'retry@example.com');
+
+        $this->assertSame('Failed', $first['status']);
+        $this->assertSame('Sent', $second['status']);
+        $this->assertSame(2, $attempts);
+        $this->assertSame($sentLinks[0], $sentLinks[1]);
+        $this->assertSame(3, (int) Database::pdo()->query('SELECT COUNT(*) FROM tokens')->fetchColumn());
+    }
+
     public function testManualClaimIsUniquePerDraw(): void
     {
         $this->insertPrize('Manual Prize', 10, 10, 0, null, 0, 1);

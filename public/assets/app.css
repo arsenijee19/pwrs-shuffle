@@ -147,9 +147,12 @@ dd { margin: 4px 0 0; font-weight: 750; }
 .celebrate .glow { animation: glow 1350ms ease-out forwards; }
 .celebrate .spark-field { animation: sparks 1050ms ease-out 560ms both; }
 .celebrate .result { animation: rise 600ms ease-out 900ms both; }
-.result-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); align-items: stretch; width: 100%; gap: 10px; }
-.result-actions .primary, .result-actions .ghost, .result-actions .secondary-buy { min-height: 50px; padding: 0 14px; text-align: center; }
-.result-actions [data-sound-toggle] { grid-column: 1 / -1; justify-self: center; min-width: 148px; }
+.result-actions { display: grid; gap: 14px; width: 100%; }
+.result-action-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; width: 100%; }
+.result-actions.has-claim .result-action-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.result-actions .primary, .result-actions .ghost, .result-actions .secondary-buy { min-height: 56px; padding: 0 14px; text-align: center; line-height: 1.2; }
+.result-action-controls { display: grid; justify-items: center; width: 100%; }
+.result-action-controls [data-sound-toggle] { width: min(100%, 220px); min-height: 48px; }
 .result-claim-cta{border-color:#bde8d8;background:#eef7f3;color:#17624a}
 .faq-panel .lead { margin-bottom: 26px; }
 .faq { display: grid; gap: 18px; }
@@ -274,8 +277,8 @@ dd { margin: 4px 0 0; font-weight: 750; }
   .primary.huge { min-height: 58px; font-size: 17px; box-shadow: 0 14px 30px rgba(35,100,170,.28); }
   .result-shell { gap: 14px; }
   .result { text-align: center; }
-  .result-actions { grid-template-columns: 1fr; }
-  .result-actions [data-sound-toggle] { justify-self: stretch; min-width: 0; }
+  .result-action-grid, .result-actions.has-claim .result-action-grid { grid-template-columns: 1fr; }
+  .result-action-controls [data-sound-toggle] { width: 100%; }
   .result .primary, .result .ghost, .result .secondary-buy { width: 100%; }
   .verification-strip { align-items: flex-start; flex-direction: column; text-align: left; }
   .verified-result::before { top: 36%; right: -90px; font-size: 34px; }
