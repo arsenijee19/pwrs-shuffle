@@ -39,7 +39,7 @@
 - Draw eligibility: every active prize participates regardless of `weight`, `won_count`, or legacy `max_quantity`. Only fulfillment constraints such as unavailable discount-code stock temporarily exclude a prize. Weight remains a legacy/admin field and is not used by DrawService.
 - Fulfillment logic: `MysteryBoxFulfillmentService` is the shared source of truth for admin single-link delivery and n8n order fulfillment. `mystery_box_fulfillments` stores one unique order record and `mystery_box_fulfillment_items` stores each requested link independently. `Sending`/unknown SMTP outcomes become `NeedsReview` and are never automatically retried.
 - n8n fulfillment cancellation: `/admin/fulfillments` can mark a package cancelled and revoke every linked token that is still `Active`. Used tokens remain `Used`; a cancelled order ID is rejected by the n8n API so polling cannot create replacement links.
-- Security: CSRF tokens on POST actions, hashed token storage, PHP secure cookie settings, basic file-based rate limiting, PDO prepared statements, output escaping, and security headers.
+- Security: CSRF tokens on POST actions, hashed token storage, PHP secure cookie settings, file-based rate limiting that fails closed if its storage is unavailable, PDO prepared statements, output escaping, CSP/security headers, server-side password validation, and upload execution blocking. Public browser setup has been removed; first admin setup is CLI/deployment-only.
 - Deployment: document root should point to `public/`.
 - Apache/cPanel routing: root `.htaccess` forwards requests into `public/`; `public/.htaccess` routes friendly URLs to `index.php`.
 
@@ -131,6 +131,8 @@
 - Simplified public Fair Play, FAQ, pre-open, and result copy: removed internal draw/anti-repeat implementation details, clarified that higher-value prizes appear less often through a fair common process, and stated that PlayWorld discounts apply to all games and subscriptions on `playworld.rs` without expiration.
 - Replaced weight-based prize selection with rarity-tier probabilities and uniform within-tier selection. Added empty-rarity proportional renormalization, active/fulfillment eligibility, post-rarity immediate anti-repeat, deterministic rarity boundary tests, and a prior 1,000,000-draw local simulation. Existing prize weights, database rows, public copy, integrations, and historical draws were not changed.
 - Updated the active rarity-tier probabilities to Ultra Rare 1%, Rare 5%, Special 15%, Standard 35%, and Common 44%; the distribution remains normalized to 100%.
+- Removed public `/setup` and `/setup.php` initialization routes because production admin setup is complete; kept `bin/setup.php` for controlled first deployment.
+- Completed a static security hardening pass: stricter admin login throttling, fail-closed rate-limit storage, server-side password length validation, CSP/security headers, and executable-file blocking in `public/uploads/`. Added `SECURITY.md` with findings and production verification steps.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.
@@ -147,6 +149,7 @@
 
 ## Known Issues
 - Local validation cannot prove physical 60/90/120 Hz device smoothness; browser screenshot checks passed, but real-device QA is still recommended.
+- Production fulfillment cancellation is pending manual browser access because the admin Mac was locked during the requested operation; only explicitly excluded addresses must remain untouched.
 - API `NeedsReview` records require manual verification if SMTP accepted a message but the application could not confirm the final database status; they must not be automatically retried.
 - Discount codes cannot be marked redeemed automatically until PlayWorld exposes a trusted redemption signal.
 - Existing production databases need the new `APP_KEY` before any assigned discount/bonus payload can be decrypted.
@@ -154,6 +157,7 @@
 - Bonus email delivery still needs a production SMTP test from `/admin/email`; automatic fulfillment sends all bonus links in one branded message, while explicit admin retry can send the existing links separately after confirmation.
 - The MerchantPro workflow requires the named HTTP Basic Auth credential plus PlayWorld/Telegram runtime secrets and a real staging/production smoke test before activation; PHP unit tests cannot run in this checkout because the `phpunit` executable is not installed.
 - SecretBox keeps existing Sodium v1 ciphertext compatible and writes new v2 ciphertext with OpenSSL only when Sodium is unavailable; a server still needs at least one of those extensions.
+- The public setup route is intentionally unavailable. A deployment without an existing admin must use `php bin/setup.php` or a controlled local deployment package.
 
 ## LLM Handoff Notes
 - Read `README.md`, `DEPLOYMENT.md`, `public/index.php`, and `app/Services/DrawService.php` first.

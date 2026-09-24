@@ -33,6 +33,7 @@ header('X-Frame-Options: DENY');
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
+header("Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; form-action 'self'");
 if (str_starts_with($requestPath, '/admin') || str_starts_with($requestPath, '/box/')) {
     header('Cache-Control: no-store, private');
 }
@@ -105,44 +106,18 @@ $router->get('/verify', function (): void {
     ], $drawId !== '' && !$draw ? 404 : 200);
 });
 
-$router->get('/setup', function (): void {
-    if (Database::hasAdmins()) {
-        redirect('/admin/login');
-    }
-
-    render('admin/setup', ['title' => 'Initial Setup']);
-});
-$router->post('/setup', function (): void {
-    verify_csrf();
-    if (Database::hasAdmins()) {
-        redirect('/admin/login');
-    }
-
-    $email = trim((string) ($_POST['email'] ?? ''));
-    $password = (string) ($_POST['password'] ?? '');
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($password) < 10) {
-        render('admin/setup', [
-            'title' => 'Initial Setup',
-            'error' => 'Unesite ispravan email i lozinku od najmanje 10 karaktera.',
-        ], 422);
-        return;
-    }
-
-    (new AuthService())->createInitialAdmin($email, $password);
-    redirect('/admin/login');
-});
-
 $router->get('/admin/login', function (): void {
     if (!Database::hasAdmins()) {
-        redirect('/setup');
+        http_response_code(503);
+        render('errors/not-found', ['title' => 'Administracija nije dostupna']);
+        return;
     }
 
     render('admin/login', ['title' => 'Admin Login']);
 });
 $router->post('/admin/login', function (): void {
     verify_csrf();
-    RateLimiter::hit('admin-login');
+    RateLimiter::hit('admin-login', false, 10);
     if ((new AuthService())->attempt($_POST['email'] ?? '', $_POST['password'] ?? '')) {
         redirect('/admin');
     }

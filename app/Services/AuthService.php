@@ -33,7 +33,9 @@ final class AuthService
     {
         header('Cache-Control: no-store');
         if (!\PlayWorld\MysteryBox\Support\Database::hasAdmins()) {
-            redirect('/setup');
+            http_response_code(503);
+            render('errors/not-found', ['title' => 'Administracija nije dostupna']);
+            return;
         }
 
         if (!self::check()) {
@@ -68,6 +70,10 @@ final class AuthService
 
     public function changePassword(string $current, string $new): bool
     {
+        if (strlen($new) < 10) {
+            return false;
+        }
+
         $stmt = Database::pdo()->prepare('SELECT * FROM admins WHERE id = :id LIMIT 1');
         $stmt->execute(['id' => $_SESSION['admin_id'] ?? 0]);
         $admin = $stmt->fetch();

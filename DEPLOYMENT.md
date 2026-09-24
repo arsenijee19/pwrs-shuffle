@@ -31,8 +31,9 @@ Admin nalog se kreira iz `ADMIN_EMAIL` i `ADMIN_PASSWORD`.
 Odmah nakon prvog logina promeniti lozinku.
 
 Ako hosting nema Terminal, lokalno napraviti ZIP koji već sadrži `vendor/`, `.env`, i SQLite bazu, pa ga uploadovati kroz File Manager.
-Ako koristite cPanel Git Version Control, repo sadrži `vendor/`; nakon pull-a otvorite `/setup` da se automatski napravi baza i prvi admin nalog.
-Ako `/setup` ne radi zbog rewrite podešavanja hostinga, otvorite `/setup.php`. Za trajni query-route fallback u `.env` postavite `APP_QUERY_ROUTES=true`.
+Javni `/setup` i `/setup.php` nisu dostupni. Ako hosting nema Terminal, inicijalizujte bazu i admin nalog lokalno,
+pa postavite gotov `.env` i SQLite bazu na server. Za cPanel Git Version Control repo sadrži `vendor/`,
+ali početni admin mora biti kreiran pre produkcionog rada kroz `php bin/setup.php` ili lokalni deployment paket.
 
 ## n8n automatska isporuka
 

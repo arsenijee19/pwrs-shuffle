@@ -19,7 +19,20 @@ final class RateLimiter
 
         $handle = fopen($file, 'c+');
         if ($handle === false) {
-            return;
+            http_response_code(503);
+            if ($json) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode([
+                    'success' => false,
+                    'error' => [
+                        'code' => 'rate_limit_unavailable',
+                        'message' => 'Zaštita od previše zahteva trenutno nije dostupna.',
+                    ],
+                ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            } else {
+                echo 'Service temporarily unavailable. Please try again later.';
+            }
+            exit;
         }
 
         flock($handle, LOCK_EX);
