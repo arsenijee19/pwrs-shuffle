@@ -13,11 +13,10 @@
       'Izvlačenje i nagrade' => [
           'Da li mogu birati nagradu?' => 'Ne. Mystery Box je proizvod iznenađenja i nagradu nije moguće unapred izabrati, rezervisati ili zameniti pre otvaranja.',
           'Kako se određuje rezultat?' => 'Rezultat određuje server u trenutku otvaranja. Prvo se zabeleži rezultat, a tek nakon toga se prikazuje animacija. Animacija je samo vizuelni prikaz i ne odlučuje nagradu.',
-          'Da li su sve nagrade iste dostupnosti?' => 'Ne. Neke nagrade se pojavljuju ređe jer imaju veću vrednost ili ograničenu dostupnost. Svaki validan link prolazi kroz isti automatizovani proces izvlačenja.',
+          'Da li su sve nagrade iste dostupnosti?' => 'Ne. Nagrade imaju različite vrednosti, pa se vrednije nagrade pojavljuju ređe, dok se ostale pojavljuju češće. Svaki validan link prolazi kroz isti korektan postupak izvlačenja.',
           'Koliko nagrada ima u fondu?' => 'PlayWorld garantuje da se u nagradnom fondu u svakom trenutku nalazi najmanje 25 aktivnih nagrada. Spisak može da se menja u skladu sa dostupnošću proizvoda i aktuelnom ponudom.',
           'Da li se glavne nagrade menjaju?' => 'Glavne nagrade ostaju deo promocije dok su dostupne. Ako neka nagrada više nije dostupna, može biti zamenjena nagradom iste ili slične vrednosti.',
-          'Kako funkcionišu popusti i bonus nagrade?' => 'Popust od 5% može se ostvariti više puta i sabirati do maksimalnih 30%. Popusti veći od 20% ne mogu se kombinovati sa drugim popustima u jednoj kupovini. Ostale bonus nagrade važe prema uslovima navedenim uz konkretnu nagradu.',
-          'Da li zaštita od ponavljanja utiče na izvlačenje?' => 'Zaštita sprečava samo da se ista nagrada istom anonimizovanom mrežnom identifikatoru pojavi dva puta uzastopno. Nakon što se izvuče druga nagrada, prethodna se odmah vraća u pool po svojoj punoj težini. Ovo nije lista ranije osvojenih nagrada, ne garantuje različite nagrade u većoj kupovini i ne menja podešene težine. Ako nema druge validne nagrade, izvlačenje se normalno nastavlja.',
+          'Kako funkcionišu popusti i bonus nagrade?' => 'Osvojeni popusti mogu se iskoristiti na sajtu playworld.rs za sve igre i pretplate iz ponude. Popusti nemaju rok trajanja. Bonus nagrade se koriste prema uslovima navedenim uz konkretnu nagradu.',
           'Šta ako već imam igru koju osvojim?' => 'Nema zamene za novac, drugi proizvod ili refundacije nakon otvaranja. Ako već imate osvojenu igru, novi Mystery Box može biti odobren samo ako PlayWorld evidencija potvrdi da je ta ista igra prethodno kupljena preko PlayWorld-a. U svim ostalim slučajevima rezultat ostaje važeći.',
       ],
       'Sigurnost, potvrda i pomoć' => [

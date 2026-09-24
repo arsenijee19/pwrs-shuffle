@@ -354,7 +354,7 @@ final class PrizeService
     public function catalogDescription(string $name): string
     {
         if (str_contains(strtolower($name), 'popusta')) {
-            return 'Osvojili ste PlayWorld popust koji možete iskoristiti pri sledećoj kupovini.';
+            return 'Osvojili ste PlayWorld popust koji možete iskoristiti na sajtu playworld.rs za sve igre i pretplate iz ponude. Popust nema rok trajanja.';
         }
 
         return 'Osvojili ste PlayWorld Mystery Box nagradu: ' . $name . '.';

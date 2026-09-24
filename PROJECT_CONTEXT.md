@@ -124,6 +124,7 @@
 - Corrected dashboard admin layout after visual review: the heading now occupies its own row and the eight navigation actions use a symmetric 4x2 desktop grid with responsive 2-column/1-column fallbacks.
 - Reorganized public result actions into a symmetric desktop grid with a separate centered sound control, and made bonus delivery feedback reflect the real email status. Definite failures can be retried with the same links without creating new tokens; successful and unknown-outcome deliveries remain protected from duplicate sends.
 - Added an admin-only “Pošalji ponovo” action for bonus deliveries. It sends each existing bonus link separately through the proven manual email path, shows a sent/failed count, requires confirmation, and keeps an audit row per attempt.
+- Simplified public Fair Play, FAQ, pre-open, and result copy: removed internal draw/anti-repeat implementation details, clarified that higher-value prizes appear less often through a fair common process, and stated that PlayWorld discounts apply to all games and subscriptions on `playworld.rs` without expiration.
 - Replaced weight-based prize selection with rarity-tier probabilities and uniform within-tier selection. Added empty-rarity proportional renormalization, active/fulfillment eligibility, post-rarity immediate anti-repeat, deterministic rarity boundary tests, and a 1,000,000-draw local simulation. Existing prize weights, database rows, public copy, integrations, and historical draws were not changed.
 
 ## Current Priorities

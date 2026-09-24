@@ -9,13 +9,11 @@
     <li>Administrator ne može promeniti već osvojenu nagradu.</li>
     <li>U fondu je uvek najmanje 25 aktivnih nagrada.</li>
     <li>Spisak nagrada može se menjati u skladu sa dostupnošću.</li>
-    <li>Popust od 5% može se sabirati do najviše 30%; popusti veći od 20% ne mogu se kombinovati sa drugim popustima.</li>
+    <li>Osvojeni popusti mogu se iskoristiti na sajtu <strong>playworld.rs</strong> za sve igre i pretplate iz ponude. Popusti nemaju rok trajanja.</li>
     <li>Ako kupac već ima osvojenu igru, novi Mystery Box moguć je samo uz potvrdu da je ista igra ranije kupljena preko PlayWorld-a.</li>
     <li>Nema naknadnih zamena, refundacija ili isplate u novcu nakon otvaranja, osim jasno definisane provere duplikata igre kupljene preko PlayWorld-a.</li>
-    <li>Nagrade nemaju količinski limit za random izbor. Njihova učestalost zavisi od podešene težine, dok se broj osvajanja vodi samo kao statistika.</li>
-    <li>Težina nagrade nije procenat. Pool zavisi od aktivnog statusa, podešene težine i trenutnih uslova isporuke, na primer dostupnosti koda za popust.</li>
-    <li>Anti-repeat sprečava samo da se ista nagrada istom anonimizovanom mrežnom identifikatoru dodeli dva puta uzastopno. Nakon bilo koje druge nagrade, prethodna se odmah vraća u weighted pool po svojoj punoj težini. Ovo ne garantuje jedinstvene nagrade u većoj kupovini.</li>
-    <li>Za anti-repeat zaštitu ne čuvamo sirovu IP adresu, već samo jednosmerni sigurnosni fingerprint.</li>
+    <li>Svaka nagrada ima svoju vrednost. Vrednije nagrade pojavljuju se ređe, dok se ostale nagrade pojavljuju češće.</li>
+    <li>Svako izvlačenje odvija se automatski, po istim pravilima za sve učesnike i uz korektan postupak.</li>
     <li>Sva izvlačenja ostaju evidentirana kroz Draw ID i vreme otvaranja.</li>
   </ul>
 </section>

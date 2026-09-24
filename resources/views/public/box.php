@@ -18,12 +18,13 @@
     <ul class="checklist">
       <li>Svaki Mystery Box može da se otvori samo jednom.</li>
       <li>U fondu je najmanje 25 aktivnih nagrada.</li>
-      <li>Neke nagrade imaju ograničenu dostupnost.</li>
+      <li>Nagrade imaju različite vrednosti, pa se vrednije nagrade pojavljuju ređe.</li>
       <li>Rezultat određuje server.</li>
       <li>Nakon otvaranja rezultat nije moguće promeniti.</li>
       <li>Rezultat će biti dostupan narednih 5 dana.</li>
       <li>Po želji možete preuzeti PDF potvrdu.</li>
-      <li>Popust od 5% može se sabirati do ukupno 30%; popusti veći od 20% se ne kombinuju.</li>
+      <li>Osvojeni popusti mogu se iskoristiti na sajtu playworld.rs za sve igre i pretplate iz ponude.</li>
+      <li>Popusti nemaju rok trajanja.</li>
       <li>Ako već imate osvojenu igru, novi box je moguć samo uz proveru PlayWorld kupovine te igre.</li>
     </ul>
   </div>
