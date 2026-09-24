@@ -14,11 +14,11 @@ final class DrawService
 {
     /** @var array<string,int> */
     private const RARITY_PROBABILITIES = [
-        'Ultra Rare' => 3,
-        'Rare' => 7,
-        'Special' => 30,
-        'Standard' => 30,
-        'Common' => 30,
+        'Ultra Rare' => 1,
+        'Rare' => 5,
+        'Special' => 15,
+        'Standard' => 35,
+        'Common' => 44,
     ];
 
     public function resultForToken(int $tokenId): ?array

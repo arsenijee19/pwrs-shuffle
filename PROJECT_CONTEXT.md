@@ -35,7 +35,7 @@
 - Reward claims API: protected lease/result endpoints under `/api/v1/reward-claims/*`, with short leases and idempotent state transitions.
 - Secret handling: `APP_KEY` protects discount codes and bonus links at rest; raw IP is never stored for anti-repeat.
 - Draw metadata: reward behavior is snapshotted in `draws`; legacy rows use a live-prize fallback when snapshot fields are null.
-- Draw logic: server-side rarity-tier selection in a transaction; the configured tiers are Ultra Rare 3%, Rare 7%, Special 30%, Standard 30%, and Common 30%. The concrete prize is selected uniformly from the eligible prizes in the selected rarity; animation is display-only.
+- Draw logic: server-side rarity-tier selection in a transaction; the configured tiers are Ultra Rare 1%, Rare 5%, Special 15%, Standard 35%, and Common 44%. The concrete prize is selected uniformly from the eligible prizes in the selected rarity; animation is display-only.
 - Draw eligibility: every active prize participates regardless of `weight`, `won_count`, or legacy `max_quantity`. Only fulfillment constraints such as unavailable discount-code stock temporarily exclude a prize. Weight remains a legacy/admin field and is not used by DrawService.
 - Fulfillment logic: `MysteryBoxFulfillmentService` is the shared source of truth for admin single-link delivery and n8n order fulfillment. `mystery_box_fulfillments` stores one unique order record and `mystery_box_fulfillment_items` stores each requested link independently. `Sending`/unknown SMTP outcomes become `NeedsReview` and are never automatically retried.
 - n8n fulfillment cancellation: `/admin/fulfillments` can mark a package cancelled and revoke every linked token that is still `Active`. Used tokens remain `Used`; a cancelled order ID is rejected by the n8n API so polling cannot create replacement links.
@@ -127,7 +127,8 @@
 - Added an admin-only “Pošalji ponovo” action for bonus deliveries. It sends each existing bonus link separately through the proven manual email path, shows a sent/failed count, requires confirmation, and keeps an audit row per attempt.
 - Added admin cancellation for n8n fulfillment packages, including a migration-backed cancellation marker, active-token revocation, cancelled item display, CSRF/rate-limited action, and API protection against future replay fulfillment.
 - Simplified public Fair Play, FAQ, pre-open, and result copy: removed internal draw/anti-repeat implementation details, clarified that higher-value prizes appear less often through a fair common process, and stated that PlayWorld discounts apply to all games and subscriptions on `playworld.rs` without expiration.
-- Replaced weight-based prize selection with rarity-tier probabilities and uniform within-tier selection. Added empty-rarity proportional renormalization, active/fulfillment eligibility, post-rarity immediate anti-repeat, deterministic rarity boundary tests, and a 1,000,000-draw local simulation. Existing prize weights, database rows, public copy, integrations, and historical draws were not changed.
+- Replaced weight-based prize selection with rarity-tier probabilities and uniform within-tier selection. Added empty-rarity proportional renormalization, active/fulfillment eligibility, post-rarity immediate anti-repeat, deterministic rarity boundary tests, and a prior 1,000,000-draw local simulation. Existing prize weights, database rows, public copy, integrations, and historical draws were not changed.
+- Updated the active rarity-tier probabilities to Ultra Rare 1%, Rare 5%, Special 15%, Standard 35%, and Common 44%; the distribution remains normalized to 100%.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.

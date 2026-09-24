@@ -80,17 +80,17 @@ final class TokenAndDrawTest extends TestCase
             $counts[$rarity]++;
         }
 
-        $this->assertSame(30, $counts['Ultra Rare']);
-        $this->assertSame(70, $counts['Rare']);
-        $this->assertSame(300, $counts['Special']);
-        $this->assertSame(300, $counts['Standard']);
-        $this->assertSame(300, $counts['Common']);
+        $this->assertSame(10, $counts['Ultra Rare']);
+        $this->assertSame(50, $counts['Rare']);
+        $this->assertSame(150, $counts['Special']);
+        $this->assertSame(350, $counts['Standard']);
+        $this->assertSame(440, $counts['Common']);
 
-        // With Ultra Rare empty, the remaining tiers use 7/97, 30/97, 30/97,
-        // and 30/97 rather than falling back to Common.
-        $this->assertSame('Rare', $service->pickRarity(['Rare', 'Special', 'Standard', 'Common'], 7));
-        $this->assertSame('Special', $service->pickRarity(['Rare', 'Special', 'Standard', 'Common'], 8));
-        $this->assertSame('Common', $service->pickRarity(['Rare', 'Special', 'Standard', 'Common'], 97));
+        // With Ultra Rare empty, the remaining tiers use 5/99, 15/99, 35/99,
+        // and 44/99 rather than falling back to Common.
+        $this->assertSame('Rare', $service->pickRarity(['Rare', 'Special', 'Standard', 'Common'], 5));
+        $this->assertSame('Special', $service->pickRarity(['Rare', 'Special', 'Standard', 'Common'], 6));
+        $this->assertSame('Common', $service->pickRarity(['Rare', 'Special', 'Standard', 'Common'], 99));
     }
 
     public function testActiveZeroWeightPrizeIsStillEligible(): void
