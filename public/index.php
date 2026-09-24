@@ -298,6 +298,24 @@ $router->get('/admin/reward-deliveries', function (): void {
     AuthService::requireAdmin();
     render('admin/reward-deliveries', ['title' => 'Bonus isporuke', 'deliveries' => (new RewardDeliveryService())->recent()]);
 });
+$router->post('/admin/reward-deliveries/{id}/resend', function (string $id): void {
+    AuthService::requireAdmin();
+    verify_csrf();
+    RateLimiter::hit('admin-reward-resend');
+
+    try {
+        $result = (new RewardDeliveryService())->resendExisting((int) $id);
+        if ($result['failed_quantity'] === 0) {
+            $_SESSION['flash'] = ['type' => 'success', 'message' => $result['sent_quantity'] . ' postojeća bonus linka poslata su na ' . $result['recipient_email'] . '.'];
+        } else {
+            $_SESSION['flash'] = ['type' => 'error', 'message' => 'Poslato: ' . $result['sent_quantity'] . '/' . $result['requested_quantity'] . '. ' . $result['failed_quantity'] . ' linkova nije poslato.'];
+        }
+    } catch (Throwable $error) {
+        $_SESSION['flash'] = ['type' => 'error', 'message' => 'Ponovno slanje nije uspelo: ' . $error->getMessage()];
+    }
+
+    redirect('/admin/reward-deliveries');
+});
 $router->get('/admin/reward-claims', function (): void {
     AuthService::requireAdmin();
     render('admin/reward-claims', ['title' => 'Zahtevi za nagrade', 'claims' => (new RewardClaimService())->recent()]);

@@ -144,6 +144,36 @@ final class RewardFeaturesTest extends TestCase
         $this->assertSame(3, (int) Database::pdo()->query('SELECT COUNT(*) FROM tokens')->fetchColumn());
     }
 
+    public function testAdminCanResendExistingBonusLinksIndividually(): void
+    {
+        $this->insertPrize('Admin Resend Prize', 10, 10, 0, null, 2);
+        $token = (new TokenService())->generate(1)[0]['token'];
+        $draw = (new DrawService())->open($token);
+        $originalLinks = [];
+        $sentLinks = [];
+        $service = new RewardDeliveryService(
+            static function (string $email, string $name, array $links) use (&$originalLinks): void {
+                $originalLinks = $links;
+            },
+            null,
+            static function (string $email, string $name, string $link) use (&$sentLinks): void {
+                $sentLinks[] = $link;
+            }
+        );
+
+        $service->claim($draw, 'admin-resend@example.com');
+        $delivery = $service->forDraw($draw['draw_id']);
+        $this->assertNotNull($delivery);
+        $result = $service->resendExisting((int) $delivery['id']);
+
+        $this->assertSame(2, $result['sent_quantity']);
+        $this->assertSame(0, $result['failed_quantity']);
+        $this->assertCount(2, $sentLinks);
+        $this->assertSame($originalLinks, $sentLinks);
+        $this->assertSame(2, (int) Database::pdo()->query('SELECT COUNT(*) FROM email_deliveries WHERE recipient_email = "admin-resend@example.com"')->fetchColumn());
+        $this->assertSame(3, (int) Database::pdo()->query('SELECT COUNT(*) FROM tokens')->fetchColumn());
+    }
+
     public function testManualClaimIsUniquePerDraw(): void
     {
         $this->insertPrize('Manual Prize', 10, 10, 0, null, 0, 1);

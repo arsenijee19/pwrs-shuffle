@@ -14,10 +14,20 @@ final class RewardDeliveryService
     /** @var callable(string,string,array<int,string>): void */
     private $mailSender;
 
-    public function __construct(?callable $mailSender = null, private readonly ?TokenService $tokens = null)
+    /** @var callable(string,string,string): void */
+    private $singleLinkMailSender;
+
+    public function __construct(
+        ?callable $mailSender = null,
+        private readonly ?TokenService $tokens = null,
+        ?callable $singleLinkMailSender = null
+    )
     {
         $this->mailSender = $mailSender ?? static function (string $email, string $name, array $links): void {
             (new MailService())->sendMysteryBoxLinks($email, $name, $links);
+        };
+        $this->singleLinkMailSender = $singleLinkMailSender ?? static function (string $email, string $name, string $link): void {
+            (new MailService())->sendMysteryBoxLink($email, $name, $link);
         };
     }
 
@@ -121,6 +131,73 @@ final class RewardDeliveryService
     {
         $delivery = $this->findByDrawId($drawId);
         return $delivery ? $this->summary($delivery, true) : null;
+    }
+
+    /**
+     * Explicit admin retry for an existing bonus delivery.
+     *
+     * This intentionally reuses the single-link admin mail path and the
+     * already-created encrypted links. It never creates new tokens.
+     *
+     * @return array{draw_id:string,recipient_email:string,requested_quantity:int,sent_quantity:int,failed_quantity:int}
+     */
+    public function resendExisting(int $deliveryId): array
+    {
+        $delivery = $this->findById($deliveryId);
+        if (!$delivery) {
+            throw new \InvalidArgumentException('Bonus isporuka nije pronađena.');
+        }
+
+        $items = $this->items($deliveryId, true);
+        if (count($items) !== (int) $delivery['requested_quantity']) {
+            throw new \RuntimeException('Broj sačuvanih bonus linkova ne odgovara zahtevanom broju.');
+        }
+
+        $sent = 0;
+        $failed = 0;
+        foreach ($items as $item) {
+            $link = (string) ($item['link'] ?? '');
+            if ($link === '' || str_starts_with($link, '[')) {
+                $failed++;
+                continue;
+            }
+
+            try {
+                ($this->singleLinkMailSender)((string) $delivery['recipient_email'], '', $link);
+                $sent++;
+                try {
+                    (new EmailDeliveryService())->record(
+                        (int) $item['token_id'],
+                        (string) $delivery['recipient_email'],
+                        '',
+                        'Sent'
+                    );
+                } catch (Throwable) {
+                    // The email was sent; audit storage must not trigger another send.
+                }
+            } catch (Throwable $error) {
+                $failed++;
+                try {
+                    (new EmailDeliveryService())->record(
+                        (int) $item['token_id'],
+                        (string) $delivery['recipient_email'],
+                        '',
+                        'Failed',
+                        $this->safeError($error)
+                    );
+                } catch (Throwable) {
+                    // Preserve the delivery result even if audit storage fails.
+                }
+            }
+        }
+
+        return [
+            'draw_id' => (string) $delivery['draw_id'],
+            'recipient_email' => (string) $delivery['recipient_email'],
+            'requested_quantity' => (int) $delivery['requested_quantity'],
+            'sent_quantity' => $sent,
+            'failed_quantity' => $failed,
+        ];
     }
 
     /** @return array<string,mixed> */

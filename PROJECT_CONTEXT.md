@@ -7,7 +7,7 @@
 
 ## Current Project Status
 - MVP plus reward automation upgrade implemented for local validation.
-- Completed functionality: existing MVP flows, structured reward behavior, immutable draw snapshots, inline prize editing with audit log, discount-code inventory and allocation, idempotent bonus-box email delivery, manual reward claims, anti-repeat HMAC identity, protected reward-claim n8n API, importable Telegram workflow, responsive customer/admin additions, and backwards-compatible migrations.
+- Completed functionality: existing MVP flows, structured reward behavior, immutable draw snapshots, inline prize editing with audit log, discount-code inventory and allocation, idempotent bonus-box email delivery, admin resend of existing bonus links, manual reward claims, anti-repeat HMAC identity, protected reward-claim n8n API, importable Telegram workflow, responsive customer/admin additions, and backwards-compatible migrations.
 - Partially implemented functionality: Telegram workflow still requires owner configuration; sound remains a short browser-generated success tone with user toggle.
 - Newly added integration artifact: inactive n8n workflow for MerchantPro shipped orders -> PlayWorld Mystery Box fulfillment, with pagination, per-order quantity calculation, idempotent replay handling, delivered status reconciliation, and Telegram operations alerts.
 - Unfinished work: production branding assets, real Telegram group ID, production secrets, cPanel runtime verification, and real device testing.
@@ -55,6 +55,7 @@
 - Email delivery creates a new token and sends that one-time link immediately; existing token links cannot be reconstructed from hashes. SMTP settings can be saved in `/admin/email`, and attempts are visible in `/admin/email-history`.
 - Bonus rewards create exactly the configured number of tokens and send them in one email; `reward_deliveries.draw_id` is the idempotency key.
 - Bonus delivery retries reuse the existing encrypted links after a definite email failure; a successful or unknown-outcome delivery is not sent again automatically.
+- Admins can explicitly resend an existing bonus delivery from `/admin/reward-deliveries`; this sends each already-created encrypted link through the same single-link `MailService` path used by manual admin delivery, records each attempt in `email_deliveries`, and never creates new tokens.
 - Discount codes are assigned transactionally only to a draw with an available code for the exact percentage.
 - Manual claims are unique per Draw ID and are notified by n8n/Telegram without treating Telegram as the source of truth.
 - Manual claim status changes are recorded in `reward_claim_events` with the admin ID when available.
@@ -122,6 +123,7 @@
 - Added an admin-only plain-text export for all discount codes, grouped by percentage, with no-store download headers and decryption only during response generation.
 - Corrected dashboard admin layout after visual review: the heading now occupies its own row and the eight navigation actions use a symmetric 4x2 desktop grid with responsive 2-column/1-column fallbacks.
 - Reorganized public result actions into a symmetric desktop grid with a separate centered sound control, and made bonus delivery feedback reflect the real email status. Definite failures can be retried with the same links without creating new tokens; successful and unknown-outcome deliveries remain protected from duplicate sends.
+- Added an admin-only “Pošalji ponovo” action for bonus deliveries. It sends each existing bonus link separately through the proven manual email path, shows a sent/failed count, requires confirmation, and keeps an audit row per attempt.
 - Replaced weight-based prize selection with rarity-tier probabilities and uniform within-tier selection. Added empty-rarity proportional renormalization, active/fulfillment eligibility, post-rarity immediate anti-repeat, deterministic rarity boundary tests, and a 1,000,000-draw local simulation. Existing prize weights, database rows, public copy, integrations, and historical draws were not changed.
 
 ## Current Priorities
@@ -143,7 +145,7 @@
 - Discount codes cannot be marked redeemed automatically until PlayWorld exposes a trusted redemption signal.
 - Existing production databases need the new `APP_KEY` before any assigned discount/bonus payload can be decrypted.
 - The legacy Shuffle + 5% display compatibility can only create new bonus links when the SMTP settings and discount-code stock are configured correctly; old draw history itself remains unchanged.
-- Bonus email delivery still needs a production SMTP test from `/admin/email`; the app intentionally sends all bonus links in one branded message and does not blindly send repeated copies.
+- Bonus email delivery still needs a production SMTP test from `/admin/email`; automatic fulfillment sends all bonus links in one branded message, while explicit admin retry can send the existing links separately after confirmation.
 - The MerchantPro workflow requires the named HTTP Basic Auth credential plus PlayWorld/Telegram runtime secrets and a real staging/production smoke test before activation; PHP unit tests cannot run in this checkout because the `phpunit` executable is not installed.
 - SecretBox keeps existing Sodium v1 ciphertext compatible and writes new v2 ciphertext with OpenSSL only when Sodium is unavailable; a server still needs at least one of those extensions.
 
