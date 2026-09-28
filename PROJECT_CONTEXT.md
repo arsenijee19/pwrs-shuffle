@@ -133,6 +133,7 @@
 - Updated the active rarity-tier probabilities to Ultra Rare 1%, Rare 5%, Special 15%, Standard 35%, and Common 44%; the distribution remains normalized to 100%.
 - Removed public `/setup` and `/setup.php` initialization routes because production admin setup is complete; kept `bin/setup.php` for controlled first deployment.
 - Completed a static security hardening pass: stricter admin login throttling, fail-closed rate-limit storage, server-side password length validation, CSP/security headers, and executable-file blocking in `public/uploads/`. Added `SECURITY.md` with findings and production verification steps.
+- Moved the public "Preuzmi nagradu" CTA to the top of eligible result pages, directly below the verification strip, so mobile users can reach the contact form without scrolling through the result details.
 
 ## Current Priorities
 - Replace placeholder cover/logo assets with official PlayWorld brand assets.

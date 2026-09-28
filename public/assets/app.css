@@ -125,6 +125,9 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
 .verification-strip { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; margin: 0; padding: 12px 14px; border: 1px solid #bde8d8; border-radius: 8px; background: linear-gradient(135deg, #eefaf5, #f8fffc); color: #17624a; }
 .verification-strip span { font-size: 12px; font-weight: 900; text-transform: uppercase; }
 .verification-strip strong { font-size: 15px; letter-spacing: 0; }
+.result-claim-priority { display: grid; justify-items: center; gap: 8px; width: 100%; margin: 2px 0 4px; }
+.result-claim-priority .result-claim-cta { width: min(100%, 520px); min-height: 58px; font-size: 17px; }
+.result-claim-priority p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
 .meta { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; gap: 12px; margin: 2px 0 0; text-align: left; }
 .meta div { background: var(--soft); border-radius: 8px; padding: 12px; }
 dt { color: var(--muted); font-size: 12px; }

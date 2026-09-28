@@ -20,6 +20,12 @@ $bonusDeliverySending = $bonusDeliveryStatus === 'Sending';
       <span>Verifikovan rezultat</span>
       <strong><?= e($draw['draw_id']) ?></strong>
     </div>
+    <?php if ($needsManualClaim): ?>
+      <div class="result-claim-priority">
+        <a class="primary result-claim-cta" href="#claim-reward">Preuzmi nagradu</a>
+        <p>Ostavite kontakt podatke i PlayWorld tim će Vas kontaktirati.</p>
+      </div>
+    <?php endif; ?>
     <img class="cover" src="<?= e($draw['cover_path']) ?>" alt="">
     <h1><?= e($draw['prize_name']) ?></h1>
     <p><?= e($draw['prize_description']) ?></p>
@@ -35,7 +41,6 @@ $bonusDeliverySending = $bonusDeliveryStatus === 'Sending';
         <a class="primary" href="/box/<?= e($token) ?>/certificate">Download PDF Certificate</a>
         <a class="ghost" href="/verify?draw=<?= e($draw['draw_id']) ?>">Proveri Draw ID</a>
         <a class="secondary-buy" href="https://www.playworld.rs/kupi/playworld-mystery-box-1004" target="_blank" rel="noopener">Kupi još jedan box</a>
-        <?php if ($needsManualClaim): ?><a class="ghost result-claim-cta" href="#claim-reward">Preuzmi nagradu</a><?php endif; ?>
       </div>
       <div class="result-action-controls">
         <button class="ghost" type="button" data-sound-toggle>Sound on/off</button>
