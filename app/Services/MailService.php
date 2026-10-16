@@ -124,7 +124,7 @@ final class MailService
             'u prilogu Vam šaljemo Vaš jedinstveni link za PlayWorld Mystery Box:',
             $link,
             'Otvorite link i ispratite instrukcije prikazane na stranici. Mystery Box možete otvoriti samo jednom, a rezultat nakon otvaranja nije moguće promeniti.',
-            'Ako osvojite igru ili poklon, na stranici rezultata kliknite „Preuzmi nagradu“ i ostavite kontakt. Screenshot nije potreban: naš tim će Vas kontaktirati tokom radnog vremena radi isporuke.',
+            'Ako osvojite igru ili poklon, na stranici rezultata kliknite „Preuzmite nagradu“ i ostavite kontakt. Screenshot nije potreban: naš tim će Vas kontaktirati tokom radnog vremena radi isporuke.',
             'Hvala Vam na učešću i želimo Vam puno sreće!',
             'Srdačno, PlayWorld tim',
         ]);

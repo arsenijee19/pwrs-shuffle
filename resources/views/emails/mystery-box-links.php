@@ -20,11 +20,11 @@ $greeting = trim($recipientName) !== '' ? 'Poštovani/a ' . trim($recipientName)
           <?php foreach ($links as $index => $link): ?>
             <div style="margin:18px 0;padding:18px;border:1px solid #dbe4ef;border-radius:12px;background:#f8fafc;">
               <strong style="display:block;margin-bottom:12px;color:#121826;">Mystery Box <?= e((string) ($index + 1)) ?></strong>
-              <a href="<?= e($link) ?>" style="display:inline-block;padding:13px 18px;background:#2457c5;border-radius:9px;color:#fff;text-decoration:none;font-weight:700;">Otvori Mystery Box</a>
+              <a href="<?= e($link) ?>" style="display:inline-block;padding:13px 18px;background:#2457c5;border-radius:9px;color:#fff;text-decoration:none;font-weight:700;">Otvorite Mystery Box</a>
               <div style="margin-top:12px;word-break:break-all;font-size:12px;color:#667085;"><?= e($link) ?></div>
             </div>
           <?php endforeach; ?>
-          <p style="font-size:14px;line-height:1.6;color:#17624a;background:#eef7f3;padding:14px 16px;border-radius:10px;">Nakon svakog otvaranja kliknite „Preuzmi nagradu“ i ostavite kontakt. Screenshot nije potreban, a naš tim će Vas kontaktirati tokom radnog vremena radi isporuke igre.</p>
+          <p style="font-size:14px;line-height:1.6;color:#17624a;background:#eef7f3;padding:14px 16px;border-radius:10px;">Nakon svakog otvaranja kliknite „Preuzmite nagradu“ i ostavite kontakt. Screenshot nije potreban, a naš tim će Vas kontaktirati tokom radnog vremena radi isporuke igre.</p>
         </td></tr>
         <tr><td style="padding:22px 30px;background:#f8fafc;border-top:1px solid #dbe4ef;color:#667085;font-size:13px;">Hvala Vam na učešću!<br><strong style="color:#121826;">PlayWorld tim</strong></td></tr>
       </table>

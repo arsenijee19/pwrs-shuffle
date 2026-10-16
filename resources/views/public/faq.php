@@ -7,7 +7,7 @@
       'Kupovina i link' => [
           'Šta je PlayWorld Mystery Box?' => 'PlayWorld Mystery Box je digitalni box iznenađenja. Nakon kupovine dobijate jedinstven link, otvarate box i sistem Vam prikazuje jednu osvojenu nagradu iz aktivnog nagradnog fonda.',
           'Kako funkcioniše kupovina?' => 'Kada uplata bude evidentirana, PlayWorld Vam šalje poseban link za svaki kupljeni Mystery Box. Na linku vidite kratke instrukcije, pregled dostupnih nagrada i dugme za otvaranje.',
-          'Da li mogu kupiti više box-ova?' => 'Da. Možete kupiti neograničen broj Mystery Box-ova. Svaki kupljeni box dobija svoj poseban link, pa se svako otvaranje vodi odvojeno kao nova prilika za nagradu.',
+          'Da li mogu kupiti više boxova?' => 'Da. Možete kupiti neograničen broj Mystery Boxova. Svaki kupljeni box dobija svoj poseban link, pa se svako otvaranje vodi odvojeno kao nova prilika za nagradu.',
           'Da li isti link mogu otvoriti više puta?' => 'Jedan link može da se iskoristi samo jednom. Kada je rezultat jednom zabeležen, isti link kasnije služi samo za pregled već osvojene nagrade, dok je rezultat dostupan.',
       ],
       'Izvlačenje i nagrade' => [
@@ -24,8 +24,8 @@
           'Šta ako osvežim stranicu ili promenim uređaj?' => 'Ako je rezultat već upisan, ponovo ćete videti isti rezultat. Ako izvlačenje nije završeno, link ostaje spreman za otvaranje.',
           'Šta ako nestane interneta tokom otvaranja?' => 'Ako je server već zabeležio rezultat, videćete ga kada ponovo otvorite link. Ako rezultat nije zabeležen, otvaranje se može ponoviti.',
           'Šta ako dođe do tehničkog problema?' => 'Kontaktirajte PlayWorld tim. Ako proverom utvrdimo da izvlačenje nije uspešno završeno zbog tehničke greške sistema, omogućićemo ponovno otvaranje ili izdati novi Mystery Box link.',
-          'Koliko dugo mogu videti rezultat?' => 'Rezultat je dostupan 5 dana od trenutka otvaranja. Nagradu preuzmite što pre klikom na „Preuzmi nagradu“, a PDF potvrdu možete sačuvati po želji.',
-          'Kako preuzimam nagradu?' => 'Na stranici rezultata kliknite „Preuzmi nagradu“ i ostavite email i telefon. Screenshot ni PDF nisu potrebni, jer rezultat proveravamo po Draw ID-ju. PlayWorld tim će Vas kontaktirati tokom radnog vremena radi isporuke igre.',
+          'Koliko dugo mogu videti rezultat?' => 'Rezultat je dostupan 5 dana od trenutka otvaranja. Nagradu preuzmite što pre klikom na „Preuzmite nagradu“, a PDF potvrdu možete sačuvati po želji.',
+          'Kako preuzimam nagradu?' => 'Na stranici rezultata kliknite „Preuzmite nagradu“ i ostavite email i telefon. Screenshot ni PDF nisu potrebni, jer rezultat proveravamo po Draw ID-ju. PlayWorld tim će Vas kontaktirati tokom radnog vremena radi isporuke igre.',
           'Šta ako izgubim link?' => 'Kontaktirajte nas što pre. Ako Mystery Box nije otvoren, pomoći ćemo Vam da ponovo pristupite linku.',
           'Kome da se javim?' => 'Javite se PlayWorld podršci ili kontakt osobi koja Vam je poslala Mystery Box link.',
           'Da li su mogući naknadni povraćaj ili zamena?' => 'Ne. Mystery Box je proizvod iznenađenja, a rezultat postaje konačan nakon otvaranja. Naknadne zamene, refundacije i isplate u novcu nisu moguće, osim provere i eventualnog novog boxa u posebno navedenom slučaju duplikata igre kupljene preko PlayWorld-a.',

@@ -11,5 +11,5 @@
       </div>
     </div>
   <?php endif; ?>
-  <a class="primary" href="/faq">Pogledaj FAQ</a>
+  <a class="primary" href="/faq">Pogledajte FAQ</a>
 </section>

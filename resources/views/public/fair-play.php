@@ -1,19 +1,19 @@
 <section class="panel readable">
   <p class="eyebrow">Transparentnost</p>
   <h1>Fair Play</h1>
-  <p>PlayWorld Mystery Box je napravljen da bude jednostavan, proverljiv i pošten prema kupcu.</p>
+  <p>PlayWorld Mystery Box je osmišljen da bude jednostavan, proverljiv i pošten prema Vama.</p>
   <ul class="checklist">
-    <li>Token radi samo jednom.</li>
-    <li>Rezultat određuje server, ne animacija.</li>
-    <li>Rezultat nije moguće promeniti nakon upisa.</li>
-    <li>Administrator ne može promeniti već osvojenu nagradu.</li>
-    <li>U fondu je uvek najmanje 25 aktivnih nagrada.</li>
-    <li>Spisak nagrada može se menjati u skladu sa dostupnošću.</li>
+    <li>Svaki link važi za samo jedno otvaranje.</li>
+    <li>Rezultat određuje server, a ne animacija.</li>
+    <li>Rezultat nije moguće promeniti nakon što je upisan.</li>
+    <li>Administrator ne može da promeni nagradu koju ste već osvojili.</li>
+    <li>U fondu se uvek nalazi najmanje 25 aktivnih nagrada.</li>
+    <li>Spisak nagrada može da se menja u skladu sa dostupnošću proizvoda.</li>
     <li>Osvojeni popusti mogu se iskoristiti na sajtu <strong>playworld.rs</strong> za sve igre i pretplate iz ponude. Popusti nemaju rok trajanja.</li>
-    <li>Ako kupac već ima osvojenu igru, novi Mystery Box moguć je samo uz potvrdu da je ista igra ranije kupljena preko PlayWorld-a.</li>
-    <li>Nema naknadnih zamena, refundacija ili isplate u novcu nakon otvaranja, osim jasno definisane provere duplikata igre kupljene preko PlayWorld-a.</li>
-    <li>Svaka nagrada ima svoju vrednost. Vrednije nagrade pojavljuju se ređe, dok se ostale nagrade pojavljuju češće.</li>
-    <li>Svako izvlačenje odvija se automatski, po istim pravilima za sve učesnike i uz korektan postupak.</li>
-    <li>Sva izvlačenja ostaju evidentirana kroz Draw ID i vreme otvaranja.</li>
+    <li>Ako već imate igru koju ste osvojili, novi Mystery Box je moguć samo uz potvrdu da je ta igra ranije kupljena preko PlayWorld-a.</li>
+    <li>Nakon otvaranja nisu moguće zamene, refundacije ni isplate u novcu, osim jasno definisane provere duplikata igre kupljene preko PlayWorld-a.</li>
+    <li>Svaka nagrada ima svoju vrednost: vrednije nagrade pojavljuju se ređe, a ostale češće.</li>
+    <li>Svako izvlačenje se odvija automatski, po istim pravilima za sve učesnike.</li>
+    <li>Sva izvlačenja su evidentirana kroz Draw ID i vreme otvaranja, pa ih u svakom trenutku možete proveriti.</li>
   </ul>
 </section>

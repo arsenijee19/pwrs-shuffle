@@ -20,17 +20,17 @@ final class PdfService
         $needsClaim = (int) ($draw['manual_claim'] ?? 0) === 1 || ($bonus < 1 && (int) ($draw['discount_percent'] ?? 0) < 1);
         if ($needsClaim) {
             $nextTitle = 'Sledeći korak: preuzmite nagradu';
-            $nextText = 'Kliknite na dugme ispod ili skenirajte QR kod, pa pritisnite „Preuzmi nagradu“ i ostavite email i telefon. '
+            $nextText = 'Kliknite na dugme ispod ili skenirajte QR kod, pa pritisnite „Preuzmite nagradu“ i ostavite email i telefon. '
                 . 'Screenshot nije potreban. <strong>Kontaktiraćemo Vas tokom radnog vremena radi isporuke igre.</strong>';
-            $nextButton = 'Preuzmi nagradu';
+            $nextButton = 'Preuzmite nagradu';
         } elseif ($bonus > 0) {
             $nextTitle = 'Sledeći korak: preuzmite dodatne boxove';
             $nextText = 'Otvorite link ispod i unesite email na koji želite da primite dodatne Mystery Box linkove. Screenshot nije potreban.';
-            $nextButton = 'Preuzmi dodatne boxove';
+            $nextButton = 'Preuzmite dodatne boxove';
         } else {
             $nextTitle = 'Sledeći korak: iskoristite popust';
             $nextText = 'Otvorite link ispod da vidite svoj kod za popust i iskoristite ga na www.playworld.rs. Screenshot nije potreban.';
-            $nextButton = 'Prikaži moj popust';
+            $nextButton = 'Prikažite moj popust';
         }
 
         $html = '<html><head><style>

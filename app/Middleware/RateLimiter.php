@@ -65,11 +65,12 @@ final class RateLimiter
                     'success' => false,
                     'error' => [
                         'code' => 'rate_limit_exceeded',
-                        'message' => 'Previše zahteva. Pokušajte ponovo kasnije.',
+                        'message' => 'Previše zahteva. Molimo Vas, pokušajte ponovo kasnije.',
                     ],
                 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             } else {
-                echo 'Too many requests. Please try again soon.';
+                header('Content-Type: text/html; charset=utf-8');
+                echo '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Previše zahteva</title><p style="font-family:sans-serif;max-width:480px;margin:15vh auto;padding:0 20px;line-height:1.6"><strong>Previše zahteva.</strong><br>Molimo Vas, sačekajte nekoliko trenutaka pa pokušajte ponovo.</p>';
             }
             exit;
         }

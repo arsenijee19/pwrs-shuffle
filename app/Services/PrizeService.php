@@ -76,7 +76,7 @@ final class PrizeService
         }
         $bonusBoxCount = (int) ($data['bonus_box_count'] ?? 0);
         if ($bonusBoxCount < 0 || $bonusBoxCount > 50) {
-            throw new \InvalidArgumentException('Broj dodatnih Mystery Box-ova mora biti između 0 i 50.');
+            throw new \InvalidArgumentException('Broj dodatnih Mystery Boxova mora biti između 0 i 50.');
         }
 
         $coverPath = $this->handleCoverUpload($cover, $data['existing_cover'] ?? null);
@@ -138,7 +138,7 @@ final class PrizeService
             throw new \InvalidArgumentException('Legacy max vrednost mora biti najmanje 1.');
         }
         if ($field === 'bonus_box_count' && ($next === false || $next < 0 || $next > 50)) {
-            throw new \InvalidArgumentException('Broj dodatnih Mystery Box-ova mora biti između 0 i 50.');
+            throw new \InvalidArgumentException('Broj dodatnih Mystery Boxova mora biti između 0 i 50.');
         }
         if ($field === 'discount_percent' && $next !== null && ($next === false || $next < 1 || $next > 100)) {
             throw new \InvalidArgumentException('Procenat popusta mora biti između 1 i 100 ili prazno.');
@@ -300,8 +300,8 @@ final class PrizeService
         return [
             ['name' => 'Besplatan Shuffle + 5% na sledeću kupovinu', 'weight' => 10, 'rarity' => 'Rare', 'max_quantity' => 100000, 'bonus_box_count' => 1, 'discount_percent' => 5, 'manual_claim' => 0, 'legacy_existing_only' => true],
             ['name' => '2 Mystery Box-a + 5% popusta', 'weight' => 10, 'rarity' => 'Rare', 'max_quantity' => 100000, 'bonus_box_count' => 2, 'discount_percent' => 5, 'manual_claim' => 0],
-            ['name' => '5 Mystery Box-ova + 50% popusta', 'weight' => 1, 'rarity' => 'Ultra Rare', 'max_quantity' => 100000, 'bonus_box_count' => 5, 'discount_percent' => 50, 'manual_claim' => 0],
-            ['name' => '10 Mystery Box-ova', 'weight' => 1, 'rarity' => 'Ultra Rare', 'max_quantity' => 100000, 'bonus_box_count' => 10, 'discount_percent' => null, 'manual_claim' => 0],
+            ['name' => '5 Mystery Boxova + 50% popusta', 'weight' => 1, 'rarity' => 'Ultra Rare', 'max_quantity' => 100000, 'bonus_box_count' => 5, 'discount_percent' => 50, 'manual_claim' => 0],
+            ['name' => '10 Mystery Boxova', 'weight' => 1, 'rarity' => 'Ultra Rare', 'max_quantity' => 100000, 'bonus_box_count' => 10, 'discount_percent' => null, 'manual_claim' => 0],
             ['name' => 'Besplatna igra po izboru', 'weight' => 1, 'rarity' => 'Ultra Rare', 'max_quantity' => 100000, 'bonus_box_count' => 0, 'discount_percent' => null, 'manual_claim' => 1],
             ['name' => 'PlayStation Plus Deluxe - 1 mesec', 'weight' => 7, 'rarity' => 'Rare', 'max_quantity' => 100000, 'bonus_box_count' => 0, 'discount_percent' => null, 'manual_claim' => 1],
             ['name' => 'PlayStation Plus Extra - 1 mesec', 'weight' => 8, 'rarity' => 'Rare', 'max_quantity' => 100000, 'bonus_box_count' => 0, 'discount_percent' => null, 'manual_claim' => 1],

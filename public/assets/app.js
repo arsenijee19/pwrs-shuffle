@@ -1,13 +1,13 @@
 (() => {
   const formattedMessage = (link) => `Poštovani,
 
-u prilogu vam šaljemo Vaš jedinstveni link za PlayWorld Mystery Box:
+u prilogu Vam šaljemo Vaš jedinstveni link za PlayWorld Mystery Box:
 
 ${link}
 
 Molimo Vas da otvorite link i ispratite instrukcije prikazane na stranici. Mystery Box možete otvoriti samo jednom, a rezultat nakon otvaranja nije moguće promeniti.
 
-Ako osvojite igru ili poklon, kliknite „Preuzmi nagradu“ na stranici rezultata i ostavite email i telefon. Screenshot nije potreban: naš tim će Vas kontaktirati tokom radnog vremena radi isporuke.
+Ako osvojite igru ili poklon, kliknite „Preuzmite nagradu“ na stranici rezultata i ostavite email i telefon. Screenshot nije potreban: naš tim će Vas kontaktirati tokom radnog vremena radi isporuke.
 
 Hvala Vam na učešću i želimo Vam puno sreće!
 
@@ -139,7 +139,7 @@ PlayWorld tim`;
 
   document.querySelectorAll('[data-confirm-open]').forEach((form) => {
     form.addEventListener('submit', (event) => {
-      if (!window.confirm('Ovu Mystery Box nagradu možete otvoriti samo jednom.')) {
+      if (!window.confirm('Da li ste spremni da otvorite svoj Mystery Box? Link važi samo za jedno otvaranje.')) {
         event.preventDefault();
         return;
       }
@@ -164,7 +164,7 @@ PlayWorld tim`;
         panel.setAttribute('hidden', '');
       }
       button.setAttribute('aria-expanded', String(isOpen));
-      button.textContent = isOpen ? 'ZATVORI KONTAKT' : 'KONTAKT';
+      button.textContent = isOpen ? 'Zatvorite kontakt' : 'Kontaktirajte nas';
     });
   });
 
@@ -270,6 +270,58 @@ PlayWorld tim`;
       }
     });
   });
+
+  const drawer = document.querySelector('[data-drawer]');
+  const navToggle = document.querySelector('[data-nav-toggle]');
+  if (drawer && navToggle) {
+    const closeButton = drawer.querySelector('.drawer-close');
+    const setDrawer = (open) => {
+      drawer.classList.toggle('is-open', open);
+      drawer.setAttribute('aria-hidden', String(!open));
+      navToggle.setAttribute('aria-expanded', String(open));
+      document.body.classList.toggle('drawer-open', open);
+      if (open) {
+        setTimeout(() => closeButton?.focus({ preventScroll: true }), 60);
+      } else if (drawer.contains(document.activeElement)) {
+        navToggle.focus({ preventScroll: true });
+      }
+    };
+    navToggle.addEventListener('click', () => setDrawer(!drawer.classList.contains('is-open')));
+    drawer.querySelectorAll('[data-drawer-close]').forEach((el) => el.addEventListener('click', () => setDrawer(false)));
+    drawer.querySelectorAll('.drawer-links a, .drawer-cta').forEach((el) => el.addEventListener('click', () => setDrawer(false)));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && drawer.classList.contains('is-open')) setDrawer(false);
+    });
+    window.matchMedia('(min-width: 761px)').addEventListener('change', (event) => {
+      if (event.matches) setDrawer(false);
+    });
+    window.addEventListener('pageshow', () => setDrawer(false));
+  }
+
+  const topbar = document.querySelector('.topbar');
+  if (topbar) {
+    let lastY = window.scrollY;
+    let ticking = false;
+    const mobile = window.matchMedia('(max-width: 760px)');
+    const update = () => {
+      ticking = false;
+      const y = window.scrollY;
+      if (!mobile.matches || y < 90) {
+        topbar.classList.remove('is-hidden');
+      } else if (y > lastY + 8) {
+        if (!topbar.contains(document.activeElement) && !document.body.classList.contains('drawer-open')) topbar.classList.add('is-hidden');
+      } else if (y < lastY - 8) {
+        topbar.classList.remove('is-hidden');
+      }
+      lastY = y;
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }, { passive: true });
+  }
 
   const celebrateShell = document.querySelector('.result-shell.celebrate');
   if (celebrateShell) {

@@ -17,8 +17,8 @@ $oldInput = is_array($_SESSION['old_input'] ?? null) ? $_SESSION['old_input'] : 
 unset($_SESSION['old_input']);
 $stickyTarget = $bonusPending ? 'bonus-reward' : 'claim-reward';
 $stickyLabel = $bonusPending
-    ? ($bonusCount === 1 ? 'Preuzmi svoj besplatni box' : 'Preuzmi svoje besplatne boxove')
-    : 'Preuzmi nagradu';
+    ? ($bonusCount === 1 ? 'Preuzmite svoj besplatni box' : 'Preuzmite svoje besplatne boxove')
+    : 'Preuzmite nagradu';
 ?>
 <section class="result-shell <?= !empty($openedNow) ? 'celebrate' : '' ?>">
   <?php if (!empty($openedNow)): ?>
@@ -55,24 +55,24 @@ $stickyLabel = $bonusPending
               <li><span>3</span>Otvorite link iz emaila</li>
             </ol>
             <?php if ($bonusDeliveryFailed): ?>
-              <p class="notice warning-notice">Prethodni pokušaj slanja na <?= e((string) $bonusDelivery['masked_email']) ?> nije uspeo. Proverite adresu i pokušajte ponovo; isti linkovi će biti poslati bez kreiranja novih boxova.</p>
+              <p class="notice warning-notice">Prethodni pokušaj slanja na <?= e((string) $bonusDelivery['masked_email']) ?> nije uspeo. Molimo Vas, proverite adresu i pokušajte ponovo. Isti linkovi će biti poslati, bez kreiranja novih boxova.</p>
             <?php endif; ?>
             <form method="post" action="/box/<?= e($token) ?>/bonus" class="claim-form action-form" data-action-form>
               <?= csrf_field() ?>
               <label class="field-highlight">Vaša email adresa<input type="email" name="email" required autocomplete="email" inputmode="email" placeholder="ime@primer.com" value="<?= e((string) ($oldInput['email'] ?? $bonusDelivery['recipient_email'] ?? '')) ?>"></label>
               <label>Ime (opciono)<input type="text" name="name" maxlength="160" autocomplete="given-name" value="<?= e((string) ($oldInput['name'] ?? '')) ?>"></label>
-              <button class="primary action-submit" type="submit"><?= $bonusDeliveryFailed ? 'Pošalji linkove ponovo' : 'Pošalji mi ' . ($bonusCount === 1 ? 'box' : 'boxove') ?></button>
+              <button class="primary action-submit" type="submit"><?= $bonusDeliveryFailed ? 'Pošaljite linkove ponovo' : 'Pošaljite mi ' . ($bonusCount === 1 ? 'box' : 'boxove') ?></button>
             </form>
-            <p class="action-hint">Ne zatvarajte ovu stranicu dok ne pošaljete email. Ako poruka ne stigne za par minuta, proverite Spam / Promocije.</p>
+            <p class="action-hint">Molimo Vas, ne zatvarajte ovu stranicu dok ne pošaljete email. Ako poruka ne stigne u roku od nekoliko minuta, proverite folder Spam ili Promocije.</p>
           <?php else: ?>
             <span class="action-badge done-badge"><?= $bonusDeliverySent ? '✓ Poslato' : 'U obradi' ?></span>
             <h2>Još <?= e((string) $bonusCount) ?> <?= e($boxWord) ?> <?= $bonusDeliverySent ? 'na putu do Vas' : 'u obradi' ?></h2>
             <?php if ($bonusDeliverySent): ?>
-              <p>Linkovi su poslati na <strong><?= e((string) $bonusDelivery['masked_email']) ?></strong>. Otvorite email od PlayWorld-a i kliknite na link da otvorite <?= $bonusCount === 1 ? 'novi box' : 'nove boxove' ?>. Ako ga ne vidite, proverite Spam / Promocije.</p>
+              <p>Linkovi su poslati na <strong><?= e((string) $bonusDelivery['masked_email']) ?></strong>. Otvorite email od PlayWorld-a i kliknite na link da otvorite <?= $bonusCount === 1 ? 'novi box' : 'nove boxove' ?>. Ako je ne vidite, proverite folder Spam ili Promocije.</p>
             <?php elseif ($bonusDeliveryNeedsReview): ?>
-              <p class="notice">Email server nije potvrdio ishod slanja na <?= e((string) $bonusDelivery['masked_email']) ?>. Nemojte slati zahtev više puta; proverite Primljeno i Spam, a zatim kontaktirajte PlayWorld tim ako poruka nije stigla.</p>
+              <p class="notice">Nismo dobili potvrdu o slanju na <?= e((string) $bonusDelivery['masked_email']) ?>. Molimo Vas, ne šaljite zahtev ponovo. Proverite folder Primljeno i Spam, a ako poruka ne stigne, kontaktirajte PlayWorld tim.</p>
             <?php else: ?>
-              <p class="notice">Slanje na <?= e((string) $bonusDelivery['masked_email']) ?> je u toku. Osvežite stranicu za nekoliko trenutaka.</p>
+              <p class="notice">Slanje na <?= e((string) $bonusDelivery['masked_email']) ?> je u toku. Molimo Vas, osvežite stranicu za nekoliko trenutaka.</p>
             <?php endif; ?>
           <?php endif; ?>
         </section>
@@ -84,8 +84,8 @@ $stickyLabel = $bonusPending
           <h2><?= e((string) $draw['discount_percent']) ?>% popusta</h2>
           <?php if (!empty($discountCode)): ?>
             <p>Kod je rezervisan za ovaj Draw ID. Kopirajte ga i iskoristite na <strong>www.playworld.rs</strong> za igre i pretplate iz ponude.</p>
-            <div class="secret-code"><code><?= e($discountCode['code']) ?></code><button type="button" class="ghost" data-copy="<?= e($discountCode['code']) ?>" data-copied-label="Kod kopiran">Kopiraj kod</button></div>
-            <a class="primary discount-use-button" href="https://www.playworld.rs/" target="_blank" rel="noopener">Iskoristi kupon</a>
+            <div class="secret-code"><code><?= e($discountCode['code']) ?></code><button type="button" class="ghost" data-copy="<?= e($discountCode['code']) ?>" data-copied-label="Kod kopiran">Kopirajte kod</button></div>
+            <a class="primary discount-use-button" href="https://www.playworld.rs/" target="_blank" rel="noopener">Iskoristite kupon</a>
           <?php else: ?>
             <p class="notice">Popust možete iskoristiti na <strong>www.playworld.rs</strong>. Kod trenutno nije dostupan za prikaz; ostavite kontakt u odeljku za preuzimanje nagrade.</p>
           <?php endif; ?>
@@ -112,11 +112,11 @@ $stickyLabel = $bonusPending
               <?= csrf_field() ?>
               <label class="field-highlight">Email adresa<input type="email" name="email" required autocomplete="email" inputmode="email" placeholder="ime@primer.com" value="<?= e((string) ($oldInput['email'] ?? '')) ?>"></label>
               <label>Telefon / Viber<input type="tel" name="phone" required inputmode="tel" autocomplete="tel" placeholder="+381 60 123 4567" value="<?= e((string) ($oldInput['phone'] ?? '')) ?>"></label>
-              <button class="primary action-submit" type="submit">Preuzmi nagradu</button>
+              <button class="primary action-submit" type="submit">Preuzmite nagradu</button>
             </form>
             <div class="contact-actions">
-              <p class="contact-lead">Radije biste nam se Vi javili?</p>
-              <button class="ghost contact-toggle" type="button" data-contact-toggle aria-expanded="false" aria-controls="contact-options">KONTAKT</button>
+              <p class="contact-lead">Želite li radije Vi da nas kontaktirate?</p>
+              <button class="ghost contact-toggle" type="button" data-contact-toggle aria-expanded="false" aria-controls="contact-options">Kontaktirajte nas</button>
               <div class="contact-icons" id="contact-options" data-contact-panel hidden>
                 <?php require app_path('resources/views/partials/contact-icons.php'); ?>
               </div>
@@ -138,15 +138,15 @@ $stickyLabel = $bonusPending
       <div class="result-action-grid">
         <a class="result-btn <?= $hasPendingAction ? 'is-ghost' : 'is-primary' ?>" href="/box/<?= e($token) ?>/certificate">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v10m0 0-4-4m4 4 4-4M5 19h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Preuzmi PDF potvrdu</span>
+          <span>Preuzmite PDF potvrdu</span>
         </a>
         <a class="result-btn is-ghost" href="/verify?draw=<?= e($draw['draw_id']) ?>">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5.500c0 4.300 2.900 8 7 9.500 4.100-1.500 7-5.200 7-9.500V6l-7-3Zm-3 9 2.200 2.200L15.500 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Proveri Draw ID</span>
+          <span>Proverite Draw ID</span>
         </a>
         <a class="result-btn <?= $hasPendingAction ? 'is-ghost' : 'is-buy' ?>" href="https://www.playworld.rs/kupi/playworld-mystery-box-1004" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2.500l2 11h10l2-8H7M10 20h.01M17 20h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Kupi još jedan box</span>
+          <span>Kupite još jedan box</span>
         </a>
       </div>
       <div class="result-action-controls">

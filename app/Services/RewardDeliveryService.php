@@ -40,7 +40,7 @@ final class RewardDeliveryService
         $drawId = (string) ($draw['draw_id'] ?? '');
         $quantity = (int) ($draw['snapshot_bonus_box_count'] ?? $draw['bonus_box_count'] ?? 0);
         if (!preg_match('/^PW-[A-F0-9]{10}$/', $drawId) || $quantity < 1 || $quantity > 50) {
-            throw new \InvalidArgumentException('Ova nagrada nema validnu bonus isporuku.');
+            throw new \InvalidArgumentException('Ova nagrada ne uključuje dodatne boxove.');
         }
 
         $pdo = Database::pdo();
@@ -49,7 +49,7 @@ final class RewardDeliveryService
             $existing = $this->findByDrawId($drawId);
             if ($existing) {
                 if ((string) $existing['recipient_email'] !== $email) {
-                    throw new \RuntimeException('Za ovaj rezultat je već unet drugi email.');
+                    throw new \RuntimeException('Za ovaj rezultat je već unet drugi email. Ako želite da ga promenite, molimo Vas, kontaktirajte PlayWorld tim.');
                 }
 
                 if ($existing['status'] === 'Sending') {
@@ -102,7 +102,7 @@ final class RewardDeliveryService
             $delivery = $this->findById($deliveryId);
             $this->commit($pdo);
             if (!$delivery) {
-                throw new \RuntimeException('Bonus isporuka nije kreirana.');
+                throw new \RuntimeException('Isporuku dodatnih boxova nije bilo moguće pripremiti. Molimo Vas, pokušajte ponovo.');
             }
         } catch (Throwable $error) {
             Database::rollback($pdo);
@@ -286,7 +286,7 @@ final class RewardDeliveryService
     private function validateEmail(string $email): void
     {
         if (strlen($email) > 254 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new \InvalidArgumentException('Unesite ispravnu email adresu.');
+            throw new \InvalidArgumentException('Molimo Vas, unesite ispravnu email adresu.');
         }
     }
 

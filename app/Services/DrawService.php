@@ -87,7 +87,7 @@ final class DrawService
             $tokenStmt->execute(['hash' => $tokenHash]);
             $token = $tokenStmt->fetch();
             if (!$token) {
-                throw new RuntimeException('Token nije pronađen.');
+                throw new RuntimeException('Ovaj link nije pronađen. Proverite da li je ispravno kopiran.');
             }
 
             $existing = $this->resultForToken((int) $token['id']);
@@ -96,11 +96,11 @@ final class DrawService
                 return $existing;
             }
             if ($token['status'] !== 'Active') {
-                throw new RuntimeException('Token nije aktivan.');
+                throw new RuntimeException('Ovaj link više nije aktivan.');
             }
             if (!empty($token['expires_at']) && new \DateTimeImmutable($token['expires_at']) < new \DateTimeImmutable()) {
                 $pdo->prepare('UPDATE tokens SET status = "Expired", updated_at = :now WHERE id = :id')->execute(['now' => date('c'), 'id' => $token['id']]);
-                throw new RuntimeException('Token je istekao.');
+                throw new RuntimeException('Ovaj link je istekao.');
             }
 
             // Rarity controls the probability tier. Weight is retained only as
@@ -108,7 +108,7 @@ final class DrawService
             $eligiblePrizes = $this->buildEligiblePrizes($pdo);
             $groups = $this->groupEligiblePrizesByRarity($eligiblePrizes);
             if ($groups === []) {
-                throw new RuntimeException('Trenutno nema dostupnih nagrada.');
+                throw new RuntimeException('Trenutno nema dostupnih nagrada. Molimo Vas, pokušajte ponovo kasnije ili kontaktirajte PlayWorld tim.');
             }
 
             $selectedRarity = $this->pickRarity(array_keys($groups));
@@ -144,7 +144,7 @@ final class DrawService
             $updatePrize = $pdo->prepare('UPDATE prizes SET won_count = won_count + 1, updated_at = :now WHERE id = :id');
             $updatePrize->execute(['now' => $now, 'id' => $prize['id']]);
             if ($updatePrize->rowCount() < 1) {
-                throw new RuntimeException('Nagrada više nije dostupna.');
+                throw new RuntimeException('Izabrana nagrada je upravo postala nedostupna. Molimo Vas, pokušajte ponovo za nekoliko trenutaka.');
             }
 
             $pdo->prepare(
@@ -169,7 +169,7 @@ final class DrawService
             ]);
 
             if ((int) ($prize['discount_percent'] ?? 0) > 0 && !$codeService->assignAvailable((int) $prize['discount_percent'], $drawId, $pdo)) {
-                throw new RuntimeException('Kod za popust više nije dostupan.');
+                throw new RuntimeException('Kod za popust trenutno nije dostupan. Molimo Vas, pokušajte ponovo za nekoliko trenutaka.');
             }
 
             $updatedToken = $pdo->prepare('UPDATE tokens SET status = "Used", used_at = :used, updated_at = :updated WHERE id = :id AND status = "Active"');

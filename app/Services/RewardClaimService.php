@@ -16,16 +16,16 @@ final class RewardClaimService
         $email = strtolower(trim($email));
         $phone = $this->normalizePhone($phone);
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 254) {
-            throw new \InvalidArgumentException('Unesite ispravnu email adresu.');
+            throw new \InvalidArgumentException('Molimo Vas, unesite ispravnu email adresu.');
         }
         if ($phone === null) {
-            throw new \InvalidArgumentException('Unesite ispravan broj telefona ili Viber broj.');
+            throw new \InvalidArgumentException('Molimo Vas, unesite ispravan broj telefona ili Viber broj, na primer +381 60 123 4567.');
         }
 
         $drawId = (string) ($draw['draw_id'] ?? '');
         $prizeName = (string) ($draw['prize_name'] ?? '');
         if (!preg_match('/^PW-[A-F0-9]{10}$/', $drawId) || $prizeName === '') {
-            throw new \InvalidArgumentException('Rezultat nije validan.');
+            throw new \InvalidArgumentException('Rezultat nije moguće potvrditi. Molimo Vas, kontaktirajte PlayWorld tim.');
         }
 
         $pdo = Database::pdo();
@@ -34,7 +34,7 @@ final class RewardClaimService
             $existing = $this->findByDrawId($drawId);
             if ($existing) {
                 if ($existing['recipient_email'] !== $email || $existing['recipient_phone'] !== $phone) {
-                    throw new \RuntimeException('Za ovaj rezultat je već poslat zahtev sa drugim kontaktom.');
+                    throw new \RuntimeException('Za ovaj rezultat je već poslat zahtev sa drugim kontaktom. Ako želite da ga promenite, molimo Vas, kontaktirajte PlayWorld tim.');
                 }
                 Database::commit($pdo);
                 return $this->public($existing, true);
@@ -55,7 +55,7 @@ final class RewardClaimService
             ]);
             $id = (int) $pdo->lastInsertId();
             Database::commit($pdo);
-            return $this->public($this->findById($id) ?? throw new \RuntimeException('Zahtev nije kreiran.'), false);
+            return $this->public($this->findById($id) ?? throw new \RuntimeException('Zahtev nije bilo moguće sačuvati. Molimo Vas, pokušajte ponovo.'), false);
         } catch (Throwable $error) {
             Database::rollback($pdo);
             throw $error;

@@ -527,7 +527,7 @@ $router->get('/box/{token}', function (string $plain): void {
     $plain = $tokens->normalizePlain($plain);
     $token = $tokens->findPlain($plain);
     if (!$token) {
-        render('public/invalid', ['title' => 'Nevažeći link', 'reason' => 'Ovaj Mystery Box link nije pronađen.'], 404);
+        render('public/invalid', ['title' => 'Nevažeći link', 'reason' => 'Ovaj Mystery Box link nije pronađen. Proverite da li je ispravno kopiran.'], 404);
         return;
     }
     $draw = (new DrawService())->resultForToken((int) $token['id']);
@@ -547,11 +547,17 @@ $router->get('/box/{token}', function (string $plain): void {
         return;
     }
     if ($token['status'] !== 'Active') {
-        render('public/invalid', ['title' => 'Token nije aktivan', 'reason' => 'Ovaj token je ' . strtolower($token['status']) . '.'], 410);
+        $inactiveReason = match ((string) $token['status']) {
+            'Used' => 'Ovaj link je već iskorišćen.',
+            'Revoked' => 'Ovaj link je poništen. Ako mislite da je u pitanju greška, molimo Vas, kontaktirajte PlayWorld tim.',
+            'Expired' => 'Ovaj link je istekao.',
+            default => 'Ovaj link trenutno nije moguće koristiti.',
+        };
+        render('public/invalid', ['title' => 'Link nije aktivan', 'reason' => $inactiveReason], 410);
         return;
     }
     render('public/box', [
-        'title' => 'Otvori Mystery Box',
+        'title' => 'Otvorite Mystery Box',
         'token' => $plain,
         'availablePrizes' => (new PrizeService())->activeAvailable(),
     ]);
@@ -565,13 +571,16 @@ $router->post('/box/{token}/open', function (string $plain): void {
         redirect('/box/' . rawurlencode($plain));
     } catch (Throwable $e) {
         $known = [
-            'Token nije pronađen.', 'Token nije aktivan.', 'Token je istekao.',
-            'Trenutno nema dostupnih nagrada.', 'Nagrada više nije dostupna.',
-            'Kod za popust više nije dostupan.',
+            'Ovaj link nije pronađen. Proverite da li je ispravno kopiran.',
+            'Ovaj link više nije aktivan.',
+            'Ovaj link je istekao.',
+            'Trenutno nema dostupnih nagrada. Molimo Vas, pokušajte ponovo kasnije ili kontaktirajte PlayWorld tim.',
+            'Izabrana nagrada je upravo postala nedostupna. Molimo Vas, pokušajte ponovo za nekoliko trenutaka.',
+            'Kod za popust trenutno nije dostupan. Molimo Vas, pokušajte ponovo za nekoliko trenutaka.',
         ];
         $reason = in_array($e->getMessage(), $known, true)
             ? $e->getMessage()
-            : 'Otvaranje trenutno nije moguće. Molimo osvežite stranicu ili kontaktirajte PlayWorld tim.';
+            : 'Otvaranje trenutno nije moguće. Molimo Vas, osvežite stranicu ili kontaktirajte PlayWorld tim.';
         render('public/invalid', ['title' => 'Mystery Box nije dostupan', 'reason' => $reason], 422);
     }
 });
@@ -583,7 +592,7 @@ $router->post('/box/{token}/bonus', function (string $plain): void {
     $token = $tokens->findPlain($plain);
     $draw = $token ? (new DrawService())->resultForToken((int) $token['id']) : null;
     if (!$draw || !(new DrawService())->isVisible($draw)) {
-        render('public/invalid', ['title' => 'Bonus nije dostupan', 'reason' => 'Rezultat nije dostupan.'], 410);
+        render('public/invalid', ['title' => 'Bonus nije dostupan', 'reason' => 'Rezultat više nije dostupan. Molimo Vas, kontaktirajte PlayWorld tim.'], 410);
         return;
     }
     try {
@@ -591,8 +600,8 @@ $router->post('/box/{token}/bonus', function (string $plain): void {
         $_SESSION['flash_type'] = ($delivery['status'] ?? '') === 'Sent' ? 'success' : 'error';
         $_SESSION['flash'] = match ((string) ($delivery['status'] ?? '')) {
             'Sent' => 'Linkovi su poslati na ' . (string) ($delivery['masked_email'] ?? 'unetu email adresu') . '.',
-            'NeedsReview' => 'Email server nije potvrdio ishod slanja. Proverite Primljeno i Spam, pa kontaktirajte PlayWorld tim ako poruka nije stigla.',
-            'Sending' => 'Slanje je u toku. Osvežite stranicu za nekoliko trenutaka.',
+            'NeedsReview' => 'Nismo dobili potvrdu o slanju. Proverite folder Primljeno i Spam, a ako poruka ne stigne, kontaktirajte PlayWorld tim.',
+            'Sending' => 'Slanje je u toku. Molimo Vas, osvežite stranicu za nekoliko trenutaka.',
             default => '',
         };
         if ($_SESSION['flash'] === '') {
@@ -613,7 +622,7 @@ $router->post('/box/{token}/claim', function (string $plain): void {
     $token = $tokens->findPlain($plain);
     $draw = $token ? (new DrawService())->resultForToken((int) $token['id']) : null;
     if (!$draw || !(new DrawService())->isVisible($draw)) {
-        render('public/invalid', ['title' => 'Zahtev nije dostupan', 'reason' => 'Rezultat nije dostupan.'], 410);
+        render('public/invalid', ['title' => 'Zahtev nije dostupan', 'reason' => 'Rezultat više nije dostupan. Molimo Vas, kontaktirajte PlayWorld tim.'], 410);
         return;
     }
     try {
@@ -630,12 +639,12 @@ $router->get('/box/{token}/certificate', function (string $plain): void {
     $plain = $tokens->normalizePlain($plain);
     $token = $tokens->findPlain($plain);
     if (!$token) {
-        render('public/invalid', ['title' => 'Nevažeći link', 'reason' => 'Token nije pronađen.'], 404);
+        render('public/invalid', ['title' => 'Nevažeći link', 'reason' => 'Ovaj link nije pronađen. Proverite da li je ispravno kopiran.'], 404);
         return;
     }
     $draw = (new DrawService())->resultForToken((int) $token['id']);
     if (!$draw || !(new DrawService())->isVisible($draw)) {
-        render('public/invalid', ['title' => 'PDF nije dostupan', 'reason' => 'Rezultat nije dostupan.'], 410);
+        render('public/invalid', ['title' => 'PDF nije dostupan', 'reason' => 'Rezultat više nije dostupan. Molimo Vas, kontaktirajte PlayWorld tim.'], 410);
         return;
     }
     (new PdfService())->output($draw, url('/box/' . $plain));

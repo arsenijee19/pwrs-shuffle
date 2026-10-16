@@ -32,19 +32,19 @@ $greeting = $safeName !== '' ? 'Poštovani/a ' . $safeName . ',' : 'Poštovani,'
               <table role="presentation" cellpadding="0" cellspacing="0" style="margin:26px 0;">
                 <tr>
                   <td style="background:#2457c5;border-radius:10px;">
-                    <a href="<?= e($link) ?>" style="display:inline-block;padding:16px 26px;color:#ffffff;text-decoration:none;font-size:17px;font-weight:800;">Otvori Mystery Box</a>
+                    <a href="<?= e($link) ?>" style="display:inline-block;padding:16px 26px;color:#ffffff;text-decoration:none;font-size:17px;font-weight:800;">Otvorite Mystery Box</a>
                   </td>
                 </tr>
               </table>
               <div style="background:#eef7f3;border:1px solid #cfeade;border-radius:12px;padding:16px 18px;margin:0 0 24px;">
-                <p style="margin:0;font-size:15px;line-height:1.55;color:#17624a;">Mystery Box možete otvoriti samo jednom. Nakon otvaranja kliknite „Preuzmi nagradu“ na stranici rezultata i ostavite kontakt. Screenshot nije potreban, a naš tim će Vas kontaktirati tokom radnog vremena radi isporuke igre.</p>
+                <p style="margin:0;font-size:15px;line-height:1.55;color:#17624a;">Mystery Box možete otvoriti samo jednom. Nakon otvaranja kliknite „Preuzmite nagradu“ na stranici rezultata i ostavite kontakt. Screenshot nije potreban, a naš tim će Vas kontaktirati tokom radnog vremena radi isporuke igre.</p>
               </div>
               <h2 style="margin:0 0 12px;font-size:18px;color:#121826;">Kratki koraci</h2>
               <ol style="margin:0 0 24px;padding-left:20px;color:#465266;font-size:15px;line-height:1.7;">
                 <li>Otvorite link iz ovog emaila.</li>
                 <li>Pročitajte kratke instrukcije na stranici.</li>
-                <li>Kliknite na dugme Otvori Mystery Box.</li>
-                <li>Kliknite „Preuzmi nagradu“ i ostavite email i telefon.</li>
+                <li>Kliknite na dugme Otvorite Mystery Box.</li>
+                <li>Kliknite „Preuzmite nagradu“ i ostavite email i telefon.</li>
                 <li>Javićemo Vam se tokom radnog vremena radi isporuke igre.</li>
               </ol>
               <p style="margin:0 0 8px;font-size:13px;line-height:1.55;color:#667085;">Ako dugme ne radi, kopirajte ovaj link u browser:</p>

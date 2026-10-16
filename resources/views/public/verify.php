@@ -13,7 +13,7 @@
       <span>Draw ID</span>
       <input name="draw" value="<?= e($drawId ?? '') ?>" placeholder="PW-XXXXXXXXXX" autocomplete="off" inputmode="latin">
     </label>
-    <button class="primary" type="submit">Proveri rezultat</button>
+    <button class="primary" type="submit">Proverite rezultat</button>
   </form>
 
   <?php if (!empty($searched) && empty($draw)): ?>

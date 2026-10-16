@@ -27,7 +27,7 @@ unset($_SESSION['flash']);
     <label>Legacy max (informativno)<input type="number" name="max_quantity" min="1" required value="<?= e((string) ($prize['max_quantity'] ?? 1)) ?>"><span>Ne utiče na izvlačenje. Zadržano je zbog kompatibilnosti sa starom bazom.</span></label>
     <fieldset class="reward-behavior">
       <legend>Automatizacija nagrade</legend>
-      <label>Broj dodatnih Mystery Box-ova<input type="number" name="bonus_box_count" min="0" max="50" value="<?= e((string) ($prize['bonus_box_count'] ?? 0)) ?>"></label>
+      <label>Broj dodatnih Mystery Boxova<input type="number" name="bonus_box_count" min="0" max="50" value="<?= e((string) ($prize['bonus_box_count'] ?? 0)) ?>"></label>
       <label class="checkbox"><input type="checkbox" name="discount_enabled" <?= !empty($prize['discount_percent']) ? 'checked' : '' ?>> Sadrži kod za popust</label>
       <label>Procenat popusta<input type="number" name="discount_percent" min="1" max="100" value="<?= e((string) ($prize['discount_percent'] ?? '')) ?>"></label>
       <label class="checkbox"><input type="checkbox" name="manual_claim" <?= !empty($prize['manual_claim']) ? 'checked' : '' ?>> Ručna isporuka preko PlayWorld tima</label>
