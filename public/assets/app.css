@@ -458,3 +458,5 @@ body.has-sticky-action main { padding-bottom: 72px; }
 /* Check-mark bullets */
 .checklist li { padding-left: 34px; }
 .checklist li::before { top: 1px; width: 22px; height: 22px; box-shadow: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.500l4 4 8-9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 14px no-repeat, linear-gradient(135deg, var(--green), #38b88a);}
+
+.error-notice { border: 1px solid #f3c1bb; background: #fff1ef; color: var(--danger); }

@@ -545,14 +545,20 @@ $router->post('/box/{token}/bonus', function (string $plain): void {
     }
     try {
         $delivery = (new RewardDeliveryService())->claim($draw, (string) ($_POST['email'] ?? ''), (string) ($_POST['name'] ?? ''));
+        $_SESSION['flash_type'] = ($delivery['status'] ?? '') === 'Sent' ? 'success' : 'error';
         $_SESSION['flash'] = match ((string) ($delivery['status'] ?? '')) {
             'Sent' => 'Linkovi su poslati na ' . (string) ($delivery['masked_email'] ?? 'unetu email adresu') . '.',
             'NeedsReview' => 'Email server nije potvrdio ishod slanja. Proverite Primljeno i Spam, pa kontaktirajte PlayWorld tim ako poruka nije stigla.',
             'Sending' => 'Slanje je u toku. Osvežite stranicu za nekoliko trenutaka.',
-            default => 'Slanje nije uspelo. Proverite email adresu i pokušajte ponovo; isti linkovi će biti poslati bez kreiranja novih boxova.',
+            default => '',
         };
+        if ($_SESSION['flash'] === '') {
+            unset($_SESSION['flash'], $_SESSION['flash_type']);
+        }
     } catch (Throwable $error) {
         $_SESSION['flash'] = $error->getMessage();
+        $_SESSION['flash_type'] = 'error';
+        $_SESSION['old_input'] = ['email' => (string) ($_POST['email'] ?? ''), 'name' => (string) ($_POST['name'] ?? '')];
     }
     redirect('/box/' . rawurlencode($plain) . '#reward-actions');
 });
@@ -570,8 +576,11 @@ $router->post('/box/{token}/claim', function (string $plain): void {
     try {
         (new RewardClaimService())->create($draw, (string) ($_POST['email'] ?? ''), (string) ($_POST['phone'] ?? ''));
         $_SESSION['flash'] = 'Zahtev je primljen. PlayWorld tim će Vam se javiti.';
+        $_SESSION['flash_type'] = 'success';
     } catch (Throwable $error) {
         $_SESSION['flash'] = $error->getMessage();
+        $_SESSION['flash_type'] = 'error';
+        $_SESSION['old_input'] = ['email' => (string) ($_POST['email'] ?? ''), 'phone' => (string) ($_POST['phone'] ?? '')];
     }
     redirect('/box/' . rawurlencode($plain) . '#reward-actions');
 });

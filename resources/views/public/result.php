@@ -12,6 +12,9 @@ $bonusPending = $hasBonusBoxes && (empty($bonusDelivery) || $bonusDeliveryFailed
 $claimPending = $needsManualClaim && empty($rewardClaim);
 $hasPendingAction = $bonusPending || $claimPending;
 $boxWord = $bonusCount === 1 ? 'Mystery Box' : ($bonusCount < 5 ? 'Mystery Boxa' : 'Mystery Boxova');
+$flashType = (string) ($_SESSION['flash_type'] ?? 'success');
+$oldInput = is_array($_SESSION['old_input'] ?? null) ? $_SESSION['old_input'] : [];
+unset($_SESSION['old_input']);
 $stickyTarget = $bonusPending ? 'bonus-reward' : 'claim-reward';
 $stickyLabel = $bonusPending
     ? ($bonusCount === 1 ? 'Preuzmi svoj besplatni box' : 'Preuzmi svoje besplatne boxove')
@@ -32,7 +35,7 @@ $stickyLabel = $bonusPending
     <?php if (!empty($draw['prize_instructions'])): ?><p class="notice"><?= e($draw['prize_instructions']) ?></p><?php endif; ?>
 
     <div class="reward-actions" id="reward-actions">
-      <?php if (!empty($_SESSION['flash'])): ?><div class="notice success-notice flash-notice" role="status"><?= e((string) $_SESSION['flash']) ?></div><?php unset($_SESSION['flash']); endif; ?>
+      <?php if (!empty($_SESSION['flash'])): ?><div class="notice flash-notice <?= $flashType === 'error' ? 'error-notice' : 'success-notice' ?>" role="<?= $flashType === 'error' ? 'alert' : 'status' ?>"><?= e((string) $_SESSION['flash']) ?></div><?php unset($_SESSION['flash'], $_SESSION['flash_type']); endif; ?>
 
       <?php if ($hasBonusBoxes): ?>
         <section class="reward-block action-card bonus-card <?= $bonusPending ? 'is-pending' : 'is-done' ?>" id="bonus-reward" data-action-card>
@@ -50,8 +53,8 @@ $stickyLabel = $bonusPending
             <?php endif; ?>
             <form method="post" action="/box/<?= e($token) ?>/bonus" class="claim-form action-form" data-action-form>
               <?= csrf_field() ?>
-              <label class="field-highlight">Vaša email adresa<input type="email" name="email" required autocomplete="email" inputmode="email" placeholder="ime@primer.com" value="<?= e((string) ($bonusDelivery['recipient_email'] ?? '')) ?>"></label>
-              <label>Ime (opciono)<input type="text" name="name" maxlength="160" autocomplete="given-name"></label>
+              <label class="field-highlight">Vaša email adresa<input type="email" name="email" required autocomplete="email" inputmode="email" placeholder="ime@primer.com" value="<?= e((string) ($oldInput['email'] ?? $bonusDelivery['recipient_email'] ?? '')) ?>"></label>
+              <label>Ime (opciono)<input type="text" name="name" maxlength="160" autocomplete="given-name" value="<?= e((string) ($oldInput['name'] ?? '')) ?>"></label>
               <button class="primary action-submit" type="submit"><?= $bonusDeliveryFailed ? 'Pošalji linkove ponovo' : 'Pošalji mi ' . ($bonusCount === 1 ? 'box' : 'boxove') ?></button>
             </form>
             <p class="action-hint">Ne zatvarajte ovu stranicu dok ne pošaljete email. Ako poruka ne stigne za par minuta, proverite Spam / Promocije.</p>
@@ -100,8 +103,8 @@ $stickyLabel = $bonusPending
             </ol>
             <form method="post" action="/box/<?= e($token) ?>/claim" class="claim-form action-form" data-action-form>
               <?= csrf_field() ?>
-              <label class="field-highlight">Email adresa<input type="email" name="email" required autocomplete="email" inputmode="email" placeholder="ime@primer.com"></label>
-              <label>Telefon / Viber<input type="tel" name="phone" required inputmode="tel" autocomplete="tel" placeholder="+381 60 123 4567"></label>
+              <label class="field-highlight">Email adresa<input type="email" name="email" required autocomplete="email" inputmode="email" placeholder="ime@primer.com" value="<?= e((string) ($oldInput['email'] ?? '')) ?>"></label>
+              <label>Telefon / Viber<input type="tel" name="phone" required inputmode="tel" autocomplete="tel" placeholder="+381 60 123 4567" value="<?= e((string) ($oldInput['phone'] ?? '')) ?>"></label>
               <button class="primary action-submit" type="submit">Preuzmi nagradu</button>
             </form>
             <div class="contact-actions">
