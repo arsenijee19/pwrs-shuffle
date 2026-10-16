@@ -34,12 +34,17 @@ $stickyLabel = $bonusPending
     </div>
   <?php endif; ?>
   <div class="panel result verified-result" data-watermark="DRAW ID <?= e($draw['draw_id']) ?>">
-    <p class="eyebrow">Čestitamo! Osvojili ste</p>
     <?php $rarityKey = strtolower(str_replace(' ', '-', (string) ($draw['rarity'] ?? ''))); ?>
-    <?php if (in_array($rarityKey, ['special', 'rare', 'ultra-rare'], true)): ?>
-      <span class="rarity-chip rarity-<?= e($rarityKey) ?>"><?= e((string) $draw['rarity']) ?></span>
-    <?php endif; ?>
-    <div class="cover-stage rarity-<?= e($rarityKey) ?>"><img class="cover" src="<?= e($draw['cover_path']) ?>" alt=""></div>
+    <div class="prize-showcase rarity-<?= e($rarityKey) ?>">
+      <span class="showcase-rays" aria-hidden="true"></span>
+      <i class="showcase-spark s1" aria-hidden="true"></i><i class="showcase-spark s2" aria-hidden="true"></i><i class="showcase-spark s3" aria-hidden="true"></i>
+      <i class="showcase-spark s4" aria-hidden="true"></i><i class="showcase-spark s5" aria-hidden="true"></i><i class="showcase-spark s6" aria-hidden="true"></i>
+      <p class="eyebrow">Čestitamo! Osvojili ste</p>
+      <?php if (in_array($rarityKey, ['special', 'rare', 'ultra-rare'], true)): ?>
+        <span class="rarity-chip rarity-<?= e($rarityKey) ?>"><?= e((string) $draw['rarity']) ?></span>
+      <?php endif; ?>
+      <div class="cover-stage rarity-<?= e($rarityKey) ?>"><img class="cover" src="<?= e($draw['cover_path']) ?>" alt=""></div>
+    </div>
     <h1 class="<?= mb_strlen((string) $draw['prize_name']) > 36 ? 'is-long' : '' ?>"><?= e($draw['prize_name']) ?></h1>
     <p><?= e($draw['prize_description']) ?></p>
     <?php if (!empty($draw['prize_instructions'])): ?><p class="notice"><?= e($draw['prize_instructions']) ?></p><?php endif; ?>
