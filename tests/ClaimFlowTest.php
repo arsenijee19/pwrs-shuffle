@@ -42,6 +42,17 @@ final class ClaimFlowTest extends TestCase
         $this->assertSame($expected, phone_international($input));
     }
 
+    public function testCsrfValidationRejectsEmptyAndMismatchedTokens(): void
+    {
+        $this->assertTrue(csrf_valid('abc123', 'abc123'));
+        $this->assertFalse(csrf_valid('', ''), 'Two empty tokens must never match.');
+        $this->assertFalse(csrf_valid('abc123', ''));
+        $this->assertFalse(csrf_valid('', 'abc123'));
+        $this->assertFalse(csrf_valid('abc123', 'abc124'));
+        $this->assertFalse(csrf_valid(['abc123'], 'abc123'));
+        $this->assertFalse(csrf_valid(null, null));
+    }
+
     public function testClaimStatusLabelsAreSerbian(): void
     {
         $this->assertSame('Novo', claim_status('New')['label']);

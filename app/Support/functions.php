@@ -76,12 +76,23 @@ function csrf_field(): string
     return '<input type="hidden" name="_csrf" value="' . e(csrf_token()) . '">';
 }
 
+/** Both values must be non-empty strings: hash_equals('', '') is true and would let forged requests through. */
+function csrf_valid(mixed $token, mixed $expected): bool
+{
+    return is_string($token) && is_string($expected) && $token !== '' && $expected !== '' && hash_equals($expected, $token);
+}
+
 function verify_csrf(): void
 {
-    $token = $_POST['_csrf'] ?? '';
-    if (!is_string($token) || !hash_equals($_SESSION['_csrf'] ?? '', $token)) {
+    if (!csrf_valid($_POST['_csrf'] ?? '', $_SESSION['_csrf'] ?? '')) {
         http_response_code(419);
-        echo 'CSRF token mismatch.';
+        $referer = (string) ($_SERVER['HTTP_REFERER'] ?? '');
+        $sameHost = $referer !== '' && (parse_url($referer, PHP_URL_HOST) ?? '') === ($_SERVER['HTTP_HOST'] ?? '');
+        render('public/invalid', [
+            'title' => 'Sesija je istekla',
+            'reason' => 'Iz bezbednosnih razloga potrebno je da osvežite stranicu. Molimo Vas, vratite se nazad i pokušajte ponovo.',
+            'back' => $sameHost ? $referer : '/',
+        ], 419);
         exit;
     }
 }

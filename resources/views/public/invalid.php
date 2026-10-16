@@ -11,5 +11,9 @@
       </div>
     </div>
   <?php endif; ?>
-  <a class="primary" href="/faq">Pogledajte FAQ</a>
+  <?php if (!empty($back)): ?>
+    <a class="primary" href="<?= e((string) $back) ?>">Vratite se nazad</a>
+  <?php else: ?>
+    <a class="primary" href="/faq">Pogledajte FAQ</a>
+  <?php endif; ?>
 </section>
