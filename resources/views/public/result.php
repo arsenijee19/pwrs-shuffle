@@ -116,9 +116,16 @@ $stickyLabel = $bonusPending
             </form>
             <div class="contact-actions">
               <p class="contact-lead">Želite li radije Vi da nas kontaktirate?</p>
-              <button class="ghost contact-toggle" type="button" data-contact-toggle aria-expanded="false" aria-controls="contact-options">Kontaktirajte nas</button>
-              <div class="contact-icons" id="contact-options" data-contact-panel hidden>
-                <?php require app_path('resources/views/partials/contact-icons.php'); ?>
+              <button class="ghost contact-toggle" type="button" data-contact-toggle aria-expanded="false" aria-controls="contact-options">
+                <span data-contact-label>Kontaktirajte nas</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="contact-panel" id="contact-options" data-contact-panel aria-hidden="true">
+                <div class="contact-panel-inner">
+                  <div class="contact-icons">
+                    <?php require app_path('resources/views/partials/contact-icons.php'); ?>
+                  </div>
+                </div>
               </div>
             </div>
           <?php endif; ?>

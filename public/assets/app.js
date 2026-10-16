@@ -154,17 +154,22 @@ PlayWorld tim`;
 
   document.querySelectorAll('[data-contact-toggle]').forEach((button) => {
     const panel = document.getElementById(button.getAttribute('aria-controls') || '');
+    const label = button.querySelector('[data-contact-label]') || button;
     if (!panel) return;
 
+    const links = () => panel.querySelectorAll('a');
+    links().forEach((link) => link.setAttribute('tabindex', '-1'));
+
     button.addEventListener('click', () => {
-      const isOpen = panel.hasAttribute('hidden');
-      if (isOpen) {
-        panel.removeAttribute('hidden');
-      } else {
-        panel.setAttribute('hidden', '');
+      const open = !panel.classList.contains('is-open');
+      panel.classList.toggle('is-open', open);
+      panel.setAttribute('aria-hidden', String(!open));
+      links().forEach((link) => (open ? link.removeAttribute('tabindex') : link.setAttribute('tabindex', '-1')));
+      button.setAttribute('aria-expanded', String(open));
+      label.textContent = open ? 'Zatvorite kontakt' : 'Kontaktirajte nas';
+      if (open) {
+        setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 380);
       }
-      button.setAttribute('aria-expanded', String(isOpen));
-      button.textContent = isOpen ? 'Zatvorite kontakt' : 'Kontaktirajte nas';
     });
   });
 
