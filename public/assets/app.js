@@ -204,9 +204,28 @@ PlayWorld tim`;
     });
   });
 
+  // Small playful pieces that pop out of the box (generic shapes, no brand logos).
+  const gameItems = [
+    '<svg viewBox="0 0 48 48"><path d="M13 14h22c5.500 0 8.500 4.500 9.500 10.500l1.800 10c.5 3-1.300 5.500-4.300 5.500-2.300 0-3.700-1.200-5.300-3.200L33 33.500H15l-3.700 3.300c-1.600 2-3 3.200-5.300 3.200-3 0-4.800-2.500-4.300-5.500l1.800-10C4.500 18.500 7.500 14 13 14Z" fill="#f1f3ff" stroke="#8a93d6" stroke-width="2"/><path d="M13 20v8M9 24h8" stroke="#3a3f7a" stroke-width="3" stroke-linecap="round"/><circle cx="33" cy="21.500" r="2.300" fill="#ff5a5f"/><circle cx="37.500" cy="26" r="2.300" fill="#3ddc97"/><circle cx="28.500" cy="26" r="2.300" fill="#5aa7ff"/><circle cx="33" cy="30.500" r="2.300" fill="#ffd36b"/></svg>',
+    '<svg viewBox="0 0 48 48"><rect x="8" y="35" width="32" height="8" rx="3" fill="#3a3f7a"/><rect x="21.500" y="17" width="5" height="19" rx="2" fill="#c9cef2"/><circle cx="24" cy="12" r="8" fill="#ff5a5f"/><circle cx="21" cy="9" r="2.500" fill="#fff" opacity=".7"/><circle cx="14" cy="39" r="1.800" fill="#3ddc97"/><circle cx="34" cy="39" r="1.800" fill="#ffd36b"/></svg>',
+    '<svg viewBox="0 0 48 48"><path d="M24 9 40 37H8Z" fill="none" stroke="#3ddc97" stroke-width="6" stroke-linejoin="round"/></svg>',
+    '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="14" fill="none" stroke="#ff5a5f" stroke-width="6"/></svg>',
+    '<svg viewBox="0 0 48 48"><path d="M11 11l26 26M37 11 11 37" stroke="#5aa7ff" stroke-width="6" stroke-linecap="round"/></svg>',
+    '<svg viewBox="0 0 48 48"><rect x="11" y="11" width="26" height="26" rx="3" fill="none" stroke="#ff8fd2" stroke-width="6"/></svg>',
+    '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="#3ddc97"/><text x="24" y="31.500" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="900" fill="#fff">A</text></svg>',
+    '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="#ff5a5f"/><text x="24" y="31.500" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="900" fill="#fff">B</text></svg>',
+    '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="#5aa7ff"/><text x="24" y="31.500" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="900" fill="#fff">X</text></svg>',
+    '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="#ffd36b"/><text x="24" y="31.500" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="900" fill="#fff">Y</text></svg>',
+    '<svg viewBox="0 0 48 48"><path d="M18 6h12v12h12v12H30v12H18V30H6V18h12Z" fill="#3a3f7a" stroke="#c9cef2" stroke-width="2.500" stroke-linejoin="round"/><path d="M21 12h6" stroke="#8a93d6" stroke-width="3" stroke-linecap="round"/></svg>',
+    '<svg viewBox="0 0 48 48"><path d="m24 4 5.500 12.500L43 18l-10 9.200 2.800 13.300L24 33.500 12.200 40.500 15 27.200 5 18l13.500-1.500Z" fill="#ffd36b" stroke="#f1a93a" stroke-width="2.500" stroke-linejoin="round"/></svg>',
+    '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="17" fill="#ffd36b" stroke="#f1a93a" stroke-width="3"/><circle cx="24" cy="24" r="11" fill="none" stroke="#f1a93a" stroke-width="2.500"/><path d="m24 16 2.400 5 5.400.7-4 3.700 1 5.300L24 28l-4.800 2.700 1-5.300-4-3.700 5.400-.7Z" fill="#fff4cf"/></svg>',
+    '<svg viewBox="0 0 48 48"><path d="M24 41C10 31 6 24 6 17.500 6 12 10 8.500 15 8.500c3.700 0 6.600 2 9 5.500 2.400-3.500 5.300-5.500 9-5.500 5 0 9 3.500 9 9 0 6.500-4 13.500-18 23.500Z" fill="#ff6b8e" stroke="#e0436b" stroke-width="2.500" stroke-linejoin="round"/></svg>',
+    '<svg viewBox="0 0 48 48"><path d="M9 28v-4a15 15 0 0 1 30 0v4" fill="none" stroke="#c9cef2" stroke-width="4" stroke-linecap="round"/><rect x="5" y="25" width="9" height="15" rx="4" fill="#7a4fe3"/><rect x="34" y="25" width="9" height="15" rx="4" fill="#7a4fe3"/></svg>',
+  ];
+
   // Full-screen "unwrap" reveal that plays while the box is opened on the server.
   const playUnwrap = (form) => {
-    const TOTAL = 3800;
+    const TOTAL = 4700;
     const root = document.createElement('div');
     root.className = 'unwrap';
     root.setAttribute('role', 'status');
@@ -228,6 +247,7 @@ PlayWorld tim`;
         </div>
         <div class="unwrap-burst"></div>
         <div class="unwrap-sparks"></div>
+        <div class="unwrap-fly"></div>
       </div>
       <p class="unwrap-caption">Otvaramo Vaš box<span>.</span><span>.</span><span>.</span></p>
       <button type="button" class="unwrap-skip">Preskočite</button>
@@ -244,6 +264,23 @@ PlayWorld tim`;
       spark.style.setProperty('--c', palette[i % palette.length]);
       spark.style.setProperty('--d', `${(Math.random() * 0.25).toFixed(2)}s`);
       sparks.appendChild(spark);
+    }
+
+    const fly = root.querySelector('.unwrap-fly');
+    const reach = Math.min(window.innerWidth * 0.42, 190);
+    const order = gameItems.map((svg, index) => ({ svg, index })).sort(() => Math.random() - 0.5);
+    for (let i = 0; i < 18; i += 1) {
+      const item = order[i % order.length];
+      const piece = document.createElement('span');
+      piece.className = 'fly';
+      piece.style.setProperty('--x', `${(Math.random() * 2 - 1) * reach}px`);
+      piece.style.setProperty('--up', `${-(150 + Math.random() * 200)}px`);
+      piece.style.setProperty('--down', `${70 + Math.random() * 120}px`);
+      piece.style.setProperty('--r', `${(Math.random() * 2 - 1) * 540}deg`);
+      piece.style.setProperty('--t', `${(1.45 + Math.random() * 0.5).toFixed(2)}s`);
+      piece.style.setProperty('--dl', `${(2.85 + i * 0.05).toFixed(2)}s`);
+      piece.innerHTML = `<span class="fly-y"><span class="fly-spin">${item.svg}</span></span>`;
+      fly.appendChild(piece);
     }
 
     document.body.appendChild(root);

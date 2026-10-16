@@ -756,47 +756,47 @@ body.dialog-open { overflow: hidden; }
 .unwrap { --s: min(7.4vw, 31px); position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; overflow: hidden; color: #fff; opacity: 0; visibility: hidden; transition: opacity .35s ease; background: radial-gradient(120% 90% at 50% 38%, #2d2670 0%, #14152f 52%, #06070e 100%); }
 .unwrap.is-open { opacity: 1; visibility: visible; }
 .unwrap-rays { position: absolute; left: 50%; top: 42%; width: 170vmax; height: 170vmax; margin: -85vmax 0 0 -85vmax; background: repeating-conic-gradient(from 0deg, rgba(255, 214, 120, 0) 0 9deg, rgba(255, 214, 120, .2) 9deg 18deg); -webkit-mask-image: radial-gradient(circle, #000 0, transparent 42%); mask-image: radial-gradient(circle, #000 0, transparent 42%); opacity: 0; will-change: transform, opacity; }
-.unwrap.is-playing .unwrap-rays { animation: raysIn 1s ease-out 3.05s both, raysSpin 6s linear 3.05s infinite; }
+.unwrap.is-playing .unwrap-rays { animation: raysIn 1s ease-out 2.85s both, raysSpin 6s linear 2.85s infinite; }
 .unwrap-stage { position: relative; width: calc(var(--s) * 10); height: calc(var(--s) * 10); margin-top: -6vh; }
 .unwrap-glow { position: absolute; left: 50%; bottom: calc(var(--s) * 1.1); width: calc(var(--s) * 7.5); height: calc(var(--s) * 2.6); border-radius: 50%; background: rgba(150, 110, 255, .55); filter: blur(calc(var(--s) * .9)); transform: translateX(-50%) scale(.5); opacity: 0; }
 .unwrap.is-playing .unwrap-glow { animation: ugGlow 3.2s ease-in-out .2s both; }
 .ug { position: absolute; left: 50%; bottom: calc(var(--s) * 1.6); width: calc(var(--s) * 6.4); height: calc(var(--s) * 6.6); transform: translate(-50%, 0); perspective: 900px; opacity: 0; will-change: transform, opacity; }
 .unwrap.is-playing .ug { animation: ugEnter .85s cubic-bezier(.2, .9, .3, 1.15) .2s both; }
 .ug-shake { position: absolute; inset: 0; transform-origin: 50% 100%; will-change: transform; }
-.unwrap.is-playing .ug-shake { animation: ugShake 1.15s ease-in-out 1.05s both; }
+.unwrap.is-playing .ug-shake { animation: ugShake 1.15s ease-in-out .9s both; }
 .ug-body, .ug-lid, .ug-paper, .ug-ribbon-v, .ug-ribbon-h { position: absolute; }
 .ug-body { left: calc(var(--s) * .2); bottom: 0; width: calc(var(--s) * 6); height: calc(var(--s) * 4.3); border-radius: calc(var(--s) * .35); background: linear-gradient(135deg, #2a65dc, #2f9e75); box-shadow: 0 calc(var(--s) * .9) calc(var(--s) * 1.4) rgba(0, 0, 0, .45); }
 .ug-lid { left: 0; bottom: calc(var(--s) * 4.0); width: calc(var(--s) * 6.4); height: calc(var(--s) * 1.3); border-radius: calc(var(--s) * .35); background: linear-gradient(135deg, #f1c45c, #e87950); transform-origin: 8% 100%; box-shadow: 0 calc(var(--s) * .4) calc(var(--s) * .7) rgba(0, 0, 0, .3); }
-.unwrap.is-playing .ug-lid { animation: ugLid .7s cubic-bezier(.16, .9, .2, 1) 3.0s both; }
+.unwrap.is-playing .ug-lid { animation: ugLid .7s cubic-bezier(.16, .9, .2, 1) 2.8s both; }
 .ug-body::before, .ug-lid::before { content: ""; position: absolute; left: 50%; top: 0; width: calc(var(--s) * .9); height: 100%; transform: translateX(-50%); background: rgba(255, 255, 255, .88); }
 .ug-ribbon-v { left: 50%; bottom: 0; width: calc(var(--s) * 1); height: calc(var(--s) * 5.35); margin-left: calc(var(--s) * -.5); background: linear-gradient(90deg, #fff0b8, #ffd36b 50%, #f1b94a); transform-origin: 50% 100%; z-index: 3; }
 .ug-ribbon-h { left: calc(var(--s) * .2); bottom: calc(var(--s) * 1.7); width: calc(var(--s) * 6); height: calc(var(--s) * .95); background: linear-gradient(180deg, #fff0b8, #ffd36b 50%, #f1b94a); transform-origin: 0 50%; z-index: 3; }
-.unwrap.is-playing .ug-ribbon-v { animation: ribbonV .55s ease-in 2.2s both; }
-.unwrap.is-playing .ug-ribbon-h { animation: ribbonH .55s ease-in 2.2s both; }
+.unwrap.is-playing .ug-ribbon-v { animation: ribbonV .55s ease-in 2s both; }
+.unwrap.is-playing .ug-ribbon-h { animation: ribbonH .55s ease-in 2s both; }
 .ug-paper { bottom: 0; width: calc(var(--s) * 3.25); height: calc(var(--s) * 5.35); z-index: 2; background: radial-gradient(circle at 25% 28%, rgba(255, 255, 255, .5) 0 6%, transparent 7%), radial-gradient(circle at 70% 66%, rgba(255, 255, 255, .4) 0 5%, transparent 6%), linear-gradient(135deg, #7a4fe3, #2457c5); background-size: 34% 28%, 28% 24%, 100% 100%; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22); backface-visibility: hidden; will-change: transform, opacity; }
 .ug-paper-l { left: 0; border-radius: calc(var(--s) * .45) 0 0 calc(var(--s) * .45); transform-origin: 0 50%; }
 .ug-paper-r { right: 0; border-radius: 0 calc(var(--s) * .45) calc(var(--s) * .45) 0; transform-origin: 100% 50%; }
-.unwrap.is-playing .ug-paper-l { animation: paperL .85s cubic-bezier(.5, 0, .2, 1) 2.6s both; }
-.unwrap.is-playing .ug-paper-r { animation: paperR .85s cubic-bezier(.5, 0, .2, 1) 2.6s both; }
+.unwrap.is-playing .ug-paper-l { animation: paperL .85s cubic-bezier(.5, 0, .2, 1) 2.4s both; }
+.unwrap.is-playing .ug-paper-r { animation: paperR .85s cubic-bezier(.5, 0, .2, 1) 2.4s both; }
 .ug-bow { position: absolute; left: 50%; bottom: calc(var(--s) * 5.05); width: calc(var(--s) * 3.2); height: calc(var(--s) * 1.8); transform: translateX(-50%); z-index: 4; will-change: transform, opacity; }
-.unwrap.is-playing .ug-bow { animation: bowOff .7s cubic-bezier(.5, 0, .3, 1) 1.95s both; }
+.unwrap.is-playing .ug-bow { animation: bowOff .7s cubic-bezier(.5, 0, .3, 1) 1.75s both; }
 .ug-bow i { position: absolute; bottom: calc(var(--s) * .2); width: calc(var(--s) * 1.5); height: calc(var(--s) * 1.35); border: calc(var(--s) * .3) solid #fff; }
 .ug-bow i:first-child { left: 0; border-radius: 60% 60% calc(var(--s) * .4) 60%; transform: rotate(-18deg); }
 .ug-bow i:nth-child(2) { right: 0; border-radius: 60% 60% 60% calc(var(--s) * .4); transform: rotate(18deg); }
 .ug-bow b { position: absolute; left: 50%; bottom: 0; width: calc(var(--s) * .85); height: calc(var(--s) * .85); margin-left: calc(var(--s) * -.425); border-radius: calc(var(--s) * .25); background: #fff; }
 .unwrap-burst { position: absolute; left: 50%; top: 52%; width: calc(var(--s) * 5); height: calc(var(--s) * 5); margin: calc(var(--s) * -2.5) 0 0 calc(var(--s) * -2.5); border-radius: 50%; background: radial-gradient(circle, #fff 0%, rgba(255, 233, 160, .95) 28%, rgba(255, 190, 90, .45) 55%, transparent 72%); opacity: 0; transform: scale(.2); will-change: transform, opacity; }
-.unwrap.is-playing .unwrap-burst { animation: burst .95s ease-out 3.0s both; }
+.unwrap.is-playing .unwrap-burst { animation: burst .95s ease-out 2.8s both; }
 .unwrap-sparks i { position: absolute; left: 50%; top: 52%; width: 9px; height: 9px; margin: -4px 0 0 -4px; border-radius: 2px; background: var(--c); opacity: 0; will-change: transform, opacity; }
-.unwrap.is-playing .unwrap-sparks i { animation: sparkOut 1s cubic-bezier(.15, .8, .3, 1) calc(3.05s + var(--d)) both; }
+.unwrap.is-playing .unwrap-sparks i { animation: sparkOut 1s cubic-bezier(.15, .8, .3, 1) calc(2.85s + var(--d)) both; }
 .unwrap-caption { position: absolute; left: 0; right: 0; bottom: 17vh; margin: 0; text-align: center; font-size: 17px; font-weight: 800; letter-spacing: .02em; color: rgba(255, 255, 255, .86); opacity: 0; }
-.unwrap.is-playing .unwrap-caption { animation: captionIn .5s ease-out .7s both, captionOut .35s ease-in 2.85s forwards; }
+.unwrap.is-playing .unwrap-caption { animation: captionIn .5s ease-out .7s both, captionOut .35s ease-in 2.55s forwards; }
 .unwrap-caption span { opacity: .2; animation: dot 1.1s ease-in-out infinite; }
 .unwrap-caption span:nth-child(2) { animation-delay: .18s; }
 .unwrap-caption span:nth-child(3) { animation-delay: .36s; }
 .unwrap-skip { position: absolute; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); transform: translateX(-50%); min-height: 44px; padding: 0 22px; border: 1px solid rgba(255, 255, 255, .22); border-radius: 999px; background: rgba(255, 255, 255, .08); color: rgba(255, 255, 255, .8); font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; opacity: 0; }
 .unwrap.is-playing .unwrap-skip { animation: captionIn .5s ease-out 1s both; }
 .unwrap-flash { position: absolute; inset: 0; background: radial-gradient(circle at 50% 46%, #fff 0%, #fff4cf 55%, #fff 100%); opacity: 0; pointer-events: none; will-change: opacity; }
-.unwrap.is-playing .unwrap-flash { animation: flashIn .45s ease-in 3.35s both; }
+.unwrap.is-playing .unwrap-flash { animation: flashIn .45s ease-in 4.2s both; }
 .unwrap.is-skipped .unwrap-flash { animation: flashIn .22s ease-in 0s both; }
 @keyframes ugEnter { 0% { opacity: 0; transform: translate(-50%, 46px) scale(.6); } 100% { opacity: 1; transform: translate(-50%, 0) scale(1); } }
 @keyframes ugGlow { 0% { opacity: 0; transform: translateX(-50%) scale(.5); } 35% { opacity: .85; transform: translateX(-50%) scale(1); } 85%, 100% { opacity: 1; transform: translateX(-50%) scale(1.5); } }
@@ -825,3 +825,22 @@ body.dialog-open { overflow: hidden; }
 .celebrate.no-stage .result { animation: rise .6s ease-out .15s both; }
 .celebrate.no-stage .cover-stage { animation-delay: .5s; }
 @media (prefers-reduced-motion: reduce) { .gift, .gift-glow, .gift-spark { animation: none; } }
+
+/* Astro-Bot style gaming items that pop out of the box */
+.unwrap-fly { position: absolute; left: 50%; top: 34%; width: 0; height: 0; }
+.fly, .fly-y, .fly-spin { position: absolute; left: 0; top: 0; width: 0; height: 0; will-change: transform, opacity; }
+.fly-spin { display: block; }
+.fly-spin svg { position: absolute; left: calc(var(--fs) / -2); top: calc(var(--fs) / -2); width: var(--fs); height: var(--fs); overflow: visible; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .35)); }
+.fly, .fly-y, .fly-spin { opacity: 0; }
+.unwrap.is-playing .fly { animation: flyX var(--t) cubic-bezier(.2, .6, .4, 1) var(--dl) both; opacity: 1; }
+.unwrap.is-playing .fly-y { animation: flyY var(--t) linear var(--dl) both; }
+.unwrap.is-playing .fly-spin { animation: flySpin var(--t) linear var(--dl) both; opacity: 1; }
+@keyframes flyX { from { transform: translateX(0); } to { transform: translateX(var(--x)); } }
+@keyframes flyY {
+  0% { opacity: 0; transform: translateY(0) scale(.2); animation-timing-function: cubic-bezier(.15, .85, .3, 1); }
+  10% { opacity: 1; }
+  42% { opacity: 1; transform: translateY(var(--up)) scale(1); animation-timing-function: cubic-bezier(.5, 0, .9, .55); }
+  100% { opacity: 0; transform: translateY(var(--down)) scale(.9); }
+}
+@keyframes flySpin { from { transform: rotate(0); } to { transform: rotate(var(--r)); } }
+.unwrap { --fs: clamp(34px, 11vw, 50px); }
