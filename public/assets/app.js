@@ -160,15 +160,24 @@ PlayWorld tim`;
     const links = () => panel.querySelectorAll('a');
     links().forEach((link) => link.setAttribute('tabindex', '-1'));
 
+    let closeTimer;
     button.addEventListener('click', () => {
-      const open = !panel.classList.contains('is-open');
-      panel.classList.toggle('is-open', open);
-      panel.setAttribute('aria-hidden', String(!open));
-      links().forEach((link) => (open ? link.removeAttribute('tabindex') : link.setAttribute('tabindex', '-1')));
+      const open = !panel.classList.contains('is-visible');
+      clearTimeout(closeTimer);
       button.setAttribute('aria-expanded', String(open));
       label.textContent = open ? 'Zatvorite kontakt' : 'Kontaktirajte nas';
+      panel.setAttribute('aria-hidden', String(!open));
+      links().forEach((link) => (open ? link.removeAttribute('tabindex') : link.setAttribute('tabindex', '-1')));
+
       if (open) {
-        setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 380);
+        // Layout changes once, instantly; afterwards only transform/opacity are animated.
+        panel.classList.add('is-open');
+        void panel.offsetWidth;
+        panel.classList.add('is-visible');
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        panel.classList.remove('is-visible');
+        closeTimer = setTimeout(() => panel.classList.remove('is-open'), 220);
       }
     });
   });
