@@ -554,7 +554,7 @@ $router->post('/box/{token}/bonus', function (string $plain): void {
     } catch (Throwable $error) {
         $_SESSION['flash'] = $error->getMessage();
     }
-    redirect('/box/' . rawurlencode($plain));
+    redirect('/box/' . rawurlencode($plain) . '#reward-actions');
 });
 $router->post('/box/{token}/claim', function (string $plain): void {
     verify_csrf();
@@ -573,7 +573,7 @@ $router->post('/box/{token}/claim', function (string $plain): void {
     } catch (Throwable $error) {
         $_SESSION['flash'] = $error->getMessage();
     }
-    redirect('/box/' . rawurlencode($plain));
+    redirect('/box/' . rawurlencode($plain) . '#reward-actions');
 });
 $router->get('/box/{token}/certificate', function (string $plain): void {
     $tokens = new TokenService();

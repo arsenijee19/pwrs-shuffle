@@ -245,6 +245,60 @@ PlayWorld tim`;
     });
   });
 
+  const focusActionCard = (card) => {
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    card.classList.remove('is-highlighted');
+    void card.offsetWidth;
+    card.classList.add('is-highlighted');
+    const input = card.querySelector('input:not([type="hidden"])');
+    if (input && !input.value) {
+      setTimeout(() => input.focus({ preventScroll: true }), 550);
+    }
+  };
+
+  document.querySelectorAll('[data-sticky-action]').forEach((bar) => {
+    const target = document.getElementById(bar.dataset.target || '');
+    if (!target) return;
+
+    const celebrating = document.querySelector('.result-shell.celebrate');
+    let targetVisible = false;
+    let typing = false;
+    const sync = () => bar.classList.toggle('is-away', targetVisible || typing);
+
+    setTimeout(() => {
+      bar.hidden = false;
+      document.body.classList.add('has-sticky-action');
+    }, celebrating ? 1500 : 300);
+
+    if ('IntersectionObserver' in window) {
+      const watched = target.querySelector('[data-action-form]') || target;
+      new IntersectionObserver((entries) => {
+        targetVisible = entries.some((entry) => entry.intersectionRatio >= 0.35);
+        sync();
+      }, { threshold: [0, 0.35, 0.7] }).observe(watched);
+    }
+
+    target.addEventListener('focusin', () => { typing = true; sync(); });
+    target.addEventListener('focusout', () => { typing = false; sync(); });
+
+    bar.querySelector('a')?.addEventListener('click', (event) => {
+      event.preventDefault();
+      focusActionCard(target);
+    });
+  });
+
+  document.querySelectorAll('[data-action-form]').forEach((form) => {
+    form.addEventListener('submit', () => {
+      const button = form.querySelector('button[type="submit"]');
+      if (button) {
+        setTimeout(() => {
+          button.disabled = true;
+          button.textContent = 'Šaljem...';
+        }, 0);
+      }
+    });
+  });
+
   const soundButton = document.querySelector('[data-sound-toggle]');
   if (soundButton) {
     let muted = localStorage.getItem('pw-sound-muted') === '1';
