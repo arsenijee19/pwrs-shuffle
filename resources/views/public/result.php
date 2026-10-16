@@ -92,7 +92,7 @@ $stickyLabel = $bonusPending
           <?php else: ?>
             <span class="action-badge">Poslednji korak</span>
             <h2>Preuzmite nagradu</h2>
-            <p class="action-lead">Ostavite email i telefon — PlayWorld tim će Vas kontaktirati i dogovoriti preuzimanje. Screenshot ili PDF nisu potrebni, rezultat proveravamo po Draw ID-ju.</p>
+            <p class="action-lead">Ostavite email i telefon, PlayWorld tim će Vas kontaktirati i dogovoriti preuzimanje. Screenshot ili PDF nisu potrebni, rezultat proveravamo po Draw ID-ju.</p>
             <ol class="action-steps" aria-label="Kako da preuzmete nagradu">
               <li class="is-current"><span>1</span>Upišite email i telefon</li>
               <li><span>2</span>Kliknite dugme ispod</li>

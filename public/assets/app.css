@@ -398,3 +398,4 @@ body.has-sticky-action main { padding-bottom: 72px; }
   .action-steps li { font-size: 12px; }
   .action-steps li:not(:last-child)::after { left: calc(50% + 20px); right: calc(-50% + 16px); }
 }
+.contact-options[hidden]{display:none}
