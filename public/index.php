@@ -147,11 +147,17 @@ $router->get('/admin/prizes', function (): void {
 });
 $router->get('/admin/prizes/new', function (): void {
     AuthService::requireAdmin();
-    render('admin/prize-form', ['title' => 'Nova nagrada', 'prize' => null]);
+    render('admin/prize-form', ['title' => 'Nova nagrada', 'prize' => $_SESSION['old_prize'] ?? null]);
+    unset($_SESSION['old_prize']);
 });
 $router->get('/admin/prizes/{id}/edit', function (string $id): void {
     AuthService::requireAdmin();
-    render('admin/prize-form', ['title' => 'Izmena nagrade', 'prize' => (new PrizeService())->find((int) $id)]);
+    $prize = (new PrizeService())->find((int) $id);
+    if ($prize && !empty($_SESSION['old_prize']) && (int) ($_SESSION['old_prize']['id'] ?? 0) === (int) $id) {
+        $prize = array_merge($prize, $_SESSION['old_prize']);
+    }
+    unset($_SESSION['old_prize']);
+    render('admin/prize-form', ['title' => 'Izmena nagrade', 'prize' => $prize]);
 });
 $router->post('/admin/prizes/save', function (): void {
     AuthService::requireAdmin();
@@ -161,6 +167,21 @@ $router->post('/admin/prizes/save', function (): void {
         $_SESSION['flash'] = ['type' => 'success', 'message' => 'Nagrada je sačuvana.'];
     } catch (Throwable $error) {
         $_SESSION['flash'] = ['type' => 'error', 'message' => $error->getMessage()];
+        $_SESSION['old_prize'] = [
+            'id' => (int) ($_POST['id'] ?? 0),
+            'name' => (string) ($_POST['name'] ?? ''),
+            'description' => (string) ($_POST['description'] ?? ''),
+            'instructions' => (string) ($_POST['instructions'] ?? ''),
+            'rarity' => (string) ($_POST['rarity'] ?? 'Standard'),
+            'weight' => (string) ($_POST['weight'] ?? ''),
+            'max_quantity' => (string) ($_POST['max_quantity'] ?? ''),
+            'bonus_box_count' => (string) ($_POST['bonus_box_count'] ?? 0),
+            'discount_percent' => !empty($_POST['discount_enabled']) ? (string) ($_POST['discount_percent'] ?? '') : null,
+            'manual_claim' => !empty($_POST['manual_claim']) ? 1 : 0,
+            'active' => !empty($_POST['active']) ? 1 : 0,
+            'cover_path' => (string) ($_POST['existing_cover'] ?? ''),
+        ];
+        redirect(!empty($_POST['id']) ? '/admin/prizes/' . (int) $_POST['id'] . '/edit' : '/admin/prizes/new');
     }
     redirect('/admin/prizes');
 });
@@ -192,13 +213,19 @@ $router->post('/admin/prizes/seed-bonus', function (): void {
 $router->post('/admin/prizes/{id}/toggle', function (string $id): void {
     AuthService::requireAdmin();
     verify_csrf();
-    (new PrizeService())->toggle((int) $id);
+    $service = new PrizeService();
+    if ($service->toggle((int) $id)) {
+        $prize = $service->find((int) $id);
+        $_SESSION['flash'] = ['type' => 'success', 'message' => 'Nagrada „' . ($prize['name'] ?? '') . '” je ' . ((int) ($prize['active'] ?? 0) === 1 ? 'uključena.' : 'isključena.')];
+    }
     redirect('/admin/prizes');
 });
 $router->post('/admin/prizes/{id}/delete', function (string $id): void {
     AuthService::requireAdmin();
     verify_csrf();
-    (new PrizeService())->delete((int) $id);
+    $_SESSION['flash'] = (new PrizeService())->delete((int) $id)
+        ? ['type' => 'success', 'message' => 'Nagrada je obrisana.']
+        : ['type' => 'error', 'message' => 'Nagrada je već osvojena ili ne postoji, pa se ne može obrisati. Možete je isključiti.'];
     redirect('/admin/prizes');
 });
 

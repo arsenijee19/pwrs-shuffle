@@ -6,8 +6,6 @@
       <p class="lead">Pregled svakog order-a i statusa pojedinačnih Mystery Box linkova.</p>
     </div>
     <div class="actions">
-      <a class="ghost" href="/admin/tokens">Tokeni</a>
-      <a class="primary" href="/admin">Dashboard</a>
     </div>
   </div>
   <?php if (!empty($_SESSION['flash'])): $flash = $_SESSION['flash']; unset($_SESSION['flash']); ?><div class="flash flash-<?= e((string) ($flash['type'] ?? 'success')) ?>"><?= e((string) ($flash['message'] ?? '')) ?></div><?php endif; ?>

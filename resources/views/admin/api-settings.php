@@ -6,8 +6,6 @@
       <p class="lead">Omogućite bezbednu vezu sa n8n automatizacijom i sačuvajte pristupni ključ direktno iz ovog panela. Ključ se šifruje pre upisa u lokalnu bazu i nikada se ponovo ne prikazuje na ekranu.</p>
     </div>
     <div class="actions">
-      <a class="ghost" href="/admin">Dashboard</a>
-      <a class="ghost" href="/admin/fulfillments">n8n isporuke</a>
     </div>
   </div>
 

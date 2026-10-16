@@ -14,17 +14,18 @@
         <button class="ghost" type="submit">Dodaj bonus nagrade</button>
       </form>
       <a class="primary" href="/admin/prizes/new">Dodaj nagradu</a>
-      <a class="ghost" href="/admin/discount-codes">Kodovi za popust</a>
-      <a class="ghost" href="/admin/reward-deliveries">Bonus isporuke</a>
-      <a class="ghost" href="/admin/reward-claims">Zahtevi</a>
     </div>
   </div>
   <?php if (!empty($_SESSION['flash'])): ?>
-    <?php $flash = $_SESSION['flash']; unset($_SESSION['flash']); ?>
-    <p class="notice <?= is_array($flash) && ($flash['type'] ?? '') === 'error' ? 'alert' : '' ?>">
-      <?= is_array($flash) ? e((string) ($flash['message'] ?? '')) : 'Katalog je dodat. Novo: ' . e((string) ($flash['created'] ?? 0)) . ', osveženo: ' . e((string) ($flash['updated'] ?? 0)) . '.' ?>
-    </p>
-    <?php unset($_SESSION['flash']); ?>
+    <?php
+    $flash = $_SESSION['flash'];
+    unset($_SESSION['flash']);
+    $isError = is_array($flash) && ($flash['type'] ?? '') === 'error';
+    $message = is_array($flash) && isset($flash['message'])
+        ? (string) $flash['message']
+        : 'Katalog je dodat. Novo: ' . (int) ($flash['created'] ?? 0) . ', osveženo: ' . (int) ($flash['updated'] ?? 0) . '.';
+    ?>
+    <p class="<?= $isError ? 'alert' : 'notice' ?>" role="<?= $isError ? 'alert' : 'status' ?>"><?= e($message) ?></p>
   <?php endif; ?>
   <table>
     <thead><tr><th>Cover</th><th>Naziv</th><th>Rarity</th><th>Weight</th><th>Legacy max</th><th>Automatika</th><th>Osvojeno</th><th>Status</th><th></th></tr></thead>
@@ -54,7 +55,7 @@
           <td class="row-actions">
             <a class="ghost" href="/admin/prizes/<?= e((string) $prize['id']) ?>/edit">Izmeni</a>
             <?php if ((int) $prize['won_count'] === 0): ?>
-              <form method="post" action="/admin/prizes/<?= e((string) $prize['id']) ?>/delete" class="inline"><?= csrf_field() ?><button class="danger">Obriši</button></form>
+              <form method="post" action="/admin/prizes/<?= e((string) $prize['id']) ?>/delete" class="inline" data-confirm-action="Obrisati nagradu „<?= e($prize['name']) ?>”? Ova radnja se ne može poništiti."><?= csrf_field() ?><button class="danger" type="submit">Obriši</button></form>
             <?php endif; ?>
           </td>
         </tr>

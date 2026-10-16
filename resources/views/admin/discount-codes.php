@@ -14,7 +14,6 @@ $lowStockThreshold = (int) env_value('DISCOUNT_LOW_STOCK_THRESHOLD', 10);
     </div>
     <div class="actions discount-page-actions">
       <a class="primary" href="/admin/discount-codes/export" download>Preuzmi sve kodove (.txt)</a>
-      <a class="ghost" href="/admin/prizes">Nazad na nagrade</a>
     </div>
   </div>
 

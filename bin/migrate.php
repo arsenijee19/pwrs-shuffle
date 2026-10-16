@@ -9,8 +9,5 @@ use PlayWorld\MysteryBox\Support\Database;
 
 App::bootstrap(dirname(__DIR__));
 
-$pdo = Database::pdo();
-foreach (glob(app_path('database/migrations/*.sql')) as $migration) {
-    $pdo->exec((string) file_get_contents($migration));
-    echo 'Migrated ' . basename($migration) . PHP_EOL;
-}
+Database::migrate();
+echo 'Database is up to date.' . PHP_EOL;

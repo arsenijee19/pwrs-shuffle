@@ -11,8 +11,6 @@
       <p class="lead">Pregled svakog pokušaja slanja Mystery Box linka iz admin panela.</p>
     </div>
     <div class="actions">
-      <a class="ghost" href="/admin/email">Email podešavanja</a>
-      <a class="primary" href="/admin/tokens">Tokeni</a>
     </div>
   </div>
   <table>

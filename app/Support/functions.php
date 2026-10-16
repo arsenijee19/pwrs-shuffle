@@ -29,6 +29,17 @@ function e(?string $value): string
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+function current_path(): string
+{
+    $route = (string) ($_GET['route'] ?? '');
+    if ((bool) env_value('APP_QUERY_ROUTES', false) && str_starts_with($route, '/')) {
+        return rtrim($route, '/') ?: '/';
+    }
+
+    $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+    return rtrim($path, '/') ?: '/';
+}
+
 function redirect(string $path): never
 {
     if ((bool) env_value('APP_QUERY_ROUTES', false) && str_starts_with($path, '/')) {

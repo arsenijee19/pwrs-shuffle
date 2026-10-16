@@ -104,6 +104,33 @@ PlayWorld tim`;
     });
   });
 
+  document.querySelectorAll('table').forEach((table) => {
+    const heads = [...table.querySelectorAll('thead th')].map((th) => th.textContent.trim());
+    const rows = [...table.querySelectorAll('tbody tr')];
+    if (!heads.length || !rows.length || rows.some((row) => row.querySelector('td[colspan]') || row.children.length !== heads.length)) return;
+    rows.forEach((row) => [...row.children].forEach((cell, index) => cell.setAttribute('data-label', heads[index])));
+    table.classList.add('is-stacked');
+  });
+
+  const fieldNames = { rarity: 'Rarity', weight: 'Weight', max_quantity: 'Legacy max', bonus_box_count: 'Broj bonus boxova', discount_percent: 'Popust u procentima' };
+  document.querySelectorAll('[data-prize-id][data-field]').forEach((input) => {
+    if (input.getAttribute('aria-label')) return;
+    const name = input.closest('tr')?.children[1]?.textContent.trim() || '';
+    input.setAttribute('aria-label', `${fieldNames[input.dataset.field] || input.dataset.field}${name ? ': ' + name : ''}`);
+  });
+
+  document.querySelectorAll('input[name="discount_enabled"]').forEach((toggle) => {
+    const percent = toggle.form?.querySelector('input[name="discount_percent"]');
+    if (!percent) return;
+    const sync = () => {
+      percent.disabled = !toggle.checked;
+      percent.required = toggle.checked;
+      percent.closest('label')?.classList.toggle('is-disabled', !toggle.checked);
+    };
+    toggle.addEventListener('change', sync);
+    sync();
+  });
+
   document.querySelectorAll('[data-confirm-action]').forEach((form) => {
     form.addEventListener('submit', (event) => {
       if (!window.confirm(form.dataset.confirmAction || 'Da li ste sigurni?')) {

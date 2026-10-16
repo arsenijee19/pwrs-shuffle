@@ -1,8 +1,16 @@
+<?php
+$isEdit = !empty($prize['id']);
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
+?>
 <section class="panel narrow">
-  <h1><?= $prize ? 'Izmena nagrade' : 'Nova nagrada' ?></h1>
+  <h1><?= $isEdit ? 'Izmena nagrade' : 'Nova nagrada' ?></h1>
+  <?php if (is_array($flash) && !empty($flash['message'])): ?>
+    <p class="<?= ($flash['type'] ?? '') === 'error' ? 'alert' : 'notice' ?>" role="alert"><?= e((string) $flash['message']) ?></p>
+  <?php endif; ?>
   <form method="post" action="/admin/prizes/save" enctype="multipart/form-data" class="form" data-prize-save>
     <?= csrf_field() ?>
-    <?php if ($prize): ?>
+    <?php if ($isEdit): ?>
       <input type="hidden" name="id" value="<?= e((string) $prize['id']) ?>">
       <input type="hidden" name="existing_cover" value="<?= e($prize['cover_path']) ?>">
     <?php endif; ?>
@@ -10,7 +18,11 @@
     <label>Opis<textarea name="description" required><?= e($prize['description'] ?? '') ?></textarea></label>
     <label>Uputstvo<textarea name="instructions"><?= e($prize['instructions'] ?? '') ?></textarea></label>
     <label>Cover<input type="file" name="cover" accept="image/png,image/jpeg,image/webp"></label>
-    <label>Rarity<input name="rarity" required value="<?= e($prize['rarity'] ?? 'Standard') ?>"></label>
+    <label>Rarity<select name="rarity" required>
+      <?php foreach (['Ultra Rare', 'Rare', 'Special', 'Standard', 'Common'] as $rarity): ?>
+        <option value="<?= e($rarity) ?>" <?= ($prize['rarity'] ?? 'Standard') === $rarity ? 'selected' : '' ?>><?= e($rarity) ?></option>
+      <?php endforeach; ?>
+    </select></label>
     <label>Weight<input type="number" name="weight" min="0" required value="<?= e((string) ($prize['weight'] ?? 10)) ?>"></label>
     <label>Legacy max (informativno)<input type="number" name="max_quantity" min="1" required value="<?= e((string) ($prize['max_quantity'] ?? 1)) ?>"><span>Ne utiče na izvlačenje. Zadržano je zbog kompatibilnosti sa starom bazom.</span></label>
     <fieldset class="reward-behavior">
@@ -21,7 +33,7 @@
       <label class="checkbox"><input type="checkbox" name="manual_claim" <?= !empty($prize['manual_claim']) ? 'checked' : '' ?>> Ručna isporuka preko PlayWorld tima</label>
       <p class="muted">Ove vrednosti se čuvaju odvojeno od naziva nagrade i koriste se na serveru.</p>
     </fieldset>
-    <label class="checkbox"><input type="checkbox" name="active" <?= !$prize || (int) $prize['active'] === 1 ? 'checked' : '' ?>> Aktivna</label>
+    <label class="checkbox"><input type="checkbox" name="active" <?= !$isEdit && !isset($prize['active']) || (int) ($prize['active'] ?? 0) === 1 ? 'checked' : '' ?>> Aktivna</label>
     <button class="primary" type="submit">Sačuvaj nagradu</button>
   </form>
 </section>
