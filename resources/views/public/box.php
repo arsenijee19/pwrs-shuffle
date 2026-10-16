@@ -1,4 +1,13 @@
 <section class="panel narrow open-panel">
+  <div class="gift-hero" aria-hidden="true">
+    <div class="gift-glow"></div>
+    <div class="gift">
+      <div class="gift-body"></div>
+      <div class="gift-lid"></div>
+      <div class="gift-bow"><i></i><i></i><b></b></div>
+    </div>
+    <span class="gift-spark s1"></span><span class="gift-spark s2"></span><span class="gift-spark s3"></span>
+  </div>
   <p class="eyebrow">Vaš link je spreman</p>
   <h1>Vaš Mystery Box je spreman</h1>
   <p class="lead">Otvorite box kada ste spremni. Jedan link važi za jedno otvaranje, a rezultat se odmah čuva u PlayWorld evidenciji.</p>

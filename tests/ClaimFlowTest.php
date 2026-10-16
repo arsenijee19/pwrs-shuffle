@@ -53,6 +53,18 @@ final class ClaimFlowTest extends TestCase
         $this->assertFalse(csrf_valid(null, null));
     }
 
+    public function testRoutePathHonoursTheQueryRouteFallback(): void
+    {
+        $this->assertSame('/box/abc#reward-actions', route_path('/box/abc#reward-actions'));
+
+        $_ENV['APP_QUERY_ROUTES'] = 'true';
+        try {
+            $this->assertSame('/index.php?route=%2Fbox%2Fabc#reward-actions', route_path('/box/abc#reward-actions'));
+        } finally {
+            unset($_ENV['APP_QUERY_ROUTES']);
+        }
+    }
+
     public function testClaimStatusLabelsAreSerbian(): void
     {
         $this->assertSame('Novo', claim_status('New')['label']);

@@ -204,6 +204,86 @@ PlayWorld tim`;
     });
   });
 
+  // Full-screen "unwrap" reveal that plays while the box is opened on the server.
+  const playUnwrap = (form) => {
+    const TOTAL = 3800;
+    const root = document.createElement('div');
+    root.className = 'unwrap';
+    root.setAttribute('role', 'status');
+    root.setAttribute('aria-label', 'Otvaramo Vaš Mystery Box');
+    root.innerHTML = `
+      <div class="unwrap-rays"></div>
+      <div class="unwrap-stage">
+        <div class="unwrap-glow"></div>
+        <div class="ug">
+          <div class="ug-shake">
+            <div class="ug-body"></div>
+            <div class="ug-lid"></div>
+            <div class="ug-ribbon-v"></div>
+            <div class="ug-ribbon-h"></div>
+            <div class="ug-paper ug-paper-l"></div>
+            <div class="ug-paper ug-paper-r"></div>
+            <div class="ug-bow"><i></i><i></i><b></b></div>
+          </div>
+        </div>
+        <div class="unwrap-burst"></div>
+        <div class="unwrap-sparks"></div>
+      </div>
+      <p class="unwrap-caption">Otvaramo Vaš box<span>.</span><span>.</span><span>.</span></p>
+      <button type="button" class="unwrap-skip">Preskočite</button>
+      <div class="unwrap-flash"></div>`;
+
+    const sparks = root.querySelector('.unwrap-sparks');
+    const palette = ['#ffd36b', '#ffffff', '#8fe3c4', '#b69cff', '#ff9a8a', '#7fc4ff'];
+    for (let i = 0; i < 22; i += 1) {
+      const angle = (i / 22) * Math.PI * 2 + Math.random() * 0.35;
+      const distance = 130 + Math.random() * 150;
+      const spark = document.createElement('i');
+      spark.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
+      spark.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
+      spark.style.setProperty('--c', palette[i % palette.length]);
+      spark.style.setProperty('--d', `${(Math.random() * 0.25).toFixed(2)}s`);
+      sparks.appendChild(spark);
+    }
+
+    document.body.appendChild(root);
+    document.body.classList.add('dialog-open');
+    requestAnimationFrame(() => {
+      root.classList.add('is-open');
+      void root.offsetWidth;
+      root.classList.add('is-playing');
+    });
+
+    const data = new FormData(form);
+    data.set('animated', '1');
+    const request = fetch(form.action, { method: 'POST', body: data, credentials: 'same-origin', headers: { Accept: 'application/json' } })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((payload) => (payload && payload.ok ? payload.url : null))
+      .catch(() => null);
+
+    let skipped = false;
+    const skipButton = root.querySelector('.unwrap-skip');
+    const skipSignal = new Promise((resolve) => skipButton.addEventListener('click', () => { skipped = true; root.classList.add('is-skipped'); resolve(); }));
+    const timer = new Promise((resolve) => setTimeout(resolve, TOTAL));
+
+    let failed = false;
+    const fail = () => {
+      if (failed) return;
+      failed = true;
+      root.remove();
+      document.body.classList.remove('dialog-open');
+      form.dataset.confirmed = '1';
+      form.submit(); // let the server show its regular, readable error page
+    };
+    request.then((url) => { if (!url) fail(); });
+
+    Promise.all([request, Promise.race([timer, skipSignal])]).then(async ([url]) => {
+      if (failed || !url) return;
+      if (skipped) await new Promise((resolve) => setTimeout(resolve, 260));
+      window.location.assign(url);
+    });
+  };
+
   document.querySelectorAll('[data-confirm-open]').forEach((form) => {
     form.addEventListener('submit', async (event) => {
       if (form.dataset.confirmed === '1') return;
@@ -223,7 +303,11 @@ PlayWorld tim`;
         button.disabled = true;
         button.textContent = 'Otvaram...';
       }
-      form.submit();
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        form.submit();
+      } else {
+        playUnwrap(form);
+      }
     });
   });
 
@@ -413,7 +497,7 @@ PlayWorld tim`;
   }
 
   const celebrateShell = document.querySelector('.result-shell.celebrate');
-  if (celebrateShell) {
+  if (celebrateShell && celebrateShell.querySelector('.box-animation')) {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     setTimeout(() => {
       const result = celebrateShell.querySelector('.result');
@@ -480,6 +564,8 @@ PlayWorld tim`;
   // Coming back with the browser's back button must not leave a stuck "sending" state.
   window.addEventListener('pageshow', (event) => {
     if (!event.persisted) return;
+    document.querySelectorAll('.unwrap').forEach((el) => el.remove());
+    document.body.classList.remove('dialog-open');
     document.querySelectorAll('[data-action-form] button[type="submit"], form[data-confirm-open] button[type="submit"]').forEach((button) => {
       button.disabled = false;
       const owner = button.closest('form'); if (owner) delete owner.dataset.confirmed;

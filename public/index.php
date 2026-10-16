@@ -542,9 +542,10 @@ $router->get('/box/{token}', function (string $plain): void {
             return;
         }
         $openedNow = ($_SESSION['opened_now'] ?? null) === (string) $draw['draw_id'];
-        unset($_SESSION['opened_now']);
+        $skipStage = $openedNow && !empty($_SESSION['skip_stage']);
+        unset($_SESSION['opened_now'], $_SESSION['skip_stage']);
         render('public/result', [
-            'title' => $openedNow ? 'Čestitamo' : 'Rezultat', 'draw' => $draw, 'token' => $plain, 'openedNow' => $openedNow,
+            'title' => $openedNow ? 'Čestitamo' : 'Rezultat', 'draw' => $draw, 'token' => $plain, 'openedNow' => $openedNow, 'skipStage' => $skipStage,
             'discountCode' => (new DiscountCodeService())->forDraw((string) $draw['draw_id']),
             'bonusDelivery' => (new RewardDeliveryService())->forDraw((string) $draw['draw_id']),
             'rewardClaim' => (new RewardClaimService())->forDraw((string) $draw['draw_id']),
@@ -573,8 +574,21 @@ $router->post('/box/{token}/open', function (string $plain): void {
     try {
         $draw = (new DrawService())->open($plain);
         $_SESSION['opened_now'] = (string) $draw['draw_id'];
+        if (($_POST['animated'] ?? '') === '1') {
+            // The full-screen unwrap animation already played on the client, so the result page skips its own stage.
+            $_SESSION['skip_stage'] = true;
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['ok' => true, 'url' => route_path('/box/' . rawurlencode($plain))], JSON_UNESCAPED_SLASHES);
+            exit;
+        }
         redirect('/box/' . rawurlencode($plain));
     } catch (Throwable $e) {
+        if (($_POST['animated'] ?? '') === '1') {
+            http_response_code(422);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['ok' => false]);
+            exit;
+        }
         $known = [
             'Ovaj link nije pronađen. Proverite da li je ispravno kopiran.',
             'Ovaj link više nije aktivan.',

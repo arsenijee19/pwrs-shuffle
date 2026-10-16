@@ -40,14 +40,20 @@ function current_path(): string
     return rtrim($path, '/') ?: '/';
 }
 
-function redirect(string $path): never
+/** Path as the browser should request it (honours the /index.php?route= fallback used on some hosts). */
+function route_path(string $path): string
 {
     if ((bool) env_value('APP_QUERY_ROUTES', false) && str_starts_with($path, '/')) {
         [$route, $fragment] = array_pad(explode('#', $path, 2), 2, null);
-        $path = '/index.php?route=' . rawurlencode($route) . ($fragment !== null ? '#' . $fragment : '');
+        return '/index.php?route=' . rawurlencode($route) . ($fragment !== null ? '#' . $fragment : '');
     }
 
-    header('Location: ' . $path, true, 302);
+    return $path;
+}
+
+function redirect(string $path): never
+{
+    header('Location: ' . route_path($path), true, 302);
     exit;
 }
 

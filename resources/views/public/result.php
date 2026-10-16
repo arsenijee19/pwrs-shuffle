@@ -20,8 +20,9 @@ $stickyLabel = $bonusPending
     ? ($bonusCount === 1 ? 'Preuzmite besplatan box' : 'Preuzmite besplatne boxove')
     : 'Preuzmite nagradu';
 ?>
-<section class="result-shell <?= !empty($openedNow) ? 'celebrate' : '' ?>">
-  <?php if (!empty($openedNow)): ?>
+<?php $showStage = !empty($openedNow) && empty($skipStage); ?>
+<section class="result-shell <?= !empty($openedNow) ? 'celebrate' : '' ?> <?= !empty($openedNow) && !$showStage ? 'no-stage' : '' ?>">
+  <?php if ($showStage): ?>
     <div class="box-animation" aria-hidden="true">
       <div class="box-rig">
         <div class="glow"></div>
