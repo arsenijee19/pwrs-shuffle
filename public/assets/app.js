@@ -145,6 +145,7 @@ PlayWorld tim`;
       }
       const button = form.querySelector('button[type="submit"]');
       if (button) {
+        button.dataset.label = button.textContent;
         button.disabled = true;
         button.textContent = 'Otvaram...';
       }
@@ -326,11 +327,21 @@ PlayWorld tim`;
     form.addEventListener('submit', () => {
       const button = form.querySelector('button[type="submit"]');
       if (button) {
+        button.dataset.label = button.textContent;
         setTimeout(() => {
           button.disabled = true;
           button.textContent = 'Šaljem...';
         }, 0);
       }
+    });
+  });
+
+  // Coming back with the browser's back button must not leave a stuck "sending" state.
+  window.addEventListener('pageshow', (event) => {
+    if (!event.persisted) return;
+    document.querySelectorAll('[data-action-form] button[type="submit"], form[data-confirm-open] button[type="submit"]').forEach((button) => {
+      button.disabled = false;
+      if (button.dataset.label) button.textContent = button.dataset.label;
     });
   });
 
@@ -349,6 +360,10 @@ PlayWorld tim`;
       localStorage.setItem('pw-sound-muted', muted ? '1' : '0');
       renderSound();
     });
+
+    if (!muted && celebrateShell && navigator.vibrate && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setTimeout(() => navigator.vibrate([18, 40, 28]), 1000);
+    }
 
     if (!muted && window.AudioContext && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setTimeout(() => {

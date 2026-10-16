@@ -21,12 +21,14 @@ $stickyLabel = $bonusPending
     : 'Preuzmi nagradu';
 ?>
 <section class="result-shell <?= !empty($openedNow) ? 'celebrate' : '' ?>">
-  <div class="box-animation" aria-hidden="true">
-    <div class="spark-field"></div>
-    <div class="box-lid"></div>
-    <div class="box-body"></div>
-    <div class="glow"></div>
-  </div>
+  <?php if (!empty($openedNow)): ?>
+    <div class="box-animation" aria-hidden="true">
+      <div class="spark-field"></div>
+      <div class="box-lid"></div>
+      <div class="box-body"></div>
+      <div class="glow"></div>
+    </div>
+  <?php endif; ?>
   <div class="panel result verified-result" data-watermark="DRAW ID <?= e($draw['draw_id']) ?>">
     <p class="eyebrow">Čestitamo! Osvojili ste</p>
     <?php $rarityKey = strtolower(str_replace(' ', '-', (string) ($draw['rarity'] ?? ''))); ?>

@@ -114,7 +114,11 @@ $router->get('/admin/login', function (): void {
         return;
     }
 
-    render('admin/login', ['title' => 'Admin Login']);
+    if (AuthService::check()) {
+        redirect('/admin');
+    }
+
+    render('admin/login', ['title' => 'Prijava']);
 });
 $router->post('/admin/login', function (): void {
     verify_csrf();
