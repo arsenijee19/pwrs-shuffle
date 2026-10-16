@@ -590,3 +590,40 @@ body.has-sticky-action .site-footer { padding-bottom: 96px; }
   .site-footer-links { display: grid; grid-template-columns: repeat(2, auto); justify-content: center; gap: 0 22px; }
   .site-footer-links a { min-height: 44px; justify-content: center; }
 }
+
+/* Admin: claims */
+.chip { display: inline-flex; align-items: center; min-height: 26px; padding: 0 11px; border-radius: 999px; font-size: 12px; font-weight: 900; white-space: nowrap; }
+.chip-new { background: #e6efff; color: var(--blue); }
+.chip-progress { background: #efeaff; color: var(--violet); }
+.chip-delivered { background: #dcf3ea; color: #17624a; }
+.chip-cancelled { background: #eef0f4; color: #667085; }
+.filter-tabs { display: flex; gap: 8px; margin: 0 0 18px; overflow-x: auto; scrollbar-width: none; }
+.filter-tabs::-webkit-scrollbar { display: none; }
+.filter-tabs a { flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: #475467; font-size: 14px; font-weight: 800; }
+.filter-tabs a span { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--soft); font-size: 12px; }
+.filter-tabs a.is-active { border-color: transparent; background: #121826; color: #fff; }
+.filter-tabs a.is-active span { background: rgba(255, 255, 255, .2); }
+.empty-state { margin: 20px 0; padding: 26px; border: 1px dashed #b9c8dc; border-radius: 12px; background: #f8fbff; color: var(--muted); text-align: center; }
+.claim-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 0 0 6px; color: var(--muted); font-size: 14px; }
+.claim-h2 { margin: 26px 0 12px; font-size: 18px; }
+.claim-contact-info { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0 0 14px; }
+.claim-contact-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.claim-contact-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 12px; color: #fff; font-weight: 900; transition: transform .16s ease, filter .16s ease; }
+.claim-contact-btn:active { transform: scale(.97); }
+@media (hover: hover) { .claim-contact-btn:hover { filter: brightness(1.08); transform: translateY(-2px); } }
+.claim-contact-btn.is-call { background: #121826; }
+.claim-contact-btn.is-viber { background: #7360f2; }
+.claim-contact-btn.is-whatsapp { background: #1fa855; }
+.claim-contact-btn.is-mail { background: #1676f3; }
+.claim-message { display: grid; gap: 10px; margin-top: 14px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--soft); }
+.claim-message p { margin: 0; color: #344054; line-height: 1.55; font-size: 14px; }
+.claim-message .ghost { justify-self: start; }
+.status-buttons { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.status-btn { min-height: 48px; border: 2px solid transparent; border-radius: 12px; font: inherit; font-weight: 900; cursor: pointer; opacity: .72; transition: opacity .16s ease, transform .16s ease; }
+.status-btn.is-current { opacity: 1; border-color: currentColor; box-shadow: 0 6px 16px rgba(16, 24, 40, .12); }
+@media (hover: hover) { .status-btn:hover { opacity: 1; } }
+.claim-note { margin-top: 14px; font-size: 13px; }
+@media (max-width: 560px) {
+  .claim-contact-actions, .status-buttons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .claim-contact-info { grid-template-columns: 1fr; }
+}

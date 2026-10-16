@@ -350,7 +350,13 @@ $router->post('/admin/reward-deliveries/{id}/resend', function (string $id): voi
 });
 $router->get('/admin/reward-claims', function (): void {
     AuthService::requireAdmin();
-    render('admin/reward-claims', ['title' => 'Zahtevi za nagrade', 'claims' => (new RewardClaimService())->recent()]);
+    $all = (new RewardClaimService())->recent();
+    $counts = array_count_values(array_column($all, 'status'));
+    $filter = (string) ($_GET['status'] ?? '');
+    $claims = in_array($filter, ['New', 'InProgress', 'Delivered', 'Cancelled'], true)
+        ? array_values(array_filter($all, static fn (array $claim): bool => $claim['status'] === $filter))
+        : $all;
+    render('admin/reward-claims', ['title' => 'Zahtevi za nagrade', 'claims' => $claims, 'counts' => $counts, 'total' => count($all), 'filter' => $filter]);
 });
 $router->get('/admin/reward-claims/{id}', function (string $id): void {
     AuthService::requireAdmin();
@@ -360,7 +366,10 @@ $router->get('/admin/reward-claims/{id}', function (string $id): void {
 $router->post('/admin/reward-claims/{id}/status', function (string $id): void {
     AuthService::requireAdmin();
     verify_csrf();
-    (new RewardClaimService())->updateStatus((int) $id, (string) ($_POST['status'] ?? ''));
+    $status = (string) ($_POST['status'] ?? '');
+    $_SESSION['flash'] = (new RewardClaimService())->updateStatus((int) $id, $status)
+        ? ['type' => 'success', 'message' => 'Status je promenjen na „' . claim_status($status)['label'] . '”.']
+        : ['type' => 'error', 'message' => 'Status nije promenjen.'];
     redirect('/admin/reward-claims/' . (int) $id);
 });
 $router->post('/admin/tokens/generate', function (): void {

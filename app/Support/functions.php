@@ -99,3 +99,30 @@ function format_date(string $date): string
     $dt = new DateTimeImmutable($date);
     return $dt->format('d.m.Y. H:i');
 }
+
+/** Digits-only international phone number (+ and 00 prefixes stripped; local 0xx numbers are assumed to be Serbian). */
+function phone_international(string $phone): string
+{
+    $digits = preg_replace('/[^0-9+]/', '', $phone) ?: '';
+    if (str_starts_with($digits, '+')) {
+        return ltrim($digits, '+');
+    }
+    if (str_starts_with($digits, '00')) {
+        return substr($digits, 2);
+    }
+    if (str_starts_with($digits, '0')) {
+        return '381' . substr($digits, 1);
+    }
+    return $digits;
+}
+
+/** @return array{label:string,class:string} */
+function claim_status(string $status): array
+{
+    return match ($status) {
+        'InProgress' => ['label' => 'U toku', 'class' => 'chip-progress'],
+        'Delivered' => ['label' => 'Isporučeno', 'class' => 'chip-delivered'],
+        'Cancelled' => ['label' => 'Otkazano', 'class' => 'chip-cancelled'],
+        default => ['label' => 'Novo', 'class' => 'chip-new'],
+    };
+}
