@@ -208,7 +208,7 @@ final class PrizeService
             $payload = [
                 'name' => $item['name'],
                 'description' => $this->catalogDescription($item['name']),
-                'instructions' => 'Sačuvajte PDF potvrdu i javite se PlayWorld timu za preuzimanje nagrade.',
+                'instructions' => '',
                 'cover_path' => '/assets/placeholder-cover.svg',
                 'rarity' => $settings['rarity'],
                 'weight' => $settings['weight'],
@@ -261,7 +261,7 @@ final class PrizeService
             $payload = [
                 'name' => $item['name'],
                 'description' => $this->catalogDescription($item['name']),
-                'instructions' => 'Sačuvajte PDF potvrdu i javite se PlayWorld timu za preuzimanje nagrade.',
+                'instructions' => '',
                 'cover_path' => '/assets/placeholder-cover.svg',
                 'rarity' => $item['rarity'],
                 'weight' => $item['weight'],

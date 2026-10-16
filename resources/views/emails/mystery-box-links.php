@@ -24,7 +24,7 @@ $greeting = trim($recipientName) !== '' ? 'Poštovani/a ' . trim($recipientName)
               <div style="margin-top:12px;word-break:break-all;font-size:12px;color:#667085;"><?= e($link) ?></div>
             </div>
           <?php endforeach; ?>
-          <p style="font-size:14px;line-height:1.6;color:#17624a;background:#eef7f3;padding:14px 16px;border-radius:10px;">Nakon svakog otvaranja možete sačuvati rezultat ili PDF potvrdu.</p>
+          <p style="font-size:14px;line-height:1.6;color:#17624a;background:#eef7f3;padding:14px 16px;border-radius:10px;">Nakon svakog otvaranja kliknite „Preuzmi nagradu“ i ostavite kontakt. Screenshot nije potreban, a naš tim će Vas kontaktirati tokom radnog vremena radi isporuke igre.</p>
         </td></tr>
         <tr><td style="padding:22px 30px;background:#f8fafc;border-top:1px solid #dbe4ef;color:#667085;font-size:13px;">Hvala Vam na učešću!<br><strong style="color:#121826;">PlayWorld tim</strong></td></tr>
       </table>

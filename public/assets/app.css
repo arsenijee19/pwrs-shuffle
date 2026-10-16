@@ -542,3 +542,51 @@ textarea { resize: vertical; line-height: 1.5; }
 .result { scroll-margin-top: 92px; }
 .section-head h1, .admin-page-head h1 { font-size: clamp(28px, 4vw, 42px); margin-bottom: 0; }
 .panel.narrow > h1 { font-size: clamp(28px, 4.5vw, 40px); }
+
+/* Prize reveal polish */
+.cover-stage { position: relative; display: grid; place-items: center; width: min(210px, 100%); margin: 2px auto; padding: 10px; border-radius: 22px; isolation: isolate; }
+.cover-stage::before { content: ""; position: absolute; inset: -14px; z-index: -1; border-radius: 30px; background: radial-gradient(closest-side, rgba(36, 87, 197, .16), transparent); }
+.cover-stage .cover { width: 100%; border-radius: 16px; box-shadow: 0 16px 34px rgba(16, 24, 40, .16); }
+.cover-stage.rarity-special::before { background: radial-gradient(closest-side, rgba(47, 158, 117, .26), transparent); }
+.cover-stage.rarity-rare::before { background: radial-gradient(closest-side, rgba(36, 87, 197, .3), transparent); }
+.cover-stage.rarity-ultra-rare::before { background: radial-gradient(closest-side, rgba(223, 172, 66, .42), rgba(122, 79, 227, .18) 70%, transparent); }
+.celebrate .cover-stage { animation: coverIn .8s cubic-bezier(.2, .9, .3, 1) 1.1s both; }
+.celebrate .cover-stage.rarity-ultra-rare::before, .celebrate .cover-stage.rarity-rare::before { animation: haloPulse 2.4s ease-in-out 1.6s 2; }
+.rarity-chip { display: inline-flex; align-items: center; gap: 7px; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.rarity-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.rarity-chip.rarity-special { background: #e3f6ee; color: #17624a; }
+.rarity-chip.rarity-rare { background: #e6efff; color: var(--blue); }
+.rarity-chip.rarity-ultra-rare { background: linear-gradient(135deg, #fff1cc, #efe6ff); color: #7a4a00; box-shadow: 0 6px 16px rgba(223, 172, 66, .28); }
+.action-reassure { display: flex; align-items: flex-start; gap: 8px; margin-top: 10px !important; color: #17624a !important; font-size: 14px; font-weight: 700; line-height: 1.4; }
+.action-reassure svg { flex: none; width: 18px; height: 18px; margin-top: 1px; padding: 2px; border-radius: 50%; background: #dcf3ea; }
+@keyframes coverIn { from { opacity: 0; transform: translateY(14px) scale(.92); } to { opacity: 1; transform: none; } }
+@keyframes haloPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .75; transform: scale(1.12); } }
+@media (max-width: 760px) { .cover-stage { width: min(170px, 100%); } }
+
+.meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.result { scroll-margin-top: 112px; }
+
+.result h1.is-long { font-size: clamp(24px, 3vw, 32px); line-height: 1.15; overflow-wrap: anywhere; }
+.invalid-help { display: grid; gap: 12px; margin: 18px 0 22px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--soft); }
+.invalid-help p { margin: 0; color: #344054; line-height: 1.55; }
+.contact-icons-inline { justify-content: flex-start; margin-top: 4px; }
+
+/* Footer and touch targets */
+body { display: flex; flex-direction: column; }
+main { flex: 1 0 auto; width: min(1120px, calc(100% - 32px)); }
+.site-footer { flex: none; margin-top: 8px; padding: 28px 16px calc(28px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: rgba(255, 255, 255, .7); }
+.site-footer-inner { display: grid; gap: 10px; justify-items: center; width: min(1120px, 100%); margin: 0 auto; text-align: center; }
+.site-footer-brand { margin: 0; font-weight: 900; font-size: 16px; }
+.site-footer-brand span { color: var(--blue); }
+.site-footer-note { max-width: 520px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 6px; }
+.site-footer-links a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 8px; color: #475467; font-size: 13px; font-weight: 700; }
+@media (hover: hover) { .site-footer-links a:hover { color: var(--blue); background: #f1f5fd; } }
+body.has-sticky-action .site-footer { padding-bottom: 96px; }
+.sound-toggle { min-height: 44px; }
+@media (max-width: 760px) {
+  nav a, nav .inline button { min-height: 40px; }
+  .brand { min-height: 36px; align-items: center; }
+  .site-footer-links { display: grid; grid-template-columns: repeat(2, auto); justify-content: center; gap: 0 22px; }
+  .site-footer-links a { min-height: 44px; justify-content: center; }
+}

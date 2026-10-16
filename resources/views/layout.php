@@ -42,8 +42,6 @@ $adminLinks = [
       <?php if ($isAdmin): ?>
         <a href="/admin"<?= $onAdminPage ? ' class="is-active" aria-current="location"' : '' ?>>Admin</a>
         <form method="post" action="/admin/logout" class="inline"><?= csrf_field() ?><button type="submit">Odjava</button></form>
-      <?php else: ?>
-        <a href="/admin/login"<?= $navActive('/admin/login') ?>>Admin</a>
       <?php endif; ?>
     </nav>
   </header>
@@ -58,5 +56,18 @@ $adminLinks = [
     <?php endif; ?>
     <?php require $viewFile; ?>
   </main>
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <p class="site-footer-brand">PlayWorld <span>Mystery Box</span></p>
+      <p class="site-footer-note">Mystery Box je proizvod iznenađenja. Rezultat određuje server, a nagrade imaju različite vrednosti.</p>
+      <div class="site-footer-links">
+        <a href="/faq">FAQ</a>
+        <a href="/fair-play">Fair Play</a>
+        <a href="/verify">Provera rezultata</a>
+        <a href="mailto:usluge@playworld.rs">usluge@playworld.rs</a>
+        <?php if (!$isAdmin): ?><a href="/admin/login">Admin</a><?php endif; ?>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>

@@ -7,10 +7,7 @@ ${link}
 
 Molimo Vas da otvorite link i ispratite instrukcije prikazane na stranici. Mystery Box možete otvoriti samo jednom, a rezultat nakon otvaranja nije moguće promeniti.
 
-Nakon što otvorite Mystery Box, molimo Vas da nam pošaljete:
-
-- screenshot osvojene nagrade, ili
-- PDF potvrdu koju možete preuzeti na stranici rezultata.
+Ako osvojite igru ili poklon, kliknite „Preuzmi nagradu“ na stranici rezultata i ostavite email i telefon. Screenshot nije potreban: naš tim će Vas kontaktirati tokom radnog vremena radi isporuke.
 
 Hvala Vam na učešću i želimo Vam puno sreće!
 

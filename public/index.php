@@ -520,11 +520,13 @@ $router->get('/box/{token}', function (string $plain): void {
     $draw = (new DrawService())->resultForToken((int) $token['id']);
     if ($draw) {
         if (!(new DrawService())->isVisible($draw)) {
-            render('public/invalid', ['title' => 'Rezultat je istekao', 'reason' => 'Rezultat je bio dostupan 5 dana nakon otvaranja.'], 410);
+            render('public/invalid', ['title' => 'Rezultat je istekao', 'reason' => 'Rezultat je bio dostupan 5 dana nakon otvaranja.', 'expired' => true], 410);
             return;
         }
+        $openedNow = ($_SESSION['opened_now'] ?? null) === (string) $draw['draw_id'];
+        unset($_SESSION['opened_now']);
         render('public/result', [
-            'title' => 'Rezultat', 'draw' => $draw, 'token' => $plain,
+            'title' => $openedNow ? 'Čestitamo' : 'Rezultat', 'draw' => $draw, 'token' => $plain, 'openedNow' => $openedNow,
             'discountCode' => (new DiscountCodeService())->forDraw((string) $draw['draw_id']),
             'bonusDelivery' => (new RewardDeliveryService())->forDraw((string) $draw['draw_id']),
             'rewardClaim' => (new RewardClaimService())->forDraw((string) $draw['draw_id']),
@@ -546,12 +548,8 @@ $router->post('/box/{token}/open', function (string $plain): void {
     $plain = (new TokenService())->normalizePlain($plain);
     try {
         $draw = (new DrawService())->open($plain);
-        render('public/result', [
-            'title' => 'Čestitamo', 'draw' => $draw, 'token' => $plain, 'openedNow' => true,
-            'discountCode' => (new DiscountCodeService())->forDraw((string) $draw['draw_id']),
-            'bonusDelivery' => (new RewardDeliveryService())->forDraw((string) $draw['draw_id']),
-            'rewardClaim' => (new RewardClaimService())->forDraw((string) $draw['draw_id']),
-        ]);
+        $_SESSION['opened_now'] = (string) $draw['draw_id'];
+        redirect('/box/' . rawurlencode($plain));
     } catch (Throwable $e) {
         $known = [
             'Token nije pronađen.', 'Token nije aktivan.', 'Token je istekao.',
@@ -607,8 +605,6 @@ $router->post('/box/{token}/claim', function (string $plain): void {
     }
     try {
         (new RewardClaimService())->create($draw, (string) ($_POST['email'] ?? ''), (string) ($_POST['phone'] ?? ''));
-        $_SESSION['flash'] = 'Zahtev je primljen. PlayWorld tim će Vam se javiti.';
-        $_SESSION['flash_type'] = 'success';
     } catch (Throwable $error) {
         $_SESSION['flash'] = $error->getMessage();
         $_SESSION['flash_type'] = 'error';
