@@ -413,14 +413,6 @@ PlayWorld tim`;
   }
 
   const celebrateShell = document.querySelector('.result-shell.celebrate');
-  if (celebrateShell) {
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    setTimeout(() => {
-      const result = celebrateShell.querySelector('.result');
-      if (!result || window.scrollY > 40) return;
-      result.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-    }, 1700);
-  }
 
   const focusActionCard = (card) => {
     card.scrollIntoView({ behavior: 'smooth', block: 'start' });

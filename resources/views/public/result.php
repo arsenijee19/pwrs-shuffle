@@ -40,7 +40,9 @@ $stickyLabel = $bonusPending
         <span class="rarity-chip rarity-<?= e($rarityKey) ?>"><?= e((string) $draw['rarity']) ?></span>
       <?php endif; ?>
     </div>
-    <div class="cover-stage rarity-<?= e($rarityKey) ?>"><img class="cover" src="<?= e($draw['cover_path']) ?>" alt=""></div>
+    <?php if (!str_contains((string) $draw['cover_path'], 'placeholder-cover')): ?>
+      <div class="cover-stage rarity-<?= e($rarityKey) ?>"><img class="cover" src="<?= e($draw['cover_path']) ?>" alt=""></div>
+    <?php endif; ?>
     <h1 class="<?= mb_strlen((string) $draw['prize_name']) > 36 ? 'is-long' : '' ?>"><?= e($draw['prize_name']) ?></h1>
     <p><?= e($draw['prize_description']) ?></p>
     <?php if (!empty($draw['prize_instructions'])): ?><p class="notice"><?= e($draw['prize_instructions']) ?></p><?php endif; ?>
