@@ -14,9 +14,12 @@ final class MailServiceTest extends TestCase
         $html = (new MailService())->mysteryBoxHtml($link, 'Marko');
         $text = (new MailService())->mysteryBoxText($link, 'Marko');
 
-        $this->assertStringContainsString('Otvori Mystery Box', $html);
+        $this->assertStringContainsString('Otvorite Mystery Box', $html);
         $this->assertStringContainsString($link, $html);
         $this->assertStringContainsString('Poštovani/a Marko', $html);
         $this->assertStringContainsString($link, $text);
+        $this->assertStringContainsString('Preuzmite nagradu', $html);
+        $this->assertStringContainsString('Preuzmite nagradu', $text);
+        $this->assertStringNotContainsString('screenshot osvojene', $text);
     }
 }

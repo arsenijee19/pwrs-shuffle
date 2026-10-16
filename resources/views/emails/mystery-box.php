@@ -43,7 +43,7 @@ $greeting = $safeName !== '' ? 'Poštovani/a ' . $safeName . ',' : 'Poštovani,'
               <ol style="margin:0 0 24px;padding-left:20px;color:#465266;font-size:15px;line-height:1.7;">
                 <li>Otvorite link iz ovog emaila.</li>
                 <li>Pročitajte kratke instrukcije na stranici.</li>
-                <li>Kliknite na dugme Otvorite Mystery Box.</li>
+                <li>Kliknite na dugme „Otvorite Mystery Box“.</li>
                 <li>Kliknite „Preuzmite nagradu“ i ostavite email i telefon.</li>
                 <li>Javićemo Vam se tokom radnog vremena radi isporuke igre.</li>
               </ol>

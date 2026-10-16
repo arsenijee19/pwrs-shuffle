@@ -12,6 +12,17 @@ final class PdfService
 {
     public function output(array $draw, string $resultUrl): void
     {
+        $this->dompdf($draw, $resultUrl)->stream('playworld-mystery-box-' . $draw['draw_id'] . '.pdf', ['Attachment' => true]);
+    }
+
+    /** Returns the raw PDF bytes (used by tests and anywhere streaming is not wanted). */
+    public function render(array $draw, string $resultUrl): string
+    {
+        return (string) $this->dompdf($draw, $resultUrl)->output();
+    }
+
+    private function dompdf(array $draw, string $resultUrl): Dompdf
+    {
         $qr = (new QRCode())->render($resultUrl);
         $coverPath = app_path('public' . $draw['cover_path']);
         $cover = file_exists($coverPath) ? 'data:' . mime_content_type($coverPath) . ';base64,' . base64_encode((string) file_get_contents($coverPath)) : '';
@@ -74,7 +85,8 @@ final class PdfService
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4');
         $dompdf->render();
-        $dompdf->stream('playworld-mystery-box-' . $draw['draw_id'] . '.pdf', ['Attachment' => true]);
+
+        return $dompdf;
     }
 }
 
