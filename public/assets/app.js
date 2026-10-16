@@ -52,13 +52,14 @@ PlayWorld tim`;
   };
 
   document.querySelectorAll('[data-copy]').forEach((button) => {
+    const original = button.textContent;
     button.addEventListener('click', async () => {
       try {
         await copyToClipboard(button.dataset.copy || '');
-        markCopied(button, 'Kopiraj link', 'Link kopiran');
+        markCopied(button, original, button.dataset.copiedLabel || 'Link kopiran');
       } catch (error) {
-        button.textContent = 'Copy failed';
-        setTimeout(() => { button.textContent = 'Kopiraj'; }, 1600);
+        button.textContent = 'Kopiranje nije uspelo';
+        setTimeout(() => { button.textContent = original; }, 1800);
       }
     });
   });
@@ -70,10 +71,10 @@ PlayWorld tim`;
 
       try {
         await copyToClipboard(message);
-        markCopied(button, 'Copy formatted', 'Poruka kopirana');
+        markCopied(button, 'Kopiraj poruku', 'Poruka kopirana');
       } catch (error) {
-        button.textContent = 'Copy failed';
-        setTimeout(() => { button.textContent = 'Copy formatted'; }, 1800);
+        button.textContent = 'Kopiranje nije uspelo';
+        setTimeout(() => { button.textContent = 'Kopiraj poruku'; }, 1800);
       }
     });
   });
@@ -90,7 +91,7 @@ PlayWorld tim`;
 
       try {
         await copyToClipboard(links.map(formattedMessage).join('\n\n---\n\n'));
-        button.textContent = `Copied ${links.length}`;
+        button.textContent = `Kopirano: ${links.length}`;
         document.querySelectorAll('[data-copy-row]').forEach((row) => {
           row.classList.add('copied-row');
           const status = row.querySelector('[data-copy-status]');
@@ -99,7 +100,7 @@ PlayWorld tim`;
           }
         });
       } catch (error) {
-        button.textContent = 'Copy failed';
+        button.textContent = 'Kopiranje nije uspelo';
       }
     });
   });
@@ -148,7 +149,7 @@ PlayWorld tim`;
       const button = form.querySelector('button[type="submit"]');
       if (button) {
         button.disabled = true;
-        button.textContent = 'Opening...';
+        button.textContent = 'Otvaram...';
       }
     });
   });
@@ -271,6 +272,16 @@ PlayWorld tim`;
       }
     });
   });
+
+  const celebrateShell = document.querySelector('.result-shell.celebrate');
+  if (celebrateShell) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(() => {
+      const result = celebrateShell.querySelector('.result');
+      if (!result || window.scrollY > 40) return;
+      result.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    }, 1700);
+  }
 
   const focusActionCard = (card) => {
     card.scrollIntoView({ behavior: 'smooth', block: 'start' });

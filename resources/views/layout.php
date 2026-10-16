@@ -41,7 +41,7 @@ $adminLinks = [
       <a href="/verify"<?= $navActive('/verify') ?>>Provera</a>
       <?php if ($isAdmin): ?>
         <a href="/admin"<?= $onAdminPage ? ' class="is-active" aria-current="location"' : '' ?>>Admin</a>
-        <form method="post" action="/admin/logout" class="inline"><?= csrf_field() ?><button>Logout</button></form>
+        <form method="post" action="/admin/logout" class="inline"><?= csrf_field() ?><button type="submit">Odjava</button></form>
       <?php else: ?>
         <a href="/admin/login"<?= $navActive('/admin/login') ?>>Admin</a>
       <?php endif; ?>

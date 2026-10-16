@@ -5,7 +5,7 @@
   <form class="open-cta" method="post" action="/box/<?= e($token) ?>/open" data-confirm-open>
     <?= csrf_field() ?>
     <p class="notice">Ovu Mystery Box nagradu možete otvoriti samo jednom.</p>
-    <button class="primary huge" type="submit">Open Mystery Box</button>
+    <button class="primary huge" type="submit">Otvori Mystery Box</button>
   </form>
 </section>
 

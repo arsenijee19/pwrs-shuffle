@@ -539,3 +539,6 @@ input[type="file"]::file-selector-button:hover { background: #e9eef8; }
 textarea { resize: vertical; line-height: 1.5; }
 .checkbox, .api-enable-row { align-items: center; }
 .is-disabled { opacity: .5; }
+.result { scroll-margin-top: 92px; }
+.section-head h1, .admin-page-head h1 { font-size: clamp(28px, 4vw, 42px); margin-bottom: 0; }
+.panel.narrow > h1 { font-size: clamp(28px, 4.5vw, 40px); }

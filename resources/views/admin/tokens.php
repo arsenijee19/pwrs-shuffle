@@ -2,7 +2,7 @@
   <div class="section-head">
     <h1>Tokeni</h1>
     <div class="actions">
-      <a class="ghost" href="/admin/tokens.csv">Export CSV</a>
+      <a class="ghost" href="/admin/tokens.csv">Izvezi CSV</a>
     </div>
   </div>
   <?php if (!empty($flash)): ?>
@@ -36,13 +36,13 @@
           <h2>Novi linkovi</h2>
           <p>Svaki red ima svoj status kopiranja, da lako vidite šta ste već poslali.</p>
         </div>
-        <button type="button" class="ghost" data-copy-all-formatted>Copy all formatted</button>
+        <button type="button" class="ghost" data-copy-all-formatted>Kopiraj sve poruke</button>
       </div>
       <?php foreach ($created as $item): ?>
         <div class="copy-row" data-copy-row>
           <input readonly value="<?= e($item['link']) ?>">
           <button type="button" data-copy="<?= e($item['link']) ?>">Kopiraj link</button>
-          <button type="button" data-copy-formatted="<?= e($item['link']) ?>">Copy formatted</button>
+          <button type="button" data-copy-formatted="<?= e($item['link']) ?>">Kopiraj poruku</button>
           <span class="copy-status" data-copy-status>Nije kopirano</span>
         </div>
       <?php endforeach; ?>

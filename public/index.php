@@ -7,6 +7,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use PlayWorld\MysteryBox\Middleware\RateLimiter;
 use PlayWorld\MysteryBox\Services\AuthService;
 use PlayWorld\MysteryBox\Services\DrawService;
+use PlayWorld\MysteryBox\Services\EmailDeliveryService;
 use PlayWorld\MysteryBox\Services\MysteryBoxFulfillmentService;
 use PlayWorld\MysteryBox\Services\MailService;
 use PlayWorld\MysteryBox\Services\N8nMysteryBoxApi;
@@ -153,7 +154,11 @@ $router->get('/admin/prizes/new', function (): void {
 $router->get('/admin/prizes/{id}/edit', function (string $id): void {
     AuthService::requireAdmin();
     $prize = (new PrizeService())->find((int) $id);
-    if ($prize && !empty($_SESSION['old_prize']) && (int) ($_SESSION['old_prize']['id'] ?? 0) === (int) $id) {
+    if (!$prize) {
+        render('errors/not-found', ['title' => 'Nagrada nije pronađena'], 404);
+        return;
+    }
+    if (!empty($_SESSION['old_prize']) && (int) ($_SESSION['old_prize']['id'] ?? 0) === (int) $id) {
         $prize = array_merge($prize, $_SESSION['old_prize']);
     }
     unset($_SESSION['old_prize']);
@@ -531,7 +536,7 @@ $router->get('/box/{token}', function (string $plain): void {
         return;
     }
     render('public/box', [
-        'title' => 'Open Mystery Box',
+        'title' => 'Otvori Mystery Box',
         'token' => $plain,
         'availablePrizes' => (new PrizeService())->activeAvailable(),
     ]);
@@ -542,7 +547,7 @@ $router->post('/box/{token}/open', function (string $plain): void {
     try {
         $draw = (new DrawService())->open($plain);
         render('public/result', [
-            'title' => 'Congratulations', 'draw' => $draw, 'token' => $plain, 'openedNow' => true,
+            'title' => 'Čestitamo', 'draw' => $draw, 'token' => $plain, 'openedNow' => true,
             'discountCode' => (new DiscountCodeService())->forDraw((string) $draw['draw_id']),
             'bonusDelivery' => (new RewardDeliveryService())->forDraw((string) $draw['draw_id']),
             'rewardClaim' => (new RewardClaimService())->forDraw((string) $draw['draw_id']),
