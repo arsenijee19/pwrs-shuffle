@@ -32,13 +32,25 @@
       ],
   ];
   ?>
+  <?php
+  $slug = static fn (string $title): string => 'faq-' . strtolower(trim((string) preg_replace('/[^a-z0-9]+/i', '-', $title), '-'));
+  ?>
+  <nav class="faq-jump" aria-label="Teme">
+    <?php foreach (array_keys($sections) as $n => $sectionTitle): ?>
+      <a href="#<?= e($slug($sectionTitle)) ?>"><span><?= $n + 1 ?></span><?= e($sectionTitle) ?></a>
+    <?php endforeach; ?>
+  </nav>
   <div class="faq">
-    <?php foreach ($sections as $sectionTitle => $items): ?>
-      <section class="faq-section" aria-labelledby="faq-<?= e(strtolower((string) preg_replace('/[^a-z0-9]+/i', '-', $sectionTitle))) ?>">
-        <h2 id="faq-<?= e(strtolower((string) preg_replace('/[^a-z0-9]+/i', '-', $sectionTitle))) ?>"><?= e($sectionTitle) ?></h2>
+    <?php $n = 0; foreach ($sections as $sectionTitle => $items): $n++; ?>
+      <section class="faq-section" id="<?= e($slug($sectionTitle)) ?>" aria-labelledby="<?= e($slug($sectionTitle)) ?>-title">
+        <header class="faq-head">
+          <span class="faq-num" aria-hidden="true"><?= $n ?></span>
+          <h2 id="<?= e($slug($sectionTitle)) ?>-title"><?= e($sectionTitle) ?></h2>
+          <small><?= count($items) ?> pitanja</small>
+        </header>
         <?php foreach ($items as $q => $a): ?>
           <details>
-            <summary><?= e($q) ?></summary>
+            <summary><span><?= e($q) ?></span></summary>
             <p><?= e($a) ?></p>
           </details>
         <?php endforeach; ?>

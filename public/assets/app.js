@@ -302,11 +302,17 @@ PlayWorld tim`;
   const soundButton = document.querySelector('[data-sound-toggle]');
   if (soundButton) {
     let muted = localStorage.getItem('pw-sound-muted') === '1';
-    soundButton.textContent = muted ? 'Sound off' : 'Sound on';
+    const soundLabel = soundButton.querySelector('[data-sound-label]');
+    const renderSound = () => {
+      if (soundLabel) soundLabel.textContent = muted ? 'Zvuk isključen' : 'Zvuk uključen';
+      soundButton.classList.toggle('is-muted', muted);
+      soundButton.setAttribute('aria-pressed', String(!muted));
+    };
+    renderSound();
     soundButton.addEventListener('click', () => {
       muted = !muted;
       localStorage.setItem('pw-sound-muted', muted ? '1' : '0');
-      soundButton.textContent = muted ? 'Sound off' : 'Sound on';
+      renderSound();
     });
 
     if (!muted && window.AudioContext && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
