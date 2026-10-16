@@ -23,10 +23,13 @@ $stickyLabel = $bonusPending
 <section class="result-shell <?= !empty($openedNow) ? 'celebrate' : '' ?>">
   <?php if (!empty($openedNow)): ?>
     <div class="box-animation" aria-hidden="true">
-      <div class="spark-field"></div>
-      <div class="box-lid"></div>
-      <div class="box-body"></div>
-      <div class="glow"></div>
+      <div class="box-rig">
+        <div class="glow"></div>
+        <div class="light-beam"></div>
+        <div class="spark-field"></div>
+        <div class="box-body"></div>
+        <div class="box-lid"></div>
+      </div>
     </div>
   <?php endif; ?>
   <div class="panel result verified-result" data-watermark="DRAW ID <?= e($draw['draw_id']) ?>">

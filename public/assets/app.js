@@ -129,26 +129,101 @@ PlayWorld tim`;
     sync();
   });
 
+  // Branded confirmation dialog (replaces the browser's native confirm box).
+  const confirmDialog = ({ title, message, confirmLabel = 'Potvrdite', cancelLabel = 'Odustanite', tone = 'primary', icon = 'help' }) => new Promise((resolve) => {
+    const previous = document.activeElement;
+    const icons = {
+      gift: '<path d="M4 11h16v9H4zM3 7.500h18V11H3zM12 7.500V20M12 7.500C10.500 4 7 4.500 7 6.500c0 1.500 2 1 5 1Zm0 0c1.500-3.500 5-3 5-1 0 1.500-2 1-5 1Z" fill="none" stroke="currentColor" stroke-width="1.800" stroke-linejoin="round"/>',
+      alert: '<path d="M12 4 3 19.500h18L12 4Zm0 6v4.500M12 17.200h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+      help: '<circle cx="12" cy="12" r="8.500" fill="none" stroke="currentColor" stroke-width="1.900"/><path d="M9.700 9.600a2.400 2.400 0 1 1 3.500 2.100c-.7.400-1.200.9-1.200 1.700M12 16.600h.01" fill="none" stroke="currentColor" stroke-width="1.900" stroke-linecap="round"/>',
+    };
+    const root = document.createElement('div');
+    root.className = 'dialog';
+    root.innerHTML = `
+      <div class="dialog-backdrop" data-dialog-cancel></div>
+      <div class="dialog-card dialog-${tone}" role="alertdialog" aria-modal="true" aria-labelledby="dialog-title" aria-describedby="dialog-message">
+        <span class="dialog-icon" aria-hidden="true"><svg viewBox="0 0 24 24">${icons[icon] || icons.help}</svg></span>
+        <h2 id="dialog-title"></h2>
+        <p id="dialog-message"></p>
+        <div class="dialog-actions">
+          <button type="button" class="ghost" data-dialog-cancel></button>
+          <button type="button" class="${tone === 'danger' ? 'danger' : 'primary'}" data-dialog-confirm></button>
+        </div>
+      </div>`;
+    root.querySelector('#dialog-title').textContent = title;
+    root.querySelector('#dialog-message').textContent = message;
+    root.querySelector('.ghost').textContent = cancelLabel;
+    const confirmButton = root.querySelector('[data-dialog-confirm]');
+    confirmButton.textContent = confirmLabel;
+    document.body.appendChild(root);
+    document.body.classList.add('dialog-open');
+    requestAnimationFrame(() => {
+      root.classList.add('is-open');
+      void root.offsetWidth; // make the dialog rendered before moving focus into it
+      (tone === 'danger' ? root.querySelector('.ghost') : confirmButton).focus({ preventScroll: true });
+    });
+
+    const close = (result) => {
+      document.removeEventListener('keydown', onKey, true);
+      root.classList.remove('is-open');
+      document.body.classList.remove('dialog-open');
+      setTimeout(() => root.remove(), 220);
+      if (previous && previous.focus) previous.focus({ preventScroll: true });
+      resolve(result);
+    };
+    const onKey = (event) => {
+      if (event.key === 'Escape') { event.preventDefault(); close(false); }
+      if (event.key === 'Tab') {
+        const focusable = [...root.querySelectorAll('button')];
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    };
+    document.addEventListener('keydown', onKey, true);
+    root.querySelectorAll('[data-dialog-cancel]').forEach((el) => el.addEventListener('click', () => close(false)));
+    confirmButton.addEventListener('click', () => close(true));
+  });
+
   document.querySelectorAll('[data-confirm-action]').forEach((form) => {
-    form.addEventListener('submit', (event) => {
-      if (!window.confirm(form.dataset.confirmAction || 'Da li ste sigurni?')) {
-        event.preventDefault();
+    form.addEventListener('submit', async (event) => {
+      if (form.dataset.confirmed === '1') return;
+      event.preventDefault();
+      const ok = await confirmDialog({
+        title: 'Potvrdite radnju',
+        message: form.dataset.confirmAction || 'Da li ste sigurni?',
+        confirmLabel: form.dataset.confirmLabel || 'Da, nastavite',
+        tone: 'danger',
+        icon: 'alert',
+      });
+      if (ok) {
+        form.dataset.confirmed = '1';
+        form.submit();
       }
     });
   });
 
   document.querySelectorAll('[data-confirm-open]').forEach((form) => {
-    form.addEventListener('submit', (event) => {
-      if (!window.confirm('Da li ste spremni da otvorite svoj Mystery Box? Link važi samo za jedno otvaranje.')) {
-        event.preventDefault();
-        return;
-      }
+    form.addEventListener('submit', async (event) => {
+      if (form.dataset.confirmed === '1') return;
+      event.preventDefault();
+      const ok = await confirmDialog({
+        title: 'Spremni ste da otvorite box?',
+        message: 'Svaki link važi samo za jedno otvaranje. Rezultat se odmah čuva i nije ga moguće promeniti.',
+        confirmLabel: 'Otvorite box',
+        cancelLabel: 'Još ne',
+        icon: 'gift',
+      });
+      if (!ok) return;
+      form.dataset.confirmed = '1';
       const button = form.querySelector('button[type="submit"]');
       if (button) {
         button.dataset.label = button.textContent;
         button.disabled = true;
         button.textContent = 'Otvaram...';
       }
+      form.submit();
     });
   });
 
@@ -407,6 +482,7 @@ PlayWorld tim`;
     if (!event.persisted) return;
     document.querySelectorAll('[data-action-form] button[type="submit"], form[data-confirm-open] button[type="submit"]').forEach((button) => {
       button.disabled = false;
+      const owner = button.closest('form'); if (owner) delete owner.dataset.confirmed;
       if (button.dataset.label) button.textContent = button.dataset.label;
     });
   });
