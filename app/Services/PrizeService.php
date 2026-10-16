@@ -366,19 +366,23 @@ final class PrizeService
             return $existing ?: '/assets/placeholder-cover.svg';
         }
 
-        if (($cover['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
-            return $existing ?: '/assets/placeholder-cover.svg';
+        $uploadError = (int) ($cover['error'] ?? UPLOAD_ERR_OK);
+        if ($uploadError === UPLOAD_ERR_INI_SIZE || $uploadError === UPLOAD_ERR_FORM_SIZE) {
+            throw new \InvalidArgumentException('Slika je prevelika. Molimo Vas, izaberite manju sliku.');
+        }
+        if ($uploadError !== UPLOAD_ERR_OK) {
+            throw new \InvalidArgumentException('Slika nije otpremljena. Molimo Vas, pokušajte ponovo.');
         }
 
         $temporaryPath = (string) ($cover['tmp_name'] ?? '');
         if ($temporaryPath === '' || !is_file($temporaryPath)) {
-            return $existing ?: '/assets/placeholder-cover.svg';
+            throw new \InvalidArgumentException('Slika nije otpremljena. Molimo Vas, pokušajte ponovo.');
         }
 
         $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
         $type = @mime_content_type($temporaryPath);
         if (!isset($allowed[$type])) {
-            return $existing ?: '/assets/placeholder-cover.svg';
+            throw new \InvalidArgumentException('Slika nije u podržanom formatu. Dozvoljeni su JPG, PNG i WebP.');
         }
 
         $dir = app_path('public/uploads');

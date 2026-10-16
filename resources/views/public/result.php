@@ -17,7 +17,7 @@ $oldInput = is_array($_SESSION['old_input'] ?? null) ? $_SESSION['old_input'] : 
 unset($_SESSION['old_input']);
 $stickyTarget = $bonusPending ? 'bonus-reward' : 'claim-reward';
 $stickyLabel = $bonusPending
-    ? ($bonusCount === 1 ? 'Preuzmite svoj besplatni box' : 'Preuzmite svoje besplatne boxove')
+    ? ($bonusCount === 1 ? 'Preuzmite besplatan box' : 'Preuzmite besplatne boxove')
     : 'Preuzmite nagradu';
 ?>
 <section class="result-shell <?= !empty($openedNow) ? 'celebrate' : '' ?>">

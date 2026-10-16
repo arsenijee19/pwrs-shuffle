@@ -30,7 +30,7 @@ final class RateLimiter
                     ],
                 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             } else {
-                echo 'Service temporarily unavailable. Please try again later.';
+                self::htmlMessage('Usluga trenutno nije dostupna.', 'Molimo Vas, pokušajte ponovo za nekoliko minuta.');
             }
             exit;
         }
@@ -69,10 +69,17 @@ final class RateLimiter
                     ],
                 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             } else {
-                header('Content-Type: text/html; charset=utf-8');
-                echo '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Previše zahteva</title><p style="font-family:sans-serif;max-width:480px;margin:15vh auto;padding:0 20px;line-height:1.6"><strong>Previše zahteva.</strong><br>Molimo Vas, sačekajte nekoliko trenutaka pa pokušajte ponovo.</p>';
+                self::htmlMessage('Previše zahteva.', 'Molimo Vas, sačekajte nekoliko trenutaka pa pokušajte ponovo.');
             }
             exit;
         }
+    }
+
+    private static function htmlMessage(string $title, string $text): void
+    {
+        header('Content-Type: text/html; charset=utf-8');
+        echo '<!doctype html><html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>' . $title . '</title>'
+            . '<link rel="stylesheet" href="/assets/app.css"></head><body><main><section class="panel narrow"><p class="eyebrow">PlayWorld Mystery Box</p>'
+            . '<h1>' . $title . '</h1><p class="lead">' . $text . '</p><a class="primary" href="/">Početna</a></section></main></body></html>';
     }
 }

@@ -416,9 +416,9 @@ $router->get('/admin/tokens.csv', function (): void {
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename=tokens.csv');
     $out = fopen('php://output', 'w');
-    fputcsv($out, ['id', 'status', 'created_at', 'used_at']);
+    fputcsv($out, ['id', 'status', 'created_at', 'used_at'], ',', '"', '');
     foreach ((new TokenService())->list(10000) as $token) {
-        fputcsv($out, [$token['id'], $token['status'], $token['created_at'], $token['used_at']]);
+        fputcsv($out, [$token['id'], $token['status'], $token['created_at'], $token['used_at']], ',', '"', '');
     }
 });
 $router->get('/admin/email', function (): void {
@@ -518,7 +518,12 @@ $router->get('/admin/password', function (): void {
 $router->post('/admin/password', function (): void {
     AuthService::requireAdmin();
     verify_csrf();
-    $ok = (new AuthService())->changePassword($_POST['current_password'] ?? '', $_POST['new_password'] ?? '');
+    $new = (string) ($_POST['new_password'] ?? '');
+    if (mb_strlen($new) < 10) {
+        render('admin/password', ['title' => 'Promena lozinke', 'message' => 'Nova lozinka mora imati najmanje 10 karaktera.'], 422);
+        return;
+    }
+    $ok = (new AuthService())->changePassword((string) ($_POST['current_password'] ?? ''), $new);
     render('admin/password', ['title' => 'Promena lozinke', 'message' => $ok ? 'Lozinka je promenjena.' : 'Trenutna lozinka nije ispravna.'], $ok ? 200 : 422);
 });
 
@@ -586,7 +591,7 @@ $router->post('/box/{token}/open', function (string $plain): void {
 });
 $router->post('/box/{token}/bonus', function (string $plain): void {
     verify_csrf();
-    RateLimiter::hit('customer-bonus-claim', true, 10);
+    RateLimiter::hit('customer-bonus-claim', false, 10);
     $tokens = new TokenService();
     $plain = $tokens->normalizePlain($plain);
     $token = $tokens->findPlain($plain);
@@ -616,7 +621,7 @@ $router->post('/box/{token}/bonus', function (string $plain): void {
 });
 $router->post('/box/{token}/claim', function (string $plain): void {
     verify_csrf();
-    RateLimiter::hit('customer-reward-claim', true, 10);
+    RateLimiter::hit('customer-reward-claim', false, 10);
     $tokens = new TokenService();
     $plain = $tokens->normalizePlain($plain);
     $token = $tokens->findPlain($plain);

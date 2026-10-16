@@ -685,3 +685,5 @@ body.drawer-open { overflow: hidden; }
 }
 @media (min-width: 761px) { .drawer { display: none; } }
 @media (prefers-reduced-motion: reduce) { .drawer-panel, .drawer-backdrop { transition-duration: 1ms; } }
+
+@media (max-width: 760px) { .result { scroll-margin-top: 12px; } }
