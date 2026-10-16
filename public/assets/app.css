@@ -728,3 +728,19 @@ body.drawer-open { overflow: hidden; }
 body.dialog-open { overflow: hidden; }
 @media (min-width: 761px) { .dialog { align-items: center; } .dialog-card { margin-bottom: 0; } }
 @media (prefers-reduced-motion: reduce) { .dialog-card, .dialog-backdrop { transition-duration: 1ms; } }
+
+/* Compact prize header */
+.result-kicker { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 12px; margin: 0; }
+.result-kicker .eyebrow { margin: 0; }
+.result-kicker .rarity-chip { padding: 5px 12px; font-size: 11px; }
+.cover-stage { width: 150px; padding: 8px; margin: 0 auto; border-radius: 20px; }
+.cover-stage::before { inset: -10px; border-radius: 26px; }
+.cover-stage .cover { border-radius: 14px; box-shadow: 0 10px 22px rgba(16, 24, 40, .14); }
+.result h1 { line-height: 1.12; }
+@media (max-width: 760px) {
+  .result { gap: 12px; }
+  .cover-stage { width: 104px; padding: 6px; border-radius: 18px; }
+  .cover-stage::before { inset: -8px; border-radius: 22px; }
+  .result h1 { font-size: 27px; }
+  .result > p:not(.eyebrow):not(.notice) { font-size: 14px; line-height: 1.5; }
+}

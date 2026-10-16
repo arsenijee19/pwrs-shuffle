@@ -33,11 +33,13 @@ $stickyLabel = $bonusPending
     </div>
   <?php endif; ?>
   <div class="panel result verified-result" data-watermark="DRAW ID <?= e($draw['draw_id']) ?>">
-    <p class="eyebrow">Čestitamo! Osvojili ste</p>
     <?php $rarityKey = strtolower(str_replace(' ', '-', (string) ($draw['rarity'] ?? ''))); ?>
-    <?php if (in_array($rarityKey, ['special', 'rare', 'ultra-rare'], true)): ?>
-      <span class="rarity-chip rarity-<?= e($rarityKey) ?>"><?= e((string) $draw['rarity']) ?></span>
-    <?php endif; ?>
+    <div class="result-kicker">
+      <p class="eyebrow">Čestitamo! Osvojili ste</p>
+      <?php if (in_array($rarityKey, ['special', 'rare', 'ultra-rare'], true)): ?>
+        <span class="rarity-chip rarity-<?= e($rarityKey) ?>"><?= e((string) $draw['rarity']) ?></span>
+      <?php endif; ?>
+    </div>
     <div class="cover-stage rarity-<?= e($rarityKey) ?>"><img class="cover" src="<?= e($draw['cover_path']) ?>" alt=""></div>
     <h1 class="<?= mb_strlen((string) $draw['prize_name']) > 36 ? 'is-long' : '' ?>"><?= e($draw['prize_name']) ?></h1>
     <p><?= e($draw['prize_description']) ?></p>
